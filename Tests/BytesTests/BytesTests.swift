@@ -53,9 +53,38 @@ final class BytesTests: XCTestCase {
             }
         }
     }
+    
+    func testSlices() throws {
+        let bytes: Bytes = [0,1,2,3,4,5]
+        let slice = bytes[1..<5]
+        
+        let value = UInt32(1<<24) + UInt32(2<<16) + UInt32(3<<8) + UInt32(4)
+        XCTAssertEqual(try slice.casting(to: UInt32.self).bigEndian, value)
+        
+        XCTAssertThrowsError(try bytes[...].casting(to: UInt32.self)) { error in
+            if case let BytesError.invalidMemorySize(targetSize, targetType, actualSize) = error {
+                XCTAssertEqual(targetSize, 4)
+                XCTAssertEqual(targetType, "UInt32")
+                XCTAssertEqual(actualSize, 6)
+            } else {
+                XCTFail("Unknown Error: \(error)")
+            }
+        }
+        
+        XCTAssertThrowsError(try bytes[0..<1].casting(to: UInt32.self)) { error in
+            if case let BytesError.invalidMemorySize(targetSize, targetType, actualSize) = error {
+                XCTAssertEqual(targetSize, 4)
+                XCTAssertEqual(targetType, "UInt32")
+                XCTAssertEqual(actualSize, 1)
+            } else {
+                XCTFail("Unknown Error: \(error)")
+            }
+        }
+    }
 
     static var allTests = [
         ("testTypes", testTypes),
         ("testCastTo", testCastTo),
+        ("testSlices", testSlices),
     ]
 }

@@ -133,5 +133,18 @@ final class BytesTests: XCTestCase {
         let bytesFromArray = array.bytes { Bytes(casting: $0.bigEndian) }
         
         XCTAssertEqual(bytesFromArray, [0x00,0x01,0x00,0x10,0x01,0x00,0x10,0x00])
+        
+        let backToArray = try [UInt16](bytes: bytesFromArray) { try $0.casting(to: UInt16.self).bigEndian }
+        XCTAssertEqual(backToArray, array)
+        
+        let set: Set<UInt16> = [0x0001, 0x0010, 0x0100, 0x1000]
+        let bytesFromSet = set.bytes { Bytes(casting: $0.bigEndian) }
+        let bytesFromAllItems = Array(set).bytes { Bytes(casting: $0.bigEndian) }
+        
+        XCTAssertEqual(bytesFromSet, bytesFromAllItems)
+        
+        let backToSet = try Set<UInt16>(bytes: bytesFromSet) { try $0.casting(to: UInt16.self).bigEndian }
+        XCTAssertEqual(backToSet, set)
+        
     }
 }

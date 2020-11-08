@@ -94,11 +94,4 @@ final class BytesTests: XCTestCase {
         let value = UInt32(1<<24) + UInt32(2<<16) + UInt32(3<<8) + UInt32(4)
         XCTAssertEqual(Bytes(casting: value.bigEndian), [1,2,3,4])
     }
-
-    static var allTests = [
-        ("testTypes", testTypes),
-        ("testCastTo", testCastTo),
-        ("testSlices", testSlices),
-        ("testCastFrom", testCastFrom),
-    ]
 }

@@ -112,4 +112,31 @@ final class IntegerTests: XCTestCase {
         XCTAssertEqual(Int64(-0x0123456789abcdef).bigEndianBytes, [0xfe, 0xdc, 0xba, 0x98, 0x76, 0x54, 0x32, 0x11])
         XCTAssertEqual(Int64(-0x0123456789abcdef).littleEndianBytes, [0x11, 0x32, 0x54, 0x76, 0x98, 0xba, 0xdc, 0xfe])
     }
+    
+    func testBytesToIntegerCollection() throws {
+        let bytes: Bytes = [0x00,0x01,0x00,0x10,0x01,0x00,0x10,0x00]
+        XCTAssertEqual(try [UInt16](bigEndianBytes: bytes), [0x0001, 0x0010, 0x0100, 0x1000])
+        XCTAssertEqual(try [UInt16](littleEndianBytes: bytes), [0x0100, 0x1000, 0x0001, 0x0010])
+        XCTAssertEqual(try Set<UInt16>(bigEndianBytes: bytes), [0x0001, 0x0010, 0x0100, 0x1000])
+        XCTAssertEqual(try Set<UInt16>(littleEndianBytes: bytes), [0x0100, 0x1000, 0x0001, 0x0010])
+        
+        let emptyBytes: Bytes = []
+        XCTAssertEqual(try [UInt16](bigEndianBytes: emptyBytes), [])
+        XCTAssertEqual(try [UInt16](littleEndianBytes: emptyBytes), [])
+        
+        let invalidBytes: Bytes = [0x00,0x01,0x00,0x10,0x01,0x00,0x10]
+        XCTAssertThrowsError(try [UInt16](bigEndianBytes: invalidBytes)) {
+            BytesError.testInvalidMemorySize($0, targetSize: 8, targetType: "UInt16", actualSize: 7)
+        }
+        XCTAssertThrowsError(try [UInt16](littleEndianBytes: invalidBytes)) {
+            BytesError.testInvalidMemorySize($0, targetSize: 8, targetType: "UInt16", actualSize: 7)
+        }
+    }
+    
+    func testIntegerCollectionToBytes() throws {
+        let integers: [UInt16] = [0x0001, 0x0010, 0x0100, 0x1000]
+        
+        XCTAssertEqual(integers.bigEndianBytes, [0x00,0x01,0x00,0x10,0x01,0x00,0x10,0x00])
+        XCTAssertEqual(integers.littleEndianBytes, [0x01,0x00,0x10,0x00,0x00,0x01,0x00,0x10])
+    }
 }

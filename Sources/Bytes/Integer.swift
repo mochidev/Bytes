@@ -39,3 +39,59 @@ extension FixedWidthInteger {
         self.init(littleEndian: try littleEndianBytes.casting())
     }
 }
+
+extension Collection where Element: FixedWidthInteger {
+    /// The big endian representations of a collection of integers.
+    @inlinable
+    public var bigEndianBytes: Bytes {
+        self.bytes(mapping: \.bigEndianBytes)
+    }
+    
+    /// Initialize a collection of integers with a sequence of Bytes representing a sequence of big endian types.
+    /// - Parameter bigEndianBytes: The Bytes to interpret as a sequence of big endian integer.
+    /// - Throws:
+    ///     - `BytesError.invalidMemorySize` if the byte sequence is not a multiple of the size of the integer type.
+    ///     - `BytesError.contiguousMemoryUnavailable` if a byte sub-sequence cannot be made to be contiguous.
+    @inlinable
+    public init<Bytes: BytesCollection>(bigEndianBytes: Bytes) throws where Self: RangeReplaceableCollection {
+        try self.init(bytes: bigEndianBytes, mapping: Element.init(bigEndianBytes:))
+    }
+    
+    /// The little endian representations of a collection of integers.
+    @inlinable
+    public var littleEndianBytes: Bytes {
+        self.bytes(mapping: \.littleEndianBytes)
+    }
+    
+    /// Initialize a collection of integers with a sequence of Bytes representing a sequence of little endian types.
+    /// - Parameter littleEndianBytes: The Bytes to interpret as a sequence of little endian integer.
+    /// - Throws:
+    ///     - `BytesError.invalidMemorySize` if the byte sequence is not a multiple of the size of the integer type.
+    ///     - `BytesError.contiguousMemoryUnavailable` if a byte sub-sequence cannot be made to be contiguous.
+    @inlinable
+    public init<Bytes: BytesCollection>(littleEndianBytes: Bytes) throws where Self: RangeReplaceableCollection {
+        try self.init(bytes: littleEndianBytes, mapping: Element.init(littleEndianBytes:))
+    }
+}
+
+extension Set where Element: FixedWidthInteger {
+    /// Initialize a Set of integers with a sequence of Bytes representing a sequence of big endian types.
+    /// - Parameter bigEndianBytes: The Bytes to interpret as a sequence of big endian integer.
+    /// - Throws:
+    ///     - `BytesError.invalidMemorySize` if the byte sequence is not a multiple of the size of the integer type.
+    ///     - `BytesError.contiguousMemoryUnavailable` if a byte sub-sequence cannot be made to be contiguous.
+    @inlinable
+    public init<Bytes: BytesCollection>(bigEndianBytes: Bytes) throws {
+        try self.init(bytes: bigEndianBytes, mapping: Element.init(bigEndianBytes:))
+    }
+    
+    /// Initialize a Set of integers with a sequence of Bytes representing a sequence of little endian types.
+    /// - Parameter littleEndianBytes: The Bytes to interpret as a sequence of little endian integer.
+    /// - Throws:
+    ///     - `BytesError.invalidMemorySize` if the byte sequence is not a multiple of the size of the integer type.
+    ///     - `BytesError.contiguousMemoryUnavailable` if a byte sub-sequence cannot be made to be contiguous.
+    @inlinable
+    public init<Bytes: BytesCollection>(littleEndianBytes: Bytes) throws {
+        try self.init(bytes: littleEndianBytes, mapping: Element.init(littleEndianBytes:))
+    }
+}

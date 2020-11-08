@@ -54,8 +54,52 @@ final class StringTests: XCTestCase {
         XCTAssertEqual(subString.utf8Bytes, subStringBytes)
     }
     
+    func testBytesToCharacter() throws {
+        let simpleCharacterBytes: Bytes = [32]
+        let simpleCharacter: Character = " "
+        XCTAssertEqual(try Character(utf8Bytes: simpleCharacterBytes), simpleCharacter)
+        
+        let complexCharacterBytes: Bytes = [240, 146, 144, 171]
+        let complexCharacter: Character = "𒐫"
+        XCTAssertEqual(try Character(utf8Bytes: complexCharacterBytes), complexCharacter)
+        
+        let emojiCharacterBytes: Bytes = [240, 159, 145, 168, 226, 128, 141, 240, 159, 145, 169, 226, 128, 141, 240, 159, 145, 167, 226, 128, 141, 240, 159, 145, 166]
+        let emojiCharacter: Character = "👨‍👩‍👧‍👦"
+        XCTAssertEqual(try Character(utf8Bytes: emojiCharacterBytes), emojiCharacter)
+        
+        let missingCharacterBytes: Bytes = []
+        XCTAssertThrowsError(try Character(utf8Bytes: missingCharacterBytes)) { error in
+            if case BytesError.invalidCharacterByteSequence = error {} else {
+                XCTFail("\(error) is not BytesError.invalidCharacterByteSequence")
+            }
+        }
+        
+        let multiCharacterBytes: Bytes = [32, 32]
+        XCTAssertThrowsError(try Character(utf8Bytes: multiCharacterBytes)) { error in
+            if case BytesError.invalidCharacterByteSequence = error {} else {
+                XCTFail("\(error) is not BytesError.invalidCharacterByteSequence")
+            }
+        }
+    }
+    
+    func testCharacterToBytes() throws {
+        let simpleCharacter: Character = " "
+        let simpleCharacterBytes: Bytes = [32]
+        XCTAssertEqual(simpleCharacter.utf8Bytes, simpleCharacterBytes)
+        
+        let complexCharacter: Character = "𒐫"
+        let complexCharacterBytes: Bytes = [240, 146, 144, 171]
+        XCTAssertEqual(complexCharacter.utf8Bytes, complexCharacterBytes)
+        
+        let emojiCharacter: Character = "👨‍👩‍👧‍👦"
+        let emojiCharacterBytes: Bytes = [240, 159, 145, 168, 226, 128, 141, 240, 159, 145, 169, 226, 128, 141, 240, 159, 145, 167, 226, 128, 141, 240, 159, 145, 166]
+        XCTAssertEqual(emojiCharacter.utf8Bytes, emojiCharacterBytes)
+    }
+    
     static var allTests = [
         ("testBytesToString", testBytesToString),
         ("testStringToBytes", testStringToBytes),
+        ("testBytesToCharacter", testBytesToCharacter),
+        ("testCharacterToBytes", testCharacterToBytes),
     ]
 }

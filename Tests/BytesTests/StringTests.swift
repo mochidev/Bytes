@@ -68,17 +68,13 @@ final class StringTests: XCTestCase {
         XCTAssertEqual(try Character(utf8Bytes: emojiCharacterBytes), emojiCharacter)
         
         let missingCharacterBytes: Bytes = []
-        XCTAssertThrowsError(try Character(utf8Bytes: missingCharacterBytes)) { error in
-            if case BytesError.invalidCharacterByteSequence = error {} else {
-                XCTFail("\(error) is not BytesError.invalidCharacterByteSequence")
-            }
+        XCTAssertThrowsError(try Character(utf8Bytes: missingCharacterBytes)) {
+            BytesError.testInvalidCharacterByteSequence($0)
         }
         
         let multiCharacterBytes: Bytes = [32, 32]
-        XCTAssertThrowsError(try Character(utf8Bytes: multiCharacterBytes)) { error in
-            if case BytesError.invalidCharacterByteSequence = error {} else {
-                XCTFail("\(error) is not BytesError.invalidCharacterByteSequence")
-            }
+        XCTAssertThrowsError(try Character(utf8Bytes: multiCharacterBytes)) {
+            BytesError.testInvalidCharacterByteSequence($0)
         }
     }
     

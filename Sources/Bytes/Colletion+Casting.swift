@@ -49,6 +49,23 @@ extension BidirectionalCollection where Element == UInt8 {
     public init<T>(casting value: T) where Self: RangeReplaceableCollection {
         self = withUnsafeBytes(of: value) { Self($0) }
     }
+    
+    /// Check if a sequence of Bytes can be safely mapped to a collection of elements.
+    /// - Parameter target: The type of element to map to.
+    /// - Throws: `BytesError.invalidMemorySize` if the total size of the bytes sequence is not a multiple of the element's size.
+    /// - Returns: `(elementSize: Int, numberOfBytes: Int, elementCount: Int)`, to aid in building the new collection.
+    @usableFromInline
+    func canBeMapped<Element>(to target: Element.Type) throws -> (elementSize: Int, numberOfBytes: Int, elementCount: Int) {
+        let elementSize = MemoryLayout<Element>.size
+        let numberOfBytes = self.count
+        let (elementCount, remainingElementSize) = numberOfBytes.quotientAndRemainder(dividingBy: elementSize)
+        
+        guard remainingElementSize == 0 else {
+            throw BytesError.invalidMemorySize(targetSize: (elementCount+1)*elementSize, targetType: "\(Element.self)", actualSize: numberOfBytes)
+        }
+        
+        return (elementSize, numberOfBytes, elementCount)
+    }
 }
 
 extension Collection {
@@ -63,5 +80,49 @@ extension Collection {
             bytes.append(contentsOf: transform(element))
         }
         return bytes
+    }
+}
+
+extension RangeReplaceableCollection {
+    /// Creates a new collection from a sequence of bytes, transforming batches of bytes into the element type of the collection.
+    /// - Parameters:
+    ///   - bytes: The bytes to transform.
+    ///   - transform: The transformation to perform on each element.
+    /// - Throws: `BytesError.invalidMemorySize` if the total size of the bytes sequence is not a multiple of the element's size.
+    @inlinable
+    public init<Bytes: BytesCollection>(bytes: Bytes, mapping transform: (Bytes.SubSequence) throws -> Self.Element) throws {
+        let (elementSize, numberOfBytes, elementCount) = try bytes.canBeMapped(to: Element.self)
+        
+        var result = Self()
+        result.reserveCapacity(elementCount)
+        
+        for sliceStart in stride(from: 0, to: numberOfBytes, by: elementSize) {
+            let slice = bytes[sliceStart..<(sliceStart+elementSize)]
+            result.append(try transform(slice))
+        }
+        
+        self = result
+    }
+}
+
+extension Set {
+    /// Creates a new Set from a sequence of bytes, transforming batches of bytes into the element type of the Set.
+    /// - Parameters:
+    ///   - bytes: The bytes to transform.
+    ///   - transform: The transformation to perform on each element.
+    /// - Throws: `BytesError.invalidMemorySize` if the total size of the bytes sequence is not a multiple of the element's size.
+    @inlinable
+    public init<Bytes: BytesCollection>(bytes: Bytes, mapping getter: (Bytes.SubSequence) throws -> Self.Element) throws {
+        let (elementSize, numberOfBytes, elementCount) = try bytes.canBeMapped(to: Element.self)
+        
+        var result = Self()
+        result.reserveCapacity(elementCount)
+        
+        for sliceStart in stride(from: 0, to: numberOfBytes, by: elementSize) {
+            let slice = bytes[sliceStart..<(sliceStart+elementSize)]
+            result.insert(try getter(slice))
+        }
+        
+        self = result
     }
 }

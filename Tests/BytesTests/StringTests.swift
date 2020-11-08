@@ -95,11 +95,4 @@ final class StringTests: XCTestCase {
         let emojiCharacterBytes: Bytes = [240, 159, 145, 168, 226, 128, 141, 240, 159, 145, 169, 226, 128, 141, 240, 159, 145, 167, 226, 128, 141, 240, 159, 145, 166]
         XCTAssertEqual(emojiCharacter.utf8Bytes, emojiCharacterBytes)
     }
-    
-    static var allTests = [
-        ("testBytesToString", testBytesToString),
-        ("testStringToBytes", testStringToBytes),
-        ("testBytesToCharacter", testBytesToCharacter),
-        ("testCharacterToBytes", testCharacterToBytes),
-    ]
 }

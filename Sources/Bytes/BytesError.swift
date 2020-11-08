@@ -9,4 +9,5 @@
 public enum BytesError: Error {
     case invalidMemorySize(targetSize: Int, targetType: String, actualSize: Int)
     case contiguousMemoryUnavailable(type: String)
+    case invalidCharacterByteSequence
 }

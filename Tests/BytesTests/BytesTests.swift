@@ -127,4 +127,11 @@ final class BytesTests: XCTestCase {
         let value = UInt32(1<<24) + UInt32(2<<16) + UInt32(3<<8) + UInt32(4)
         XCTAssertEqual(Bytes(casting: value.bigEndian), [1,2,3,4])
     }
+    
+    func testMapping() throws {
+        let array: [UInt16] = [0x0001, 0x0010, 0x0100, 0x1000]
+        let bytesFromArray = array.bytes { Bytes(casting: $0.bigEndian) }
+        
+        XCTAssertEqual(bytesFromArray, [0x00,0x01,0x00,0x10,0x01,0x00,0x10,0x00])
+    }
 }

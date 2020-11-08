@@ -50,3 +50,18 @@ extension BidirectionalCollection where Element == UInt8 {
         self = withUnsafeBytes(of: value) { Self($0) }
     }
 }
+
+extension Collection {
+    /// Create a new Bytes sequence mapping each element accordingly.
+    /// - Parameter transform: The transformation to perform on each element.
+    /// - Returns: A Bytes sequence.
+    @inlinable
+    public func bytes(mapping transform: (Self.Element) -> Bytes) -> Bytes {
+        var bytes = Bytes()
+        bytes.reserveCapacity(self.count*MemoryLayout<Self.Element>.size)
+        for element in self {
+            bytes.append(contentsOf: transform(element))
+        }
+        return bytes
+    }
+}

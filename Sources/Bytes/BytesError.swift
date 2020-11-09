@@ -12,4 +12,5 @@ public enum BytesError: Error {
     
     case invalidCharacterByteSequence
     case invalidRawRepresentableByteSequence
+    case invalidUUIDByteSequence
 }

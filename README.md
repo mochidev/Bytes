@@ -1,5 +1,17 @@
 # Bytes
 
+<p align="center">
+    <a href="https://swiftpackageindex.com/mochidev/Bytes">
+        <img src="https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2Fmochidev%2FBytes%2Fbadge%3Ftype%3Dswift-versions" />
+    </a>
+    <a href="https://swiftpackageindex.com/mochidev/Bytes">
+        <img src="https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2Fmochidev%2FBytes%2Fbadge%3Ftype%3Dplatforms" />
+    </a>
+    <a href="https://github.com/mochidev/Bytes/actions?query=workflow%3A%22Test+Bytes%22">
+        <img src="https://github.com/mochidev/Bytes/workflows/Test%20Bytes/badge.svg" alt="Test Status" />
+    </a>
+</p>
+
 `Bytes` aims to be your go-to Swift library for transforming basic types to and from buffers of bytes that can be serialized and written to the network, a file, or a database.
 
 ## Installation

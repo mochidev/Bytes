@@ -66,6 +66,16 @@ final class RawRepresentableTests: XCTestCase {
         XCTAssertThrowsError(try RawEnum(rawBytes: [0x00,0x00])) {
             BytesError.testInvalidMemorySize($0, targetSize: 1, targetType: "SimpleStruct", actualSize: 2)
         }
+        XCTAssertEqual(try [RawEnum](rawBytes: [0x00,0x01,0x02]), [.a, .b, .c])
+        XCTAssertEqual(try Set<RawEnum>(rawBytes: [0x00,0x01,0x02]), [.a, .b, .c])
+        XCTAssertEqual(try [RawEnum](rawBytes: []), [])
+        XCTAssertEqual(try Set<RawEnum>(rawBytes: []), [])
+        XCTAssertThrowsError(try [RawEnum](rawBytes: [0x03])) {
+            BytesError.testInvalidRawRepresentableByteSequence($0)
+        }
+        XCTAssertThrowsError(try Set<RawEnum>(rawBytes: [0x03])) {
+            BytesError.testInvalidRawRepresentableByteSequence($0)
+        }
         
         XCTAssertEqual(try IntEnum(bigEndianBytes: [0x00,0x00]), .a)
         XCTAssertEqual(try IntEnum(littleEndianBytes: [0x00,0x00]), .a)
@@ -83,6 +93,38 @@ final class RawRepresentableTests: XCTestCase {
             BytesError.testInvalidMemorySize($0, targetSize: 2, targetType: "UInt16", actualSize: 1)
         }
         XCTAssertThrowsError(try IntEnum(littleEndianBytes: [0x00])) {
+            BytesError.testInvalidMemorySize($0, targetSize: 2, targetType: "UInt16", actualSize: 1)
+        }
+        XCTAssertEqual(try [IntEnum](bigEndianBytes: [0x00,0x00,0x00,0x01,0x00,0x02]), [.a, .b, .c])
+        XCTAssertEqual(try [IntEnum](littleEndianBytes: [0x00,0x00,0x01,0x00,0x02,0x00]), [.a, .b, .c])
+        XCTAssertEqual(try Set<IntEnum>(bigEndianBytes: [0x00,0x00,0x00,0x01,0x00,0x02]), [.a, .b, .c])
+        XCTAssertEqual(try Set<IntEnum>(littleEndianBytes: [0x00,0x00,0x01,0x00,0x02,0x00]), [.a, .b, .c])
+        XCTAssertEqual(try [IntEnum](bigEndianBytes: []), [])
+        XCTAssertEqual(try [IntEnum](littleEndianBytes: []), [])
+        XCTAssertEqual(try Set<IntEnum>(bigEndianBytes: []), [])
+        XCTAssertEqual(try Set<IntEnum>(littleEndianBytes: []), [])
+        XCTAssertThrowsError(try [IntEnum](bigEndianBytes: [0x00, 0x03])) {
+            BytesError.testInvalidRawRepresentableByteSequence($0)
+        }
+        XCTAssertThrowsError(try [IntEnum](littleEndianBytes: [0x00, 0x03])) {
+            BytesError.testInvalidRawRepresentableByteSequence($0)
+        }
+        XCTAssertThrowsError(try Set<IntEnum>(bigEndianBytes: [0x00, 0x03])) {
+            BytesError.testInvalidRawRepresentableByteSequence($0)
+        }
+        XCTAssertThrowsError(try Set<IntEnum>(littleEndianBytes: [0x00, 0x03])) {
+            BytesError.testInvalidRawRepresentableByteSequence($0)
+        }
+        XCTAssertThrowsError(try [IntEnum](bigEndianBytes: [0x00])) {
+            BytesError.testInvalidMemorySize($0, targetSize: 2, targetType: "UInt16", actualSize: 1)
+        }
+        XCTAssertThrowsError(try [IntEnum](littleEndianBytes: [0x00])) {
+            BytesError.testInvalidMemorySize($0, targetSize: 2, targetType: "UInt16", actualSize: 1)
+        }
+        XCTAssertThrowsError(try Set<IntEnum>(bigEndianBytes: [0x00])) {
+            BytesError.testInvalidMemorySize($0, targetSize: 2, targetType: "UInt16", actualSize: 1)
+        }
+        XCTAssertThrowsError(try Set<IntEnum>(littleEndianBytes: [0x00])) {
             BytesError.testInvalidMemorySize($0, targetSize: 2, targetType: "UInt16", actualSize: 1)
         }
         
@@ -117,6 +159,8 @@ final class RawRepresentableTests: XCTestCase {
         XCTAssertEqual(RawEnum.a.rawBytes, [0x00])
         XCTAssertEqual(RawEnum.b.rawBytes, [0x01])
         XCTAssertEqual(RawEnum.c.rawBytes, [0x02])
+        XCTAssertEqual([RawEnum.a, .b, .c].rawBytes, [0x00,0x01,0x02])
+        XCTAssertEqual(Set([RawEnum.a, .b, .c]).rawBytes.sorted(), [0x00,0x01,0x02])
         
         XCTAssertEqual(IntEnum.a.bigEndianBytes, [0x00,0x00])
         XCTAssertEqual(IntEnum.a.littleEndianBytes, [0x00,0x00])
@@ -124,6 +168,10 @@ final class RawRepresentableTests: XCTestCase {
         XCTAssertEqual(IntEnum.b.littleEndianBytes, [0x01,0x00])
         XCTAssertEqual(IntEnum.c.bigEndianBytes, [0x00,0x02])
         XCTAssertEqual(IntEnum.c.littleEndianBytes, [0x02,0x00])
+        XCTAssertEqual([IntEnum.a, .b, .c].bigEndianBytes, [0x00,0x00,0x00,0x01,0x00,0x02])
+        XCTAssertEqual([IntEnum.a, .b, .c].littleEndianBytes, [0x00,0x00,0x01,0x00,0x02,0x00])
+        XCTAssertEqual(try [UInt16](bigEndianBytes: Set([IntEnum.a, .b, .c]).bigEndianBytes).sorted(), [0x0000,0x0001,0x0002])
+        XCTAssertEqual(try [UInt16](littleEndianBytes: Set([IntEnum.a, .b, .c]).littleEndianBytes).sorted(), [0x0000,0x0001,0x0002])
         
         XCTAssertEqual(StringEnum.a.utf8Bytes, [0x61])
         XCTAssertEqual(StringEnum.b.utf8Bytes, [0x62])

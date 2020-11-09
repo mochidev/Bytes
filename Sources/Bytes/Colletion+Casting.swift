@@ -91,7 +91,18 @@ extension RangeReplaceableCollection {
     /// - Throws: `BytesError.invalidMemorySize` if the total size of the bytes sequence is not a multiple of the element's size.
     @inlinable
     public init<Bytes: BytesCollection>(bytes: Bytes, mapping transform: (Bytes.SubSequence) throws -> Self.Element) throws {
-        let (elementSize, numberOfBytes, elementCount) = try bytes.canBeMapped(to: Element.self)
+        try self.init(bytes: bytes, element: Element.self, mapping: transform)
+    }
+    
+    /// Creates a new collection from a sequence of bytes, transforming batches of bytes into the specified element type.
+    /// - Parameters:
+    ///   - bytes: The bytes to transform.
+    ///   - element: The element that was used to encode the byte sequence.
+    ///   - transform: The transformation to perform on each element.
+    /// - Throws: `BytesError.invalidMemorySize` if the total size of the bytes sequence is not a multiple of the element's size.
+    @inlinable
+    public init<Bytes: BytesCollection, EncodedElement>(bytes: Bytes, element: EncodedElement.Type, mapping transform: (Bytes.SubSequence) throws -> Self.Element) throws {
+        let (elementSize, numberOfBytes, elementCount) = try bytes.canBeMapped(to: EncodedElement.self)
         
         var result = Self()
         result.reserveCapacity(elementCount)
@@ -112,15 +123,26 @@ extension Set {
     ///   - transform: The transformation to perform on each element.
     /// - Throws: `BytesError.invalidMemorySize` if the total size of the bytes sequence is not a multiple of the element's size.
     @inlinable
-    public init<Bytes: BytesCollection>(bytes: Bytes, mapping getter: (Bytes.SubSequence) throws -> Self.Element) throws {
-        let (elementSize, numberOfBytes, elementCount) = try bytes.canBeMapped(to: Element.self)
+    public init<Bytes: BytesCollection>(bytes: Bytes, mapping transform: (Bytes.SubSequence) throws -> Self.Element) throws {
+        try self.init(bytes: bytes, element: Element.self, mapping: transform)
+    }
+    
+    /// Creates a new Set from a sequence of bytes, transforming batches of bytes into the specified element type.
+    /// - Parameters:
+    ///   - bytes: The bytes to transform.
+    ///   - element: The element that was used to encode the byte sequence.
+    ///   - transform: The transformation to perform on each element.
+    /// - Throws: `BytesError.invalidMemorySize` if the total size of the bytes sequence is not a multiple of the element's size.
+    @inlinable
+    public init<Bytes: BytesCollection, EncodedElement>(bytes: Bytes, element: EncodedElement.Type, mapping transform: (Bytes.SubSequence) throws -> Self.Element) throws {
+        let (elementSize, numberOfBytes, elementCount) = try bytes.canBeMapped(to: EncodedElement.self)
         
         var result = Self()
         result.reserveCapacity(elementCount)
         
         for sliceStart in stride(from: 0, to: numberOfBytes, by: elementSize) {
             let slice = bytes[sliceStart..<(sliceStart+elementSize)]
-            result.insert(try getter(slice))
+            result.insert(try transform(slice))
         }
         
         self = result

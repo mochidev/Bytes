@@ -92,7 +92,6 @@ final class IntegerTests: XCTestCase {
     
     func testIntegerToBytes() throws {
         XCTAssertEqual(UInt8(0x01).bigEndianBytes, [0x01])
-        XCTAssertEqual(UInt8(0x01).bigEndianBytes, [0x01])
         XCTAssertEqual(UInt8(0x01).littleEndianBytes, [0x01])
         XCTAssertEqual(Int8(-0x01).bigEndianBytes, [0xff])
         XCTAssertEqual(Int8(-0x01).littleEndianBytes, [0xff])

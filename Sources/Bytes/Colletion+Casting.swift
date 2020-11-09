@@ -8,7 +8,7 @@
 
 import Foundation
 
-extension BidirectionalCollection where Element == UInt8 {
+extension BidirectionalCollection where Element == Byte {
     /// Cast an _entire_ Bytes sequence to the target's type.
     /// - Parameter target: The type of the target.
     /// - Throws:

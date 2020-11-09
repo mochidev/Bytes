@@ -45,8 +45,13 @@ extension BidirectionalCollection where Element == Byte {
                     $0.baseAddress!.assumingMemoryBound(to: R.self).pointee
                 }
             })
-            else {
+        else {
+            guard self.count <= 4*1024 else { // If bytes is less than 4KB, then perform a copy first
                 throw BytesError.contiguousMemoryUnavailable(type: "\(Self.self)")
+            }
+            return Bytes(self).withUnsafeBytes {
+                $0.baseAddress!.assumingMemoryBound(to: R.self).pointee
+            }
         }
         return result
     }

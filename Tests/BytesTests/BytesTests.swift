@@ -133,12 +133,25 @@ final class BytesTests: XCTestCase {
             BytesError.testInvalidMemorySize($0, targetSize: 4, targetType: "UInt32", actualSize: 3)
         }
         
-        let array1: Bytes = [0,0]
+        let array1: Bytes = [0,1]
         let array2: Bytes = [0,0]
         
         let joined = [array1, array2].joined()
+        XCTAssertEqual(try joined.casting(to: UInt32.self), try Bytes([0,1,0,0]).casting(to: UInt32.self))
         
-        XCTAssertThrowsError(try joined.casting(to: UInt32.self)) {
+        // Make sure non-contiguous data large than 4096 is not castable (aka performance will likely suffer beyond this point
+        struct BigType { // This type is 4096+1 bytes
+            struct SmallType {
+                var a: (uuid_t,uuid_t,uuid_t,uuid_t, uuid_t,uuid_t,uuid_t,uuid_t, uuid_t,uuid_t,uuid_t,uuid_t, uuid_t,uuid_t,uuid_t,uuid_t)
+            }
+            
+            var a: (SmallType,SmallType,SmallType,SmallType, SmallType,SmallType,SmallType,SmallType, SmallType,SmallType,SmallType,SmallType, SmallType,SmallType,SmallType,SmallType)
+            var b: UInt8
+        }
+        
+        let bigArray = [Bytes(repeating: 0, count: 4096), Bytes([0])].joined()
+        
+        XCTAssertThrowsError(try bigArray.casting(to: BigType.self)) {
             BytesError.testContiguousMemoryUnavailable($0, collectionType: "FlattenSequence<Array<Array<UInt8>>>")
         }
     }

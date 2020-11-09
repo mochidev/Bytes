@@ -6,9 +6,20 @@
 
 Add `Bytes` as a dependency in your `Package.swift` file to start using it. Then, add `import Bytes` to any file you wish to use the library in.
 
+Please check the [releases](https://github.com/mochidev/Bytes/releases) for recommended versions.
+
 ```swift
 dependencies: [
-    .package(url: "https://github.com/mochidev/Bytes.git", from: "0.1.0"),
+    .package(url: "https://github.com/mochidev/Bytes.git", .upToNextMinor(from: "0.1.0")),
+],
+...
+targets: [
+    .target(
+        name: "MyPackage",
+        dependencies: [
+            "Bytes",
+        ]
+    )
 ]
 ```
 
@@ -25,7 +36,11 @@ struct Example {
 func methodThatTakesExample(_ example: Example) { ... }
 
 let example = Example(a: 1, b: 2)
+
+// Turn a Swift type into Bytes:
 let bytes = Bytes(casting: example) // [0x01, 0x02]
+
+// Turn Bytes into a Swift type:
 let backToExample = try bytes.casting(to: Example.self) // Type is explicit
 methodThatTakesExample(try bytes.casting()) // Type is inferred from context
 ```

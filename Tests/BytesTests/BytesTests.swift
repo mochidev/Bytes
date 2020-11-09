@@ -89,10 +89,12 @@ extension BytesError {
 
 final class BytesTests: XCTestCase {
     func testTypes() throws {
+        XCTAssertTrue(Byte.self == UInt8.self)
         XCTAssertTrue(Bytes.self == Array<UInt8>.self)
         XCTAssertTrue(BytesSlice.self == ArraySlice<UInt8>.self)
         XCTAssertTrue(ContiguousBytes.self == ContiguousArray<UInt8>.self)
         
+        XCTAssertFalse(Byte.self == Int8.self)
         XCTAssertFalse(Bytes.self == Array<Int8>.self)
     }
     

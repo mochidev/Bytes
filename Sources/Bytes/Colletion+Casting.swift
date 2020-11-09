@@ -74,8 +74,18 @@ extension Collection {
     /// - Returns: A Bytes sequence.
     @inlinable
     public func bytes(mapping transform: (Self.Element) -> Bytes) -> Bytes {
+        bytes(for: Element.self, mapping: transform)
+    }
+    
+    /// Create a new Bytes sequence mapping each element accordingly.
+    /// - Parameters:
+    ///   - target: The element that was used to encode the byte sequence.
+    ///   - transform: The transformation to perform on each element.
+    /// - Returns: A Bytes sequence.
+    @inlinable
+    public func bytes<EncodedElement>(for target: EncodedElement.Type, mapping transform: (Self.Element) -> Bytes) -> Bytes {
         var bytes = Bytes()
-        bytes.reserveCapacity(self.count*MemoryLayout<Self.Element>.size)
+        bytes.reserveCapacity(self.count*MemoryLayout<EncodedElement>.size)
         for element in self {
             bytes.append(contentsOf: transform(element))
         }

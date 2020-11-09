@@ -117,7 +117,7 @@ extension Collection where Element: RawRepresentable {
     /// The Bytes representations of a collection of `rawValue`s.
     @inlinable
     public var rawBytes: Bytes {
-        self.bytes(mapping: \.rawBytes)
+        self.bytes(for: Element.RawValue.self, mapping: \.rawBytes)
     }
     
     /// Initialize a collection of raw representable types with a sequence of Bytes representing the `rawValue`s.
@@ -136,7 +136,7 @@ extension Collection where Element: RawRepresentable, Element.RawValue: FixedWid
     /// The big endian representations of a collection of `rawValue` integers.
     @inlinable
     public var bigEndianBytes: Bytes {
-        self.bytes(mapping: \.bigEndianBytes)
+        self.bytes(for: Element.RawValue.self, mapping: \.bigEndianBytes)
     }
     
     /// Initialize a collection of raw representable types with a sequence of Bytes representing a sequence of big endian `rawValue`s.
@@ -153,7 +153,7 @@ extension Collection where Element: RawRepresentable, Element.RawValue: FixedWid
     /// The little endian representations of a collection of `rawValue` integers.
     @inlinable
     public var littleEndianBytes: Bytes {
-        self.bytes(mapping: \.littleEndianBytes)
+        self.bytes(for: Element.RawValue.self, mapping: \.littleEndianBytes)
     }
     
     /// Initialize a collection of raw representable types with a sequence of Bytes representing a sequence of little endian `rawValue`s.

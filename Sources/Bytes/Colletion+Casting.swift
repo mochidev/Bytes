@@ -9,6 +9,16 @@
 import Foundation
 
 extension BidirectionalCollection where Element == Byte {
+    /// Check if a sequence of Bytes can be safely casted to an element.
+    /// - Parameter target: The type of element to cast to.
+    /// - Throws: `BytesError.invalidMemorySize` if the size of the bytes sequence is not equal to the element's size.
+    @inlinable
+    func canBeCasted<Element>(to target: Element.Type) throws {
+        guard MemoryLayout<Element>.size == self.count else {
+            throw BytesError.invalidMemorySize(targetSize: MemoryLayout<Element>.size, targetType: "\(Element.self)", actualSize: self.count)
+        }
+    }
+    
     /// Cast an _entire_ Bytes sequence to the target's type.
     /// - Parameter target: The type of the target.
     /// - Throws:
@@ -27,9 +37,7 @@ extension BidirectionalCollection where Element == Byte {
     /// - Returns: An instance represented by the Bytes sequence.
     @inlinable
     public func casting<R>() throws -> R {
-        guard MemoryLayout<R>.size == self.count else {
-            throw BytesError.invalidMemorySize(targetSize: MemoryLayout<R>.size, targetType: "\(R.self)", actualSize: self.count)
-        }
+        try canBeCasted(to: R.self)
         
         guard
             let result = self.withContiguousStorageIfAvailable({
@@ -54,7 +62,7 @@ extension BidirectionalCollection where Element == Byte {
     /// - Parameter target: The type of element to map to.
     /// - Throws: `BytesError.invalidMemorySize` if the total size of the bytes sequence is not a multiple of the element's size.
     /// - Returns: `(elementSize: Int, numberOfBytes: Int, elementCount: Int)`, to aid in building the new collection.
-    @usableFromInline
+    @inlinable
     func canBeMapped<Element>(to target: Element.Type) throws -> (elementSize: Int, numberOfBytes: Int, elementCount: Int) {
         let elementSize = MemoryLayout<Element>.size
         let numberOfBytes = self.count

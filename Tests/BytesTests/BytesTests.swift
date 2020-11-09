@@ -85,6 +85,23 @@ extension BytesError {
             XCTFail(messageResult, file: file, line: line)
         }
     }
+    
+    static func testInvalidUUIDByteSequence(
+        _ expression: @autoclosure () throws -> Error,
+        _ message: @autoclosure () -> String = "",
+        file: StaticString = #file,
+        line: UInt = #line) rethrows {
+        
+        let expressionResult = try expression()
+        let messageResult = message()
+        
+        if case Self.invalidUUIDByteSequence = expressionResult {
+        } else if messageResult.isEmpty {
+            XCTFail("\(expressionResult) is not BytesError.invalidUUIDByteSequence", file: file, line: line)
+        } else {
+            XCTFail(messageResult, file: file, line: line)
+        }
+    }
 }
 
 final class BytesTests: XCTestCase {

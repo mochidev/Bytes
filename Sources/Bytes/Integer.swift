@@ -48,7 +48,7 @@ extension Collection where Element: FixedWidthInteger {
     }
     
     /// Initialize a collection of integers with a sequence of Bytes representing a sequence of big endian types.
-    /// - Parameter bigEndianBytes: The Bytes to interpret as a sequence of big endian integer.
+    /// - Parameter bigEndianBytes: The Bytes to interpret as a sequence of big endian integers.
     /// - Throws:
     ///     - `BytesError.invalidMemorySize` if the byte sequence is not a multiple of the size of the integer type.
     ///     - `BytesError.contiguousMemoryUnavailable` if a byte sub-sequence cannot be made to be contiguous.
@@ -64,7 +64,7 @@ extension Collection where Element: FixedWidthInteger {
     }
     
     /// Initialize a collection of integers with a sequence of Bytes representing a sequence of little endian types.
-    /// - Parameter littleEndianBytes: The Bytes to interpret as a sequence of little endian integer.
+    /// - Parameter littleEndianBytes: The Bytes to interpret as a sequence of little endian integers.
     /// - Throws:
     ///     - `BytesError.invalidMemorySize` if the byte sequence is not a multiple of the size of the integer type.
     ///     - `BytesError.contiguousMemoryUnavailable` if a byte sub-sequence cannot be made to be contiguous.
@@ -76,7 +76,7 @@ extension Collection where Element: FixedWidthInteger {
 
 extension Set where Element: FixedWidthInteger {
     /// Initialize a Set of integers with a sequence of Bytes representing a sequence of big endian types.
-    /// - Parameter bigEndianBytes: The Bytes to interpret as a sequence of big endian integer.
+    /// - Parameter bigEndianBytes: The Bytes to interpret as a sequence of big endian integers.
     /// - Throws:
     ///     - `BytesError.invalidMemorySize` if the byte sequence is not a multiple of the size of the integer type.
     ///     - `BytesError.contiguousMemoryUnavailable` if a byte sub-sequence cannot be made to be contiguous.
@@ -86,7 +86,7 @@ extension Set where Element: FixedWidthInteger {
     }
     
     /// Initialize a Set of integers with a sequence of Bytes representing a sequence of little endian types.
-    /// - Parameter littleEndianBytes: The Bytes to interpret as a sequence of little endian integer.
+    /// - Parameter littleEndianBytes: The Bytes to interpret as a sequence of little endian integers.
     /// - Throws:
     ///     - `BytesError.invalidMemorySize` if the byte sequence is not a multiple of the size of the integer type.
     ///     - `BytesError.contiguousMemoryUnavailable` if a byte sub-sequence cannot be made to be contiguous.

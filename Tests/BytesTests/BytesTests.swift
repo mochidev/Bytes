@@ -68,6 +68,23 @@ extension BytesError {
             XCTFail(messageResult, file: file, line: line)
         }
     }
+    
+    static func testInvalidRawRepresentableByteSequence(
+        _ expression: @autoclosure () throws -> Error,
+        _ message: @autoclosure () -> String = "",
+        file: StaticString = #file,
+        line: UInt = #line) rethrows {
+        
+        let expressionResult = try expression()
+        let messageResult = message()
+        
+        if case Self.invalidRawRepresentableByteSequence = expressionResult {
+        } else if messageResult.isEmpty {
+            XCTFail("\(expressionResult) is not BytesError.invalidRawRepresentableByteSequence", file: file, line: line)
+        } else {
+            XCTFail(messageResult, file: file, line: line)
+        }
+    }
 }
 
 final class BytesTests: XCTestCase {

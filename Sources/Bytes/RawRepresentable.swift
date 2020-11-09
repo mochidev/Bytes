@@ -110,3 +110,99 @@ extension RawRepresentable where RawValue == Character {
         self = value
     }
 }
+
+// MARK: - Collection Extensions
+
+extension Collection where Element: RawRepresentable {
+    /// The Bytes representations of a collection of `rawValue`s.
+    @inlinable
+    public var rawBytes: Bytes {
+        self.bytes(mapping: \.rawBytes)
+    }
+    
+    /// Initialize a collection of raw representable types with a sequence of Bytes representing the `rawValue`s.
+    /// - Parameter rawBytes: The Bytes to interpret as a sequence of `rawValue`s.
+    /// - Throws:
+    ///     - `BytesError.invalidMemorySize` if the byte sequence is not a multiple of the size of the `rawValue`'s type.
+    ///     - `BytesError.contiguousMemoryUnavailable` if a byte sub-sequence cannot be made to be contiguous.
+    ///     - `BytesError.invalidRawRepresentableByteSequence` if the byte sequence does not correspond with a valid raw value.
+    @inlinable
+    public init<Bytes: BytesCollection>(rawBytes: Bytes) throws where Self: RangeReplaceableCollection {
+        try self.init(bytes: rawBytes, element: Element.RawValue.self, mapping: Element.init(rawBytes:))
+    }
+}
+
+extension Collection where Element: RawRepresentable, Element.RawValue: FixedWidthInteger {
+    /// The big endian representations of a collection of `rawValue` integers.
+    @inlinable
+    public var bigEndianBytes: Bytes {
+        self.bytes(mapping: \.bigEndianBytes)
+    }
+    
+    /// Initialize a collection of raw representable types with a sequence of Bytes representing a sequence of big endian `rawValue`s.
+    /// - Parameter bigEndianBytes: The Bytes to interpret as a sequence of big endian integer `rawValue`s.
+    /// - Throws:
+    ///     - `BytesError.invalidMemorySize` if the byte sequence is not a multiple of the size of the integer type.
+    ///     - `BytesError.contiguousMemoryUnavailable` if the byte sequence cannot be made to be contiguous.
+    ///     - `BytesError.invalidRawRepresentableByteSequence` if the integer does not correspond with a valid raw value.
+    @inlinable
+    public init<Bytes: BytesCollection>(bigEndianBytes: Bytes) throws where Self: RangeReplaceableCollection {
+        try self.init(bytes: bigEndianBytes, element: Element.RawValue.self, mapping: Element.init(bigEndianBytes:))
+    }
+    
+    /// The little endian representations of a collection of `rawValue` integers.
+    @inlinable
+    public var littleEndianBytes: Bytes {
+        self.bytes(mapping: \.littleEndianBytes)
+    }
+    
+    /// Initialize a collection of raw representable types with a sequence of Bytes representing a sequence of little endian `rawValue`s.
+    /// - Parameter littleEndianBytes: The Bytes to interpret as a sequence of little endian integer `rawValue`s.
+    /// - Throws:
+    ///     - `BytesError.invalidMemorySize` if the byte sequence is not a multiple of the size of the integer type.
+    ///     - `BytesError.contiguousMemoryUnavailable` if the byte sequence cannot be made to be contiguous.
+    ///     - `BytesError.invalidRawRepresentableByteSequence` if the integer does not correspond with a valid raw value.
+    @inlinable
+    public init<Bytes: BytesCollection>(littleEndianBytes: Bytes) throws where Self: RangeReplaceableCollection {
+        try self.init(bytes: littleEndianBytes, element: Element.RawValue.self, mapping: Element.init(littleEndianBytes:))
+    }
+}
+
+// MARK: - Set Extensions
+
+extension Set where Element: RawRepresentable {
+    /// Initialize a Set of raw representable types with a sequence of Bytes representing the `rawValue`s.
+    /// - Parameter rawBytes: The Bytes to interpret as a sequence of big endian integer.
+    /// - Throws:
+    ///     - `BytesError.invalidMemorySize` if the byte sequence is not a multiple of the size of the `rawValue`'s type.
+    ///     - `BytesError.contiguousMemoryUnavailable` if a byte sub-sequence cannot be made to be contiguous.
+    ///     - `BytesError.invalidRawRepresentableByteSequence` if the byte sequence does not correspond with a valid raw value.
+    @inlinable
+    public init<Bytes: BytesCollection>(rawBytes: Bytes) throws {
+        try self.init(bytes: rawBytes, element: Element.RawValue.self, mapping: Element.init(rawBytes:))
+    }
+}
+
+extension Set where Element: RawRepresentable, Element.RawValue: FixedWidthInteger {
+    /// Initialize a Set of raw representable types with a sequence of Bytes representing a sequence of big endian `rawValue`s.
+    /// - Parameter bigEndianBytes: The Bytes to interpret as a sequence of big endian integer `rawValue`s.
+    /// - Throws:
+    ///     - `BytesError.invalidMemorySize` if the byte sequence is not a multiple of the size of the integer type.
+    ///     - `BytesError.contiguousMemoryUnavailable` if the byte sequence cannot be made to be contiguous.
+    ///     - `BytesError.invalidRawRepresentableByteSequence` if the integer does not correspond with a valid raw value.
+    @inlinable
+    public init<Bytes: BytesCollection>(bigEndianBytes: Bytes) throws {
+        try self.init(bytes: bigEndianBytes, element: Element.RawValue.self, mapping: Element.init(bigEndianBytes:))
+    }
+    
+    /// Initialize a Set of raw representable types with a sequence of Bytes representing a sequence of little endian `rawValue`s.
+    /// - Parameter littleEndianBytes: The Bytes to interpret as a sequence of little endian integer `rawValue`s.
+    /// - Throws:
+    ///     - `BytesError.invalidMemorySize` if the byte sequence is not a multiple of the size of the integer type.
+    ///     - `BytesError.contiguousMemoryUnavailable` if the byte sequence cannot be made to be contiguous.
+    ///     - `BytesError.invalidRawRepresentableByteSequence` if the integer does not correspond with a valid raw value.
+    @inlinable
+    public init<Bytes: BytesCollection>(littleEndianBytes: Bytes) throws {
+        try self.init(bytes: littleEndianBytes, element: Element.RawValue.self, mapping: Element.init(littleEndianBytes:))
+    }
+}

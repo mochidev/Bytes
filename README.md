@@ -22,7 +22,7 @@ Please check the [releases](https://github.com/mochidev/Bytes/releases) for reco
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/mochidev/Bytes.git", .upToNextMinor(from: "0.1.0")),
+    .package(url: "https://github.com/mochidev/Bytes.git", .upToNextMinor(from: "0.2.0")),
 ],
 ...
 targets: [
@@ -124,6 +124,10 @@ struct Versionstamp {
     }
 }
 ```
+
+### AsyncSequence
+
+Bytes can also be used to pull data from `AsyncSequence` iterators. To learn more, please see [Integration with AsyncSequenceReader](https://github.com/mochidev/AsyncSequenceReader#integration-with-bytes).
 
 ## Contributing
 

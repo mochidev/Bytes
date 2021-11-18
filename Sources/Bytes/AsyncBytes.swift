@@ -42,6 +42,8 @@ extension AsyncIteratorProtocol where Element == Byte {
     ) async throws -> Bytes {
         precondition(minCount <= maxCount, "maxCount must be larger than or equal to minCount")
         precondition(minCount >= 0, "minCount must be larger than 0")
+        guard maxCount > 0 else { return [] }
+        
         var result = Bytes()
         result.reserveCapacity(minCount)
         
@@ -72,6 +74,8 @@ extension AsyncIteratorProtocol where Element == Byte {
         max maxCount: Int
     ) async rethrows -> Bytes {
         precondition(maxCount >= 0, "maxCount must be larger than 0")
+        guard maxCount > 0 else { return [] }
+        
         var result = Bytes()
         result.reserveCapacity(maxCount)
         
@@ -118,6 +122,8 @@ extension AsyncIteratorProtocol where Element == Byte {
     ) async throws -> Bytes? {
         precondition(minCount <= maxCount, "maxCount must be larger than or equal to minCount")
         precondition(minCount >= 0, "minCount must be larger than 0")
+        guard maxCount > 0 else { return [] }
+        
         var result = Bytes()
         result.reserveCapacity(minCount)
         
@@ -149,7 +155,9 @@ extension AsyncIteratorProtocol where Element == Byte {
         bytes type: Bytes.Type,
         max maxCount: Int
     ) async rethrows -> Bytes? {
-        precondition(maxCount > 0, "maxCount must be larger than 0")
+        precondition(maxCount >= 0, "maxCount must be larger than 0")
+        guard maxCount > 0 else { return [] }
+        
         var result = Bytes()
         result.reserveCapacity(maxCount)
         

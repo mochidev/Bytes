@@ -120,3 +120,54 @@ extension Set where Element == UUID {
         try self.init(bytes: stringBytes, element: UUIDTextualBytes.self, mapping: Element.init(stringBytes:))
     }
 }
+
+#if compiler(>=5.5) && canImport(_Concurrency)
+
+@available(macOS 10.15, iOS 13.0, watchOS 6.0, tvOS 13.0, *)
+extension AsyncIteratorProtocol where Element == UInt8 {
+    /// Asynchronously advances to the next binary UUID, or throws if it could not.
+    ///
+    /// **Learn More:** [Integration with AsyncSequenceReader](https://github.com/mochidev/AsyncSequenceReader#integration-with-bytes)
+    /// - Parameter type: This should be set to `UUID.self`.
+    /// - Returns: A UUID.
+    /// - Throws: `BytesError.invalidMemorySize` if 16 bytes are not available.
+    @inlinable
+    public mutating func next(_ type: UUID.Type) async throws -> UUID {
+        try UUID(bytes: await next(bytes: Bytes.self, count: MemoryLayout<uuid_t>.size))
+    }
+    
+    /// Asynchronously advances to the next UUID String, or throws if it could not.
+    ///
+    /// **Learn More:** [Integration with AsyncSequenceReader](https://github.com/mochidev/AsyncSequenceReader#integration-with-bytes)
+    /// - Parameter type: This should be set to `UUID.self`.
+    /// - Returns: A UUID.
+    /// - Throws: `BytesError.invalidMemorySize` if 36 bytes are not available.
+    @inlinable
+    public mutating func next(string type: UUID.Type) async throws -> UUID {
+        try UUID(stringBytes: await next(bytes: Bytes.self, count: MemoryLayout<UUIDTextualBytes>.size))
+    }
+    
+    /// Asynchronously advances to the next binary UUID, or ends the sequence if there is no next element.
+    ///
+    /// **Learn More:** [Integration with AsyncSequenceReader](https://github.com/mochidev/AsyncSequenceReader#integration-with-bytes)
+    /// - Parameter type: This should be set to `UUID.self`.
+    /// - Returns: A UUID, or `nil` if the sequence is finished.
+    /// - Throws: `BytesError.invalidMemorySize` if 16 bytes are not available.
+    @inlinable
+    public mutating func nextIfPresent(_ type: UUID.Type) async throws -> UUID? {
+        try (await nextIfPresent(bytes: Bytes.self, count: MemoryLayout<uuid_t>.size)).map { try UUID(bytes: $0) }
+    }
+    
+    /// Asynchronously advances to the next UUID String, or ends the sequence if there is no next element.
+    ///
+    /// **Learn More:** [Integration with AsyncSequenceReader](https://github.com/mochidev/AsyncSequenceReader#integration-with-bytes)
+    /// - Parameter type: This should be set to `UUID.self`.
+    /// - Returns: A UUID, or `nil` if the sequence is finished.
+    /// - Throws: `BytesError.invalidMemorySize` if 36 bytes are not available.
+    @inlinable
+    public mutating func nextIfPresent(string type: UUID.Type) async throws -> UUID? {
+        try (await nextIfPresent(bytes: Bytes.self, count: MemoryLayout<UUIDTextualBytes>.size)).map { try UUID(stringBytes: $0) }
+    }
+}
+
+#endif

@@ -95,3 +95,62 @@ extension Set where Element: FixedWidthInteger {
         try self.init(bytes: littleEndianBytes, mapping: Element.init(littleEndianBytes:))
     }
 }
+
+#if compiler(>=5.5) && canImport(_Concurrency)
+
+@available(macOS 10.15, iOS 13.0, watchOS 6.0, tvOS 13.0, *)
+extension AsyncIteratorProtocol where Element == UInt8 {
+    /// Asynchronously advances to the next little endian integer in the squence and returns it, or throws if it could not.
+    ///
+    /// If a complete integer could not be constructed, an error is thrown and the sequence should be considered finished.
+    ///
+    /// **Learn More:** [Integration with AsyncSequenceReader](https://github.com/mochidev/AsyncSequenceReader#integration-with-bytes)
+    /// - Parameter type: The type of integer to decode.
+    /// - Returns: An integer of type `type`.
+    /// - Throws: `BytesError.invalidMemorySize` if a complete integer could not be returned by the time the sequence ended.
+    @inlinable
+    public mutating func next<T>(littleEndian type: T.Type) async throws -> T where T: FixedWidthInteger {
+        try T(littleEndianBytes: await next(bytes: Bytes.self, count: MemoryLayout<T>.size))
+    }
+    
+    /// Asynchronously advances to the next big endian integer in the squence and returns it, or throws if it could not.
+    ///
+    /// If a complete integer could not be constructed, an error is thrown and the sequence should be considered finished.
+    ///
+    /// **Learn More:** [Integration with AsyncSequenceReader](https://github.com/mochidev/AsyncSequenceReader#integration-with-bytes)
+    /// - Parameter type: The type of integer to decode.
+    /// - Returns: An integer of type `type`.
+    /// - Throws: `BytesError.invalidMemorySize` if a complete integer could not be returned by the time the sequence ended.
+    @inlinable
+    public mutating func next<T>(bigEndian type: T.Type) async throws -> T where T: FixedWidthInteger {
+        try T(bigEndianBytes: await next(bytes: Bytes.self, count: MemoryLayout<T>.size))
+    }
+    
+    /// Asynchronously advances to the next little endian integer in the squence and returns it, or ends the sequence if there is no next element.
+    ///
+    /// If a complete integer could not be constructed, an error is thrown and the sequence should be considered finished.
+    ///
+    /// **Learn More:** [Integration with AsyncSequenceReader](https://github.com/mochidev/AsyncSequenceReader#integration-with-bytes)
+    /// - Parameter type: The type of integer to decode.
+    /// - Returns: An integer of type `type`, or `nil` if the sequence is finished.
+    /// - Throws: `BytesError.invalidMemorySize` if a complete integer could not be returned by the time the sequence ended.
+    @inlinable
+    public mutating func nextIfPresent<T>(littleEndian type: T.Type) async throws -> T? where T: FixedWidthInteger {
+        try (await nextIfPresent(bytes: Bytes.self, count: MemoryLayout<T>.size)).map { try T(littleEndianBytes: $0) }
+    }
+    
+    /// Asynchronously advances to the next big endian integer in the squence and returns it, or ends the sequence if there is no next element.
+    ///
+    /// If a complete integer could not be constructed, an error is thrown and the sequence should be considered finished.
+    ///
+    /// **Learn More:** [Integration with AsyncSequenceReader](https://github.com/mochidev/AsyncSequenceReader#integration-with-bytes)
+    /// - Parameter type: The type of integer to decode.
+    /// - Returns: An integer of type `type`, or `nil` if the sequence is finished.
+    /// - Throws: `BytesError.invalidMemorySize` if a complete integer could not be returned by the time the sequence ended.
+    @inlinable
+    public mutating func nextIfPresent<T>(bigEndian type: T.Type) async throws -> T? where T: FixedWidthInteger {
+        try (await nextIfPresent(bytes: Bytes.self, count: MemoryLayout<T>.size)).map { try T(bigEndianBytes: $0) }
+    }
+}
+
+#endif

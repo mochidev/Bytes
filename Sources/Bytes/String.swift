@@ -66,7 +66,7 @@ extension AsyncIteratorProtocol where Element == UInt8 {
     /// - Returns: A string of size at least `minCount` and at most `maxCount`.
     /// - Throws: `BytesError.invalidMemorySize` if a complete string could not be returned by the time the sequence ended.
     @inlinable
-    public mutating func next(utf8 type: String.Type, min minCount: Int, max maxCount: Int) async throws -> String {
+    public mutating func next(utf8 type: String.Type, min minCount: Int = 0, max maxCount: Int) async throws -> String {
         String(utf8Bytes: try await next(bytes: Bytes.self, min: minCount, max: maxCount))
     }
     
@@ -91,7 +91,7 @@ extension AsyncIteratorProtocol where Element == UInt8 {
     /// - Returns: A string of size at least `minCount` and at most `maxCount`, or `nil` if the sequence is finished.
     /// - Throws: `BytesError.invalidMemorySize` if a complete string could not be returned by the time the sequence ended.
     @inlinable
-    public mutating func nextIfPresent(utf8 type: String.Type, min minCount: Int, max maxCount: Int) async throws -> String? {
+    public mutating func nextIfPresent(utf8 type: String.Type, min minCount: Int = 0, max maxCount: Int) async throws -> String? {
         try (await nextIfPresent(bytes: Bytes.self, min: minCount, max: maxCount)).map { String(utf8Bytes: $0) }
     }
 }

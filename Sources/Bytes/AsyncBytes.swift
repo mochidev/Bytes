@@ -34,7 +34,7 @@ extension AsyncIteratorProtocol where Element == UInt8 {
     /// - Returns: A byte array of size at least `minCount` and at most `maxCount`.
     /// - Throws: `BytesError.invalidMemorySize` if a complete byte array could not be returned by the time the sequence ended.
     @inlinable
-    public mutating func next(bytes type: Bytes.Type, min minCount: Int, max maxCount: Int) async throws -> Bytes {
+    public mutating func next(bytes type: Bytes.Type, min minCount: Int = 0, max maxCount: Int) async throws -> Bytes {
         precondition(minCount <= maxCount, "maxCount must be larger than or equal to minCount")
         precondition(minCount >= 0, "minCount must be larger than 0")
         var result = Bytes()
@@ -77,7 +77,7 @@ extension AsyncIteratorProtocol where Element == UInt8 {
     /// - Returns: A byte array of size at least `minCount` and at most `maxCount`, or `nil` if the sequence is finished.
     /// - Throws: `BytesError.invalidMemorySize` if a complete byte array could not be returned by the time the sequence ended.
     @inlinable
-    public mutating func nextIfPresent(bytes type: Bytes.Type, min minCount: Int, max maxCount: Int) async throws -> Bytes? {
+    public mutating func nextIfPresent(bytes type: Bytes.Type, min minCount: Int = 0, max maxCount: Int) async throws -> Bytes? {
         precondition(minCount <= maxCount, "maxCount must be larger than or equal to minCount")
         precondition(minCount >= 0, "minCount must be larger than 0")
         var result = Bytes()

@@ -206,3 +206,179 @@ extension Set where Element: RawRepresentable, Element.RawValue: FixedWidthInteg
         try self.init(bytes: littleEndianBytes, element: Element.RawValue.self, mapping: Element.init(littleEndianBytes:))
     }
 }
+
+
+// MARK: - ByteIterator
+
+extension IteratorProtocol where Element == Byte {
+    /// Advances to the next raw representable in the squence and returns it, or throws if it could not.
+    ///
+    /// If a complete raw representable could not be constructed, an error is thrown and the sequence should be considered finished.
+    ///
+    /// **Learn More:** [Integration with AsyncSequenceReader](https://github.com/mochidev/AsyncSequenceReader#integration-with-bytes)
+    /// - Parameter type: The type of raw representable to decode.
+    /// - Returns: A raw representable of type `type`.
+    /// - Throws: `BytesError.invalidMemorySize` if a complete raw representable could not be returned by the time the sequence ended.
+    @inlinable
+    public mutating func next<T: RawRepresentable>(raw type: T.Type) throws -> T {
+        try T(rawBytes: next(bytes: Bytes.self, count: MemoryLayout<T.RawValue>.size))
+    }
+    
+    /// Advances to the next raw representable in the squence and returns it, or ends the sequence if there is no next element.
+    ///
+    /// If a complete raw representable could not be constructed, an error is thrown and the sequence should be considered finished.
+    ///
+    /// **Learn More:** [Integration with AsyncSequenceReader](https://github.com/mochidev/AsyncSequenceReader#integration-with-bytes)
+    /// - Parameter type: The type of raw representable to decode.
+    /// - Returns: A raw representable of type `type`, or `nil` if the sequence is finished.
+    /// - Throws: `BytesError.invalidMemorySize` if a complete raw representable could not be returned by the time the sequence ended.
+    @inlinable
+    public mutating func nextIfPresent<T: RawRepresentable>(raw type: T.Type) throws -> T? {
+        try nextIfPresent(bytes: Bytes.self, count: MemoryLayout<T.RawValue>.size).map { try T(rawBytes: $0) }
+    }
+}
+
+extension IteratorProtocol where Element == Byte {
+    /// Advances to the next little endian integer in the squence and returns it, or throws if it could not.
+    ///
+    /// If a complete integer could not be constructed, an error is thrown and the sequence should be considered finished.
+    ///
+    /// **Learn More:** [Integration with AsyncSequenceReader](https://github.com/mochidev/AsyncSequenceReader#integration-with-bytes)
+    /// - Parameter type: The type of raw representable to decode.
+    /// - Returns: A raw representable type as a fixed width integer of type `type`.
+    /// - Throws: `BytesError.invalidMemorySize` if a complete integer could not be returned by the time the sequence ended.
+    @inlinable
+    public mutating func next<T: RawRepresentable>(littleEndian type: T.Type) throws -> T where T.RawValue: FixedWidthInteger {
+        try T(littleEndianBytes: next(bytes: Bytes.self, count: MemoryLayout<T.RawValue>.size))
+    }
+    
+    /// Advances to the next big endian integer in the squence and returns it, or throws if it could not.
+    ///
+    /// If a complete integer could not be constructed, an error is thrown and the sequence should be considered finished.
+    ///
+    /// **Learn More:** [Integration with AsyncSequenceReader](https://github.com/mochidev/AsyncSequenceReader#integration-with-bytes)
+    /// - Parameter type: The type of raw representable to decode.
+    /// - Returns: A raw representable type as a fixed width integer of type `type`.
+    /// - Throws: `BytesError.invalidMemorySize` if a complete integer could not be returned by the time the sequence ended.
+    @inlinable
+    public mutating func next<T: RawRepresentable>(bigEndian type: T.Type) throws -> T where T.RawValue: FixedWidthInteger {
+        try T(bigEndianBytes: next(bytes: Bytes.self, count: MemoryLayout<T.RawValue>.size))
+    }
+    
+    /// Advances to the next little endian integer in the squence and returns it, or ends the sequence if there is no next element.
+    ///
+    /// If a complete integer could not be constructed, an error is thrown and the sequence should be considered finished.
+    ///
+    /// **Learn More:** [Integration with AsyncSequenceReader](https://github.com/mochidev/AsyncSequenceReader#integration-with-bytes)
+    /// - Parameter type: The type of raw representable to decode.
+    /// - Returns: A raw representable type as a fixed width integer of type `type`, or `nil` if the sequence is finished.
+    /// - Throws: `BytesError.invalidMemorySize` if a complete integer could not be returned by the time the sequence ended.
+    @inlinable
+    public mutating func nextIfPresent<T: RawRepresentable>(littleEndian type: T.Type) throws -> T? where T.RawValue: FixedWidthInteger {
+        try nextIfPresent(bytes: Bytes.self, count: MemoryLayout<T.RawValue>.size).map { try T(littleEndianBytes: $0) }
+    }
+    
+    /// Advances to the next big endian integer in the squence and returns it, or ends the sequence if there is no next element.
+    ///
+    /// If a complete integer could not be constructed, an error is thrown and the sequence should be considered finished.
+    ///
+    /// **Learn More:** [Integration with AsyncSequenceReader](https://github.com/mochidev/AsyncSequenceReader#integration-with-bytes)
+    /// - Parameter type: The type of raw representable to decode.
+    /// - Returns: A raw representable type as a fixed width integer of type `type`, or `nil` if the sequence is finished.
+    /// - Throws: `BytesError.invalidMemorySize` if a complete integer could not be returned by the time the sequence ended.
+    @inlinable
+    public mutating func nextIfPresent<T: RawRepresentable>(bigEndian type: T.Type) async throws -> T? where T.RawValue: FixedWidthInteger {
+        try nextIfPresent(bytes: Bytes.self, count: MemoryLayout<T.RawValue>.size).map { try T(bigEndianBytes: $0) }
+    }
+}
+
+
+// MARK: - AsyncByteIterator
+
+#if compiler(>=5.5) && canImport(_Concurrency)
+
+@available(macOS 10.15, iOS 13.0, watchOS 6.0, tvOS 13.0, *)
+extension AsyncIteratorProtocol where Element == Byte {
+    /// Asynchronously advances to the next raw representable in the squence and returns it, or throws if it could not.
+    ///
+    /// If a complete raw representable could not be constructed, an error is thrown and the sequence should be considered finished.
+    ///
+    /// **Learn More:** [Integration with AsyncSequenceReader](https://github.com/mochidev/AsyncSequenceReader#integration-with-bytes)
+    /// - Parameter type: The type of raw representable to decode.
+    /// - Returns: A raw representable type as a fixed width integer of type `type`.
+    /// - Throws: `BytesError.invalidMemorySize` if a complete raw representable could not be returned by the time the sequence ended.
+    @inlinable
+    public mutating func next<T: RawRepresentable>(raw type: T.Type) async throws -> T {
+        try T(rawBytes: await next(bytes: Bytes.self, count: MemoryLayout<T.RawValue>.size))
+    }
+    
+    /// Asynchronously advances to the next raw representable in the squence and returns it, or ends the sequence if there is no next element.
+    ///
+    /// If a complete raw representable could not be constructed, an error is thrown and the sequence should be considered finished.
+    ///
+    /// **Learn More:** [Integration with AsyncSequenceReader](https://github.com/mochidev/AsyncSequenceReader#integration-with-bytes)
+    /// - Parameter type: The type of raw representable to decode.
+    /// - Returns: A raw representable of type `type`, or `nil` if the sequence is finished.
+    /// - Throws: `BytesError.invalidMemorySize` if a complete raw representable could not be returned by the time the sequence ended.
+    @inlinable
+    public mutating func nextIfPresent<T: RawRepresentable>(raw type: T.Type) async throws -> T? {
+        try await nextIfPresent(bytes: Bytes.self, count: MemoryLayout<T.RawValue>.size).map { try T(rawBytes: $0) }
+    }
+}
+
+@available(macOS 10.15, iOS 13.0, watchOS 6.0, tvOS 13.0, *)
+extension AsyncIteratorProtocol where Element == Byte {
+    /// Asynchronously advances to the next little endian integer in the squence and returns it, or throws if it could not.
+    ///
+    /// If a complete integer could not be constructed, an error is thrown and the sequence should be considered finished.
+    ///
+    /// **Learn More:** [Integration with AsyncSequenceReader](https://github.com/mochidev/AsyncSequenceReader#integration-with-bytes)
+    /// - Parameter type: The type of raw representable to decode.
+    /// - Returns: A raw representable type as a fixed width integer of type `type`.
+    /// - Throws: `BytesError.invalidMemorySize` if a complete integer could not be returned by the time the sequence ended.
+    @inlinable
+    public mutating func next<T: RawRepresentable>(littleEndian type: T.Type) async throws -> T where T.RawValue: FixedWidthInteger {
+        try T(littleEndianBytes: await next(bytes: Bytes.self, count: MemoryLayout<T.RawValue>.size))
+    }
+    
+    /// Asynchronously advances to the next big endian integer in the squence and returns it, or throws if it could not.
+    ///
+    /// If a complete integer could not be constructed, an error is thrown and the sequence should be considered finished.
+    ///
+    /// **Learn More:** [Integration with AsyncSequenceReader](https://github.com/mochidev/AsyncSequenceReader#integration-with-bytes)
+    /// - Parameter type: The type of raw representable to decode.
+    /// - Returns: A raw representable type as a fixed width integer of type `type`.
+    /// - Throws: `BytesError.invalidMemorySize` if a complete integer could not be returned by the time the sequence ended.
+    @inlinable
+    public mutating func next<T: RawRepresentable>(bigEndian type: T.Type) async throws -> T where T.RawValue: FixedWidthInteger {
+        try T(bigEndianBytes: await next(bytes: Bytes.self, count: MemoryLayout<T.RawValue>.size))
+    }
+    
+    /// Asynchronously advances to the next little endian integer in the squence and returns it, or ends the sequence if there is no next element.
+    ///
+    /// If a complete integer could not be constructed, an error is thrown and the sequence should be considered finished.
+    ///
+    /// **Learn More:** [Integration with AsyncSequenceReader](https://github.com/mochidev/AsyncSequenceReader#integration-with-bytes)
+    /// - Parameter type: The type of raw representable to decode.
+    /// - Returns: A raw representable type as a fixed width integer of type `type`, or `nil` if the sequence is finished.
+    /// - Throws: `BytesError.invalidMemorySize` if a complete integer could not be returned by the time the sequence ended.
+    @inlinable
+    public mutating func nextIfPresent<T: RawRepresentable>(littleEndian type: T.Type) async throws -> T? where T.RawValue: FixedWidthInteger {
+        try await nextIfPresent(bytes: Bytes.self, count: MemoryLayout<T.RawValue>.size).map { try T(littleEndianBytes: $0) }
+    }
+    
+    /// Asynchronously advances to the next big endian integer in the squence and returns it, or ends the sequence if there is no next element.
+    ///
+    /// If a complete integer could not be constructed, an error is thrown and the sequence should be considered finished.
+    ///
+    /// **Learn More:** [Integration with AsyncSequenceReader](https://github.com/mochidev/AsyncSequenceReader#integration-with-bytes)
+    /// - Parameter type: The type of raw representable to decode.
+    /// - Returns: A raw representable type as a fixed width integer of type `type`, or `nil` if the sequence is finished.
+    /// - Throws: `BytesError.invalidMemorySize` if a complete integer could not be returned by the time the sequence ended.
+    @inlinable
+    public mutating func nextIfPresent<T: RawRepresentable>(bigEndian type: T.Type) async throws -> T? where T.RawValue: FixedWidthInteger {
+        try await nextIfPresent(bytes: Bytes.self, count: MemoryLayout<T.RawValue>.size).map { try T(bigEndianBytes: $0) }
+    }
+}
+
+#endif

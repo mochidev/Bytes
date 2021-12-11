@@ -96,10 +96,13 @@ extension Set where Element: FixedWidthInteger {
     }
 }
 
+
+// MARK: - AsyncByteIterator
+
 #if compiler(>=5.5) && canImport(_Concurrency)
 
 @available(macOS 10.15, iOS 13.0, watchOS 6.0, tvOS 13.0, *)
-extension AsyncIteratorProtocol where Element == UInt8 {
+extension AsyncIteratorProtocol where Element == Byte {
     /// Asynchronously advances to the next little endian integer in the squence and returns it, or throws if it could not.
     ///
     /// If a complete integer could not be constructed, an error is thrown and the sequence should be considered finished.
@@ -109,7 +112,7 @@ extension AsyncIteratorProtocol where Element == UInt8 {
     /// - Returns: An integer of type `type`.
     /// - Throws: `BytesError.invalidMemorySize` if a complete integer could not be returned by the time the sequence ended.
     @inlinable
-    public mutating func next<T>(littleEndian type: T.Type) async throws -> T where T: FixedWidthInteger {
+    public mutating func next<T: FixedWidthInteger>(littleEndian type: T.Type) async throws -> T {
         try T(littleEndianBytes: await next(bytes: Bytes.self, count: MemoryLayout<T>.size))
     }
     
@@ -122,7 +125,7 @@ extension AsyncIteratorProtocol where Element == UInt8 {
     /// - Returns: An integer of type `type`.
     /// - Throws: `BytesError.invalidMemorySize` if a complete integer could not be returned by the time the sequence ended.
     @inlinable
-    public mutating func next<T>(bigEndian type: T.Type) async throws -> T where T: FixedWidthInteger {
+    public mutating func next<T: FixedWidthInteger>(bigEndian type: T.Type) async throws -> T {
         try T(bigEndianBytes: await next(bytes: Bytes.self, count: MemoryLayout<T>.size))
     }
     
@@ -135,8 +138,8 @@ extension AsyncIteratorProtocol where Element == UInt8 {
     /// - Returns: An integer of type `type`, or `nil` if the sequence is finished.
     /// - Throws: `BytesError.invalidMemorySize` if a complete integer could not be returned by the time the sequence ended.
     @inlinable
-    public mutating func nextIfPresent<T>(littleEndian type: T.Type) async throws -> T? where T: FixedWidthInteger {
-        try (await nextIfPresent(bytes: Bytes.self, count: MemoryLayout<T>.size)).map { try T(littleEndianBytes: $0) }
+    public mutating func nextIfPresent<T: FixedWidthInteger>(littleEndian type: T.Type) async throws -> T? {
+        try await nextIfPresent(bytes: Bytes.self, count: MemoryLayout<T>.size).map { try T(littleEndianBytes: $0) }
     }
     
     /// Asynchronously advances to the next big endian integer in the squence and returns it, or ends the sequence if there is no next element.
@@ -148,8 +151,8 @@ extension AsyncIteratorProtocol where Element == UInt8 {
     /// - Returns: An integer of type `type`, or `nil` if the sequence is finished.
     /// - Throws: `BytesError.invalidMemorySize` if a complete integer could not be returned by the time the sequence ended.
     @inlinable
-    public mutating func nextIfPresent<T>(bigEndian type: T.Type) async throws -> T? where T: FixedWidthInteger {
-        try (await nextIfPresent(bytes: Bytes.self, count: MemoryLayout<T>.size)).map { try T(bigEndianBytes: $0) }
+    public mutating func nextIfPresent<T: FixedWidthInteger>(bigEndian type: T.Type) async throws -> T? {
+        try await nextIfPresent(bytes: Bytes.self, count: MemoryLayout<T>.size).map { try T(bigEndianBytes: $0) }
     }
 }
 

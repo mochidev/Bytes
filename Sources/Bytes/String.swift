@@ -42,6 +42,61 @@ extension Character {
 }
 
 
+// MARK: - ByteIterator
+
+extension IteratorProtocol where Element == Byte {
+    /// Advances to the UTF-8 encoded String of size `count`, or throws if it could not.
+    ///
+    /// **Learn More:** [Integration with AsyncSequenceReader](https://github.com/mochidev/AsyncSequenceReader#integration-with-bytes)
+    /// - Parameter type: This should be set to `String.self`.
+    /// - Parameter count: The number of bytes to form into a string.
+    /// - Returns: A string of size `count`.
+    /// - Throws: `BytesError.invalidMemorySize` if a complete string could not be returned by the time the sequence ended.
+    @inlinable
+    public mutating func next(utf8 type: String.Type, count: Int) throws -> String {
+        String(utf8Bytes: try next(bytes: Bytes.self, count: count))
+    }
+    
+    /// Advances to the UTF-8 encoded String with the specified minimum size, continuing until the specified maximum size, or throws if it could not.
+    ///
+    /// **Learn More:** [Integration with AsyncSequenceReader](https://github.com/mochidev/AsyncSequenceReader#integration-with-bytes)
+    /// - Parameter type: This should be set to `String.self`.
+    /// - Parameter minCount: The minimum number of bytes to form into a string.
+    /// - Parameter maxCount: The maximum number of bytes to form into a string.
+    /// - Returns: A string of size at least `minCount` and at most `maxCount`.
+    /// - Throws: `BytesError.invalidMemorySize` if a complete string could not be returned by the time the sequence ended.
+    @inlinable
+    public mutating func next(utf8 type: String.Type, min minCount: Int = 0, max maxCount: Int) throws -> String {
+        String(utf8Bytes: try next(bytes: Bytes.self, min: minCount, max: maxCount))
+    }
+    
+    /// Advances to the UTF-8 encoded String of size `count`, or ends the sequence if there is no next element.
+    ///
+    /// **Learn More:** [Integration with AsyncSequenceReader](https://github.com/mochidev/AsyncSequenceReader#integration-with-bytes)
+    /// - Parameter type: This should be set to `String.self`.
+    /// - Parameter count: The number of bytes to form into a string.
+    /// - Returns: A string of size `count`, or `nil` if the sequence is finished.
+    /// - Throws: `BytesError.invalidMemorySize` if a complete string could not be returned by the time the sequence ended.
+    @inlinable
+    public mutating func nextIfPresent(utf8 type: String.Type, count: Int) throws -> String? {
+        try nextIfPresent(bytes: Bytes.self, count: count).map { String(utf8Bytes: $0) }
+    }
+    
+    /// Advances to the UTF-8 encoded String with the specified minimum size, continuing until the specified maximum size, or ends the sequence if there is no next element.
+    ///
+    /// **Learn More:** [Integration with AsyncSequenceReader](https://github.com/mochidev/AsyncSequenceReader#integration-with-bytes)
+    /// - Parameter type: This should be set to `String.self`.
+    /// - Parameter minCount: The minimum number of bytes to form into a string.
+    /// - Parameter maxCount: The maximum number of bytes to form into a string.
+    /// - Returns: A string of size at least `minCount` and at most `maxCount`, or `nil` if the sequence is finished.
+    /// - Throws: `BytesError.invalidMemorySize` if a complete string could not be returned by the time the sequence ended.
+    @inlinable
+    public mutating func nextIfPresent(utf8 type: String.Type, min minCount: Int = 0, max maxCount: Int) throws -> String? {
+        try nextIfPresent(bytes: Bytes.self, min: minCount, max: maxCount).map { String(utf8Bytes: $0) }
+    }
+}
+
+
 // MARK: - AsyncByteIterator
 
 #if compiler(>=5.5) && canImport(_Concurrency)

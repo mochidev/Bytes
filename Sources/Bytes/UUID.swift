@@ -121,10 +121,13 @@ extension Set where Element == UUID {
     }
 }
 
+
+// MARK: - AsyncByteIterator
+
 #if compiler(>=5.5) && canImport(_Concurrency)
 
 @available(macOS 10.15, iOS 13.0, watchOS 6.0, tvOS 13.0, *)
-extension AsyncIteratorProtocol where Element == UInt8 {
+extension AsyncIteratorProtocol where Element == Byte {
     /// Asynchronously advances to the next binary UUID, or throws if it could not.
     ///
     /// **Learn More:** [Integration with AsyncSequenceReader](https://github.com/mochidev/AsyncSequenceReader#integration-with-bytes)
@@ -155,7 +158,7 @@ extension AsyncIteratorProtocol where Element == UInt8 {
     /// - Throws: `BytesError.invalidMemorySize` if 16 bytes are not available.
     @inlinable
     public mutating func nextIfPresent(_ type: UUID.Type) async throws -> UUID? {
-        try (await nextIfPresent(bytes: Bytes.self, count: MemoryLayout<uuid_t>.size)).map { try UUID(bytes: $0) }
+        try await nextIfPresent(bytes: Bytes.self, count: MemoryLayout<uuid_t>.size).map { try UUID(bytes: $0) }
     }
     
     /// Asynchronously advances to the next UUID String, or ends the sequence if there is no next element.
@@ -166,7 +169,7 @@ extension AsyncIteratorProtocol where Element == UInt8 {
     /// - Throws: `BytesError.invalidMemorySize` if 36 bytes are not available.
     @inlinable
     public mutating func nextIfPresent(string type: UUID.Type) async throws -> UUID? {
-        try (await nextIfPresent(bytes: Bytes.self, count: MemoryLayout<UUIDTextualBytes>.size)).map { try UUID(stringBytes: $0) }
+        try await nextIfPresent(bytes: Bytes.self, count: MemoryLayout<UUIDTextualBytes>.size).map { try UUID(stringBytes: $0) }
     }
 }
 

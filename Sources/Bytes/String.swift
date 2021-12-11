@@ -41,10 +41,13 @@ extension Character {
     }
 }
 
+
+// MARK: - AsyncByteIterator
+
 #if compiler(>=5.5) && canImport(_Concurrency)
 
 @available(macOS 10.15, iOS 13.0, watchOS 6.0, tvOS 13.0, *)
-extension AsyncIteratorProtocol where Element == UInt8 {
+extension AsyncIteratorProtocol where Element == Byte {
     /// Asynchronously advances to the UTF-8 encoded String of size `count`, or throws if it could not.
     ///
     /// **Learn More:** [Integration with AsyncSequenceReader](https://github.com/mochidev/AsyncSequenceReader#integration-with-bytes)
@@ -79,7 +82,7 @@ extension AsyncIteratorProtocol where Element == UInt8 {
     /// - Throws: `BytesError.invalidMemorySize` if a complete string could not be returned by the time the sequence ended.
     @inlinable
     public mutating func nextIfPresent(utf8 type: String.Type, count: Int) async throws -> String? {
-        try (await nextIfPresent(bytes: Bytes.self, count: count)).map { String(utf8Bytes: $0) }
+        try await nextIfPresent(bytes: Bytes.self, count: count).map { String(utf8Bytes: $0) }
     }
     
     /// Asynchronously advances to the UTF-8 encoded String with the specified minimum size, continuing until the specified maximum size, or ends the sequence if there is no next element.
@@ -92,7 +95,7 @@ extension AsyncIteratorProtocol where Element == UInt8 {
     /// - Throws: `BytesError.invalidMemorySize` if a complete string could not be returned by the time the sequence ended.
     @inlinable
     public mutating func nextIfPresent(utf8 type: String.Type, min minCount: Int = 0, max maxCount: Int) async throws -> String? {
-        try (await nextIfPresent(bytes: Bytes.self, min: minCount, max: maxCount)).map { String(utf8Bytes: $0) }
+        try await nextIfPresent(bytes: Bytes.self, min: minCount, max: maxCount).map { String(utf8Bytes: $0) }
     }
 }
 

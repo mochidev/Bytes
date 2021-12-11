@@ -122,6 +122,22 @@ struct Versionstamp {
         
         self.init(transactionCommitVersion: transactionCommitVersion, batchNumber: batchNumber, userData: userData)
     }
+    
+    /// Alternatively using the ByteIterator-class of methods, which don't require keeping track of indices since they decode objects in order.
+    init<Bytes: BytesCollection>(sequence: Bytes?) throws {
+        var iterator = sequence.makeIterator()
+                        
+        self.init(
+            transactionCommitVersion: try iterator.next(bigEndian: UInt64.self),
+            batchNumber: try iterator.next(bigEndian: UInt16.self),
+            userData: try iterator.nextIfPresent(bigEndian: UInt16.self)
+        )
+        
+        /// Verify we are at the end of the stream of bytes.
+        guard iterator.next() == nil else {
+            throw Error.invalidVersionstamp
+        }
+    }
 }
 ```
 

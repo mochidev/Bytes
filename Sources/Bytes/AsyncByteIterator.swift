@@ -1,5 +1,5 @@
 //
-//  AsyncBytes.swift
+//  AsyncByteIterator.swift
 //  Bytes
 //
 //  Created by Dimitri Bouniol on 2021-11-12.

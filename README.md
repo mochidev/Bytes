@@ -22,7 +22,7 @@ Please check the [releases](https://github.com/mochidev/Bytes/releases) for reco
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/mochidev/Bytes.git", .upToNextMinor(from: "0.2.0")),
+    .package(url: "https://github.com/mochidev/Bytes.git", .upToNextMinor(from: "0.2.2")),
 ],
 ...
 targets: [
@@ -57,6 +57,8 @@ let backToExample = try bytes.casting(to: Example.self) // Type is explicit
 methodThatTakesExample(try bytes.casting()) // Type is inferred from context
 ```
 
+Do note that objects cast to and from Bytes in this way are not stable outside of the program scope, since they mirror the memory layout of the object at that moment in time. It is much more preferable to encode the item directly using the specialized methods on `Int`, `String`, `UUID`, etc…, as they provide a stable and consistent scheme of encoding and decoding objects in memory.
+
 ### Integers
 
 When working with integers, it is preferable to use the `bigEndianBytes`/ `littleEndianBytes` and  `init(bigEndianBytes: Bytes)`/`init(littleEndianBytes: Bytes)` integer-specific properties and initializers when possible, as they will be guaranteed to be cross platform (casting will always use the byte-order native to system memory). Integer overrides are available for all integer types: `Int8`, `UInt8`, `Int16`, `UInt16`, `Int32`, `UInt32`, `Int64`, and `UInt64`. Using `Int` and `UInt` for serialization is not recommended, as they are different sizes on different platforms. 
@@ -87,7 +89,7 @@ struct Versionstamp {
     let batchNumber: UInt16
     var userData: UInt16?
     
-    public init(transactionCommitVersion: UInt64, batchNumber: UInt16, userData: UInt16? = nil) {
+    init(transactionCommitVersion: UInt64, batchNumber: UInt16, userData: UInt16? = nil) {
         self.transactionCommitVersion = transactionCommitVersion
         self.batchNumber = batchNumber
         self.userData = userData
@@ -145,8 +147,27 @@ struct Versionstamp {
 
 Bytes can also be used to pull data from `AsyncSequence` iterators. To learn more, please see [Integration with AsyncSequenceReader](https://github.com/mochidev/AsyncSequenceReader#integration-with-bytes).
 
+For instance, improving the above example:
+```swift
+#if compiler(>=5.5) && canImport(_Concurrency)
+
+@available(macOS 10.15, iOS 13.0, watchOS 6.0, tvOS 13.0, *)
+extension AsyncIteratorProtocol where Element == Byte {
+    @inlinable
+    mutating func next(_ type: Versionstamp.Type) async throws -> Versionstamp {
+        Versionstamp(
+            transactionCommitVersion: try await next(bigEndian: UInt64.self),
+            batchNumber: try await next(bigEndian: UInt16.self),
+            userData: try await nextIfPresent(bigEndian: UInt16.self)
+        )
+    }
+}
+
+#endif
+```
+
 ## Contributing
 
 Contribution is welcome! Please take a look at the issues already available, or start a new issue to discuss a new feature. Although guarantees can't be made regarding feature requests, PRs that fit within the goals of the project and that have been discussed beforehand are more than welcome!
 
-Please make sure that all submissions have clean commit histories, are well documented, and thoroughly tested. **Please rebase your PR** before submission rather than merge in `main`. Linear histories are required, so merge commits will not be merge-able.
+Please make sure that all submissions have clean commit histories, are well documented, and thoroughly tested. **Please rebase your PR** before submission rather than merge in `main`. Linear histories are required, so merge commits in PRs will not be accepted.

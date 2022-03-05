@@ -148,7 +148,7 @@ extension IteratorProtocol where Element == Byte {
     /// - Returns: An integer of type `type`, or `nil` if the sequence is finished.
     /// - Throws: `BytesError.invalidMemorySize` if a complete integer could not be returned by the time the sequence ended.
     @inlinable
-    public mutating func nextIfPresent<T: FixedWidthInteger>(bigEndian type: T.Type) async throws -> T? {
+    public mutating func nextIfPresent<T: FixedWidthInteger>(bigEndian type: T.Type) throws -> T? {
         try nextIfPresent(bytes: Bytes.self, count: MemoryLayout<T>.size).map { try T(bigEndianBytes: $0) }
     }
 }

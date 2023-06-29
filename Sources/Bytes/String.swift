@@ -94,6 +94,44 @@ extension IteratorProtocol where Element == Byte {
     public mutating func nextIfPresent(utf8 type: String.Type, min minCount: Int = 0, max maxCount: Int) throws -> String? {
         try nextIfPresent(Bytes.self, min: minCount, max: maxCount).map { String(utf8Bytes: $0) }
     }
+    
+    /// Advances by the specified UTF-8 encoded String if found, or throws if the next bytes in the iterator do not match.
+    ///
+    /// Use this method when you expect a String to be next in the sequence, and it would be an error if something else were encountered.
+    ///
+    /// If the String is empty, this method won't do anything.
+    ///
+    /// - Note: The string will not check for null termination unless a null character is specified.
+    ///
+    /// **Learn More:** [Integration with AsyncSequenceReader](https://github.com/mochidev/AsyncSequenceReader#integration-with-bytes)
+    /// - Parameter string: The string to check for.
+    /// - Throws: ``BytesError/checkedSequenceNotFound`` if the string could not be identified.
+    @inlinable
+    public mutating func check<String: StringProtocol>(
+        utf8 string: String
+    ) throws {
+        try check(string.utf8Bytes)
+    }
+    
+    /// Advances by the specified UTF-8 encoded String if found, throws if the next bytes in the iterator do not match, or returns false if the sequence ended.
+    ///
+    /// Use this method when you expect a String to be next in the sequence, and it would be an error if something else were encountered.
+    ///
+    /// If the String is empty, this method won't do anything.
+    ///
+    /// - Note: The string will not check for null termination unless a null character is specified.
+    ///
+    /// **Learn More:** [Integration with AsyncSequenceReader](https://github.com/mochidev/AsyncSequenceReader#integration-with-bytes)
+    /// - Parameter string: The string to check for.
+    /// - Returns: `true` if the string was found, or `false` if the sequence finished.
+    /// - Throws: ``BytesError/checkedSequenceNotFound`` if the string could not be identified.
+    @inlinable
+    @discardableResult
+    public mutating func checkIfPresent<String: StringProtocol>(
+        utf8 string: String
+    ) throws -> Bool {
+        try checkIfPresent(string.utf8Bytes)
+    }
 }
 
 
@@ -151,6 +189,44 @@ extension AsyncIteratorProtocol where Element == Byte {
     @inlinable
     public mutating func nextIfPresent(utf8 type: String.Type, min minCount: Int = 0, max maxCount: Int) async throws -> String? {
         try await nextIfPresent(Bytes.self, min: minCount, max: maxCount).map { String(utf8Bytes: $0) }
+    }
+    
+    /// Asynchronously advances by the specified UTF-8 encoded String if found, or throws if the next bytes in the iterator do not match.
+    ///
+    /// Use this method when you expect a String to be next in the sequence, and it would be an error if something else were encountered.
+    ///
+    /// If the String is empty, this method won't do anything.
+    ///
+    /// - Note: The string will not check for null termination unless a null character is specified.
+    ///
+    /// **Learn More:** [Integration with AsyncSequenceReader](https://github.com/mochidev/AsyncSequenceReader#integration-with-bytes)
+    /// - Parameter string: The string to check for.
+    /// - Throws: ``BytesError/checkedSequenceNotFound`` if the string could not be identified.
+    @inlinable
+    public mutating func check<String: StringProtocol>(
+        utf8 string: String
+    ) async throws {
+        try await check(string.utf8Bytes)
+    }
+    
+    /// Asynchronously advances by the specified UTF-8 encoded String if found, throws if the next bytes in the iterator do not match, or returns false if the sequence ended.
+    ///
+    /// Use this method when you expect a String to be next in the sequence, and it would be an error if something else were encountered.
+    ///
+    /// If the String is empty, this method won't do anything.
+    ///
+    /// - Note: The string will not check for null termination unless a null character is specified.
+    ///
+    /// **Learn More:** [Integration with AsyncSequenceReader](https://github.com/mochidev/AsyncSequenceReader#integration-with-bytes)
+    /// - Parameter string: The string to check for.
+    /// - Returns: `true` if the string was found, or `false` if the sequence finished.
+    /// - Throws: ``BytesError/checkedSequenceNotFound`` if the string could not be identified.
+    @inlinable
+    @discardableResult
+    public mutating func checkIfPresent<String: StringProtocol>(
+        utf8 string: String
+    ) async throws -> Bool {
+        try await checkIfPresent(string.utf8Bytes)
     }
 }
 

@@ -91,6 +91,7 @@ Sometimes, while reading a sequence of bytes you just want to verify that the ne
 try iterator.check(0) // Check for 0x00, throw if not found
 try iterator.check([0x0d, 0x0a]) // Check for \r\n, throw if not found
 try iterator.checkIfPresent([0x0d, 0x0a]) // Check for \r\n, return false if iterator is finished, throw if not finished and not found
+try iterator.checkIfPresent(utf8: "\r\n") // Check for \r\n, return false if iterator is finished, throw if not finished and not found
 ```
 
 ### Complex Example

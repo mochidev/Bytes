@@ -151,6 +151,66 @@ extension IteratorProtocol where Element == Byte {
     public mutating func nextIfPresent<T: FixedWidthInteger>(bigEndian type: T.Type) throws -> T? {
         try nextIfPresent(Bytes.self, count: MemoryLayout<T>.size).map { try T(bigEndianBytes: $0) }
     }
+    
+    /// Advances by the next little endien integer if found, or throws if the next bytes in the iterator do not match.
+    ///
+    /// Use this method when you expect an integer to be next in the sequence, and it would be an error if something else were encountered.
+    ///
+    /// **Learn More:** [Integration with AsyncSequenceReader](https://github.com/mochidev/AsyncSequenceReader#integration-with-bytes)
+    /// - Parameter integer: The integer to check for.
+    /// - Throws: ``BytesError/checkedSequenceNotFound`` if the integer could not be identified.
+    @inlinable
+    public mutating func check<Int: FixedWidthInteger>(
+        littleEndian integer: Int
+    ) throws {
+        try check(integer.littleEndianBytes)
+    }
+    
+    /// Advances by the next big endien integer if found, or throws if the next bytes in the iterator do not match.
+    ///
+    /// Use this method when you expect an integer to be next in the sequence, and it would be an error if something else were encountered.
+    ///
+    /// **Learn More:** [Integration with AsyncSequenceReader](https://github.com/mochidev/AsyncSequenceReader#integration-with-bytes)
+    /// - Parameter integer: The integer to check for.
+    /// - Throws: ``BytesError/checkedSequenceNotFound`` if the integer could not be identified.
+    @inlinable
+    public mutating func check<Int: FixedWidthInteger>(
+        bigEndian integer: Int
+    ) throws {
+        try check(integer.bigEndianBytes)
+    }
+    
+    /// Advances by the next little endien integer if found, throws if the next bytes in the iterator do not match, or returns false if the sequence ended.
+    ///
+    /// Use this method when you expect an integer to be next in the sequence, and it would be an error if something else were encountered.
+    ///
+    /// **Learn More:** [Integration with AsyncSequenceReader](https://github.com/mochidev/AsyncSequenceReader#integration-with-bytes)
+    /// - Parameter integer: The integer to check for.
+    /// - Returns: `true` if the integer was found, or `false` if the sequence finished.
+    /// - Throws: ``BytesError/checkedSequenceNotFound`` if the integer could not be identified.
+    @inlinable
+    @discardableResult
+    public mutating func checkIfPresent<Int: FixedWidthInteger>(
+        littleEndian integer: Int
+    ) throws -> Bool {
+        try checkIfPresent(integer.littleEndianBytes)
+    }
+    
+    /// Advances by the next big endien integer if found, throws if the next bytes in the iterator do not match, or returns false if the sequence ended.
+    ///
+    /// Use this method when you expect an integer to be next in the sequence, and it would be an error if something else were encountered.
+    ///
+    /// **Learn More:** [Integration with AsyncSequenceReader](https://github.com/mochidev/AsyncSequenceReader#integration-with-bytes)
+    /// - Parameter integer: The integer to check for.
+    /// - Returns: `true` if the integer was found, or `false` if the sequence finished.
+    /// - Throws: ``BytesError/checkedSequenceNotFound`` if the integer could not be identified.
+    @inlinable
+    @discardableResult
+    public mutating func checkIfPresent<Int: FixedWidthInteger>(
+        bigEndian integer: Int
+    ) throws -> Bool {
+        try checkIfPresent(integer.bigEndianBytes)
+    }
 }
 
 
@@ -210,6 +270,66 @@ extension AsyncIteratorProtocol where Element == Byte {
     @inlinable
     public mutating func nextIfPresent<T: FixedWidthInteger>(bigEndian type: T.Type) async throws -> T? {
         try await nextIfPresent(Bytes.self, count: MemoryLayout<T>.size).map { try T(bigEndianBytes: $0) }
+    }
+    
+    /// Asynchronously advances by the next little endien integer if found, or throws if the next bytes in the iterator do not match.
+    ///
+    /// Use this method when you expect an integer to be next in the sequence, and it would be an error if something else were encountered.
+    ///
+    /// **Learn More:** [Integration with AsyncSequenceReader](https://github.com/mochidev/AsyncSequenceReader#integration-with-bytes)
+    /// - Parameter integer: The integer to check for.
+    /// - Throws: ``BytesError/checkedSequenceNotFound`` if the integer could not be identified.
+    @inlinable
+    public mutating func check<Int: FixedWidthInteger>(
+        littleEndian integer: Int
+    ) async throws {
+        try await check(integer.littleEndianBytes)
+    }
+    
+    /// Asynchronously advances by the next big endien integer if found, or throws if the next bytes in the iterator do not match.
+    ///
+    /// Use this method when you expect an integer to be next in the sequence, and it would be an error if something else were encountered.
+    ///
+    /// **Learn More:** [Integration with AsyncSequenceReader](https://github.com/mochidev/AsyncSequenceReader#integration-with-bytes)
+    /// - Parameter integer: The integer to check for.
+    /// - Throws: ``BytesError/checkedSequenceNotFound`` if the integer could not be identified.
+    @inlinable
+    public mutating func check<Int: FixedWidthInteger>(
+        bigEndian integer: Int
+    ) async throws {
+        try await check(integer.bigEndianBytes)
+    }
+    
+    /// Asynchronously advances by the next little endien integer if found, throws if the next bytes in the iterator do not match, or returns false if the sequence ended.
+    ///
+    /// Use this method when you expect an integer to be next in the sequence, and it would be an error if something else were encountered.
+    ///
+    /// **Learn More:** [Integration with AsyncSequenceReader](https://github.com/mochidev/AsyncSequenceReader#integration-with-bytes)
+    /// - Parameter integer: The integer to check for.
+    /// - Returns: `true` if the integer was found, or `false` if the sequence finished.
+    /// - Throws: ``BytesError/checkedSequenceNotFound`` if the integer could not be identified.
+    @inlinable
+    @discardableResult
+    public mutating func checkIfPresent<Int: FixedWidthInteger>(
+        littleEndian integer: Int
+    ) async throws -> Bool {
+        try await checkIfPresent(integer.littleEndianBytes)
+    }
+    
+    /// Asynchronously advances by the next big endien integer if found, throws if the next bytes in the iterator do not match, or returns false if the sequence ended.
+    ///
+    /// Use this method when you expect an integer to be next in the sequence, and it would be an error if something else were encountered.
+    ///
+    /// **Learn More:** [Integration with AsyncSequenceReader](https://github.com/mochidev/AsyncSequenceReader#integration-with-bytes)
+    /// - Parameter integer: The integer to check for.
+    /// - Returns: `true` if the integer was found, or `false` if the sequence finished.
+    /// - Throws: ``BytesError/checkedSequenceNotFound`` if the integer could not be identified.
+    @inlinable
+    @discardableResult
+    public mutating func checkIfPresent<Int: FixedWidthInteger>(
+        bigEndian integer: Int
+    ) async throws -> Bool {
+        try await checkIfPresent(integer.bigEndianBytes)
     }
 }
 

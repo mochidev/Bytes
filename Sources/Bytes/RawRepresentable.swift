@@ -290,6 +290,96 @@ extension IteratorProtocol where Element == Byte {
     public mutating func nextIfPresent<T: RawRepresentable>(bigEndian type: T.Type) throws -> T? where T.RawValue: FixedWidthInteger {
         try nextIfPresent(Bytes.self, count: MemoryLayout<T.RawValue>.size).map { try T(bigEndianBytes: $0) }
     }
+    
+    /// Advances by the next byte if found, or throws if the next bytes in the iterator do not match.
+    ///
+    /// Use this method when you expect an integer to be next in the sequence, and it would be an error if something else were encountered.
+    ///
+    /// **Learn More:** [Integration with AsyncSequenceReader](https://github.com/mochidev/AsyncSequenceReader#integration-with-bytes)
+    /// - Parameter integer: The raw integer to check for.
+    /// - Throws: ``BytesError/checkedSequenceNotFound`` if the integer could not be identified.
+    @inlinable
+    public mutating func check<RawInt: RawRepresentable>(
+        _ integer: RawInt
+    ) throws where RawInt.RawValue == UInt8 {
+        try check(integer.rawValue)
+    }
+    
+    /// Advances by the next little endien integer if found, or throws if the next bytes in the iterator do not match.
+    ///
+    /// Use this method when you expect an integer to be next in the sequence, and it would be an error if something else were encountered.
+    ///
+    /// **Learn More:** [Integration with AsyncSequenceReader](https://github.com/mochidev/AsyncSequenceReader#integration-with-bytes)
+    /// - Parameter integer: The raw integer to check for.
+    /// - Throws: ``BytesError/checkedSequenceNotFound`` if the integer could not be identified.
+    @inlinable
+    public mutating func check<RawInt: RawRepresentable>(
+        littleEndian integer: RawInt
+    ) throws where RawInt.RawValue: FixedWidthInteger {
+        try check(integer.littleEndianBytes)
+    }
+    
+    /// Advances by the next big endien integer if found, or throws if the next bytes in the iterator do not match.
+    ///
+    /// Use this method when you expect an integer to be next in the sequence, and it would be an error if something else were encountered.
+    ///
+    /// **Learn More:** [Integration with AsyncSequenceReader](https://github.com/mochidev/AsyncSequenceReader#integration-with-bytes)
+    /// - Parameter integer: The raw integer to check for.
+    /// - Throws: ``BytesError/checkedSequenceNotFound`` if the integer could not be identified.
+    @inlinable
+    public mutating func check<RawInt: RawRepresentable>(
+        bigEndian integer: RawInt
+    ) throws where RawInt.RawValue: FixedWidthInteger {
+        try check(integer.bigEndianBytes)
+    }
+    
+    /// Advances by the byte if found, throws if the next bytes in the iterator do not match, or returns false if the sequence ended.
+    ///
+    /// Use this method when you expect an integer to be next in the sequence, and it would be an error if something else were encountered.
+    ///
+    /// **Learn More:** [Integration with AsyncSequenceReader](https://github.com/mochidev/AsyncSequenceReader#integration-with-bytes)
+    /// - Parameter integer: The raw integer to check for.
+    /// - Returns: `true` if the integer was found, or `false` if the sequence finished.
+    /// - Throws: ``BytesError/checkedSequenceNotFound`` if the integer could not be identified.
+    @inlinable
+    @discardableResult
+    public mutating func checkIfPresent<RawInt: RawRepresentable>(
+        _ integer: RawInt
+    ) throws -> Bool where RawInt.RawValue == UInt8 {
+        try checkIfPresent(integer.rawValue)
+    }
+    
+    /// Advances by the next little endien integer if found, throws if the next bytes in the iterator do not match, or returns false if the sequence ended.
+    ///
+    /// Use this method when you expect an integer to be next in the sequence, and it would be an error if something else were encountered.
+    ///
+    /// **Learn More:** [Integration with AsyncSequenceReader](https://github.com/mochidev/AsyncSequenceReader#integration-with-bytes)
+    /// - Parameter integer: The raw integer to check for.
+    /// - Returns: `true` if the integer was found, or `false` if the sequence finished.
+    /// - Throws: ``BytesError/checkedSequenceNotFound`` if the integer could not be identified.
+    @inlinable
+    @discardableResult
+    public mutating func checkIfPresent<RawInt: RawRepresentable>(
+        littleEndian integer: RawInt
+    ) throws -> Bool where RawInt.RawValue: FixedWidthInteger {
+        try checkIfPresent(integer.littleEndianBytes)
+    }
+    
+    /// Advances by the next big endien integer if found, throws if the next bytes in the iterator do not match, or returns false if the sequence ended.
+    ///
+    /// Use this method when you expect an integer to be next in the sequence, and it would be an error if something else were encountered.
+    ///
+    /// **Learn More:** [Integration with AsyncSequenceReader](https://github.com/mochidev/AsyncSequenceReader#integration-with-bytes)
+    /// - Parameter integer: The raw integer to check for.
+    /// - Returns: `true` if the integer was found, or `false` if the sequence finished.
+    /// - Throws: ``BytesError/checkedSequenceNotFound`` if the integer could not be identified.
+    @inlinable
+    @discardableResult
+    public mutating func checkIfPresent<RawInt: RawRepresentable>(
+        bigEndian integer: RawInt
+    ) throws -> Bool where RawInt.RawValue: FixedWidthInteger {
+        try checkIfPresent(integer.bigEndianBytes)
+    }
 }
 
 
@@ -378,6 +468,96 @@ extension AsyncIteratorProtocol where Element == Byte {
     @inlinable
     public mutating func nextIfPresent<T: RawRepresentable>(bigEndian type: T.Type) async throws -> T? where T.RawValue: FixedWidthInteger {
         try await nextIfPresent(Bytes.self, count: MemoryLayout<T.RawValue>.size).map { try T(bigEndianBytes: $0) }
+    }
+    
+    /// Asynchronously advances by the next byte if found, or throws if the next bytes in the iterator do not match.
+    ///
+    /// Use this method when you expect an integer to be next in the sequence, and it would be an error if something else were encountered.
+    ///
+    /// **Learn More:** [Integration with AsyncSequenceReader](https://github.com/mochidev/AsyncSequenceReader#integration-with-bytes)
+    /// - Parameter integer: The raw integer to check for.
+    /// - Throws: ``BytesError/checkedSequenceNotFound`` if the integer could not be identified.
+    @inlinable
+    public mutating func check<RawInt: RawRepresentable>(
+        _ integer: RawInt
+    ) async throws where RawInt.RawValue == UInt8 {
+        try await check(integer.rawValue)
+    }
+    
+    /// Asynchronously advances by the next little endien integer if found, or throws if the next bytes in the iterator do not match.
+    ///
+    /// Use this method when you expect an integer to be next in the sequence, and it would be an error if something else were encountered.
+    ///
+    /// **Learn More:** [Integration with AsyncSequenceReader](https://github.com/mochidev/AsyncSequenceReader#integration-with-bytes)
+    /// - Parameter integer: The raw integer to check for.
+    /// - Throws: ``BytesError/checkedSequenceNotFound`` if the integer could not be identified.
+    @inlinable
+    public mutating func check<RawInt: RawRepresentable>(
+        littleEndian integer: RawInt
+    ) async throws where RawInt.RawValue: FixedWidthInteger {
+        try await check(integer.littleEndianBytes)
+    }
+    
+    /// Asynchronously advances by the next big endien integer if found, or throws if the next bytes in the iterator do not match.
+    ///
+    /// Use this method when you expect an integer to be next in the sequence, and it would be an error if something else were encountered.
+    ///
+    /// **Learn More:** [Integration with AsyncSequenceReader](https://github.com/mochidev/AsyncSequenceReader#integration-with-bytes)
+    /// - Parameter integer: The raw integer to check for.
+    /// - Throws: ``BytesError/checkedSequenceNotFound`` if the integer could not be identified.
+    @inlinable
+    public mutating func check<RawInt: RawRepresentable>(
+        bigEndian integer: RawInt
+    ) async throws where RawInt.RawValue: FixedWidthInteger {
+        try await check(integer.bigEndianBytes)
+    }
+    
+    /// Asynchronously advances by the byte if found, throws if the next bytes in the iterator do not match, or returns false if the sequence ended.
+    ///
+    /// Use this method when you expect an integer to be next in the sequence, and it would be an error if something else were encountered.
+    ///
+    /// **Learn More:** [Integration with AsyncSequenceReader](https://github.com/mochidev/AsyncSequenceReader#integration-with-bytes)
+    /// - Parameter integer: The raw integer to check for.
+    /// - Returns: `true` if the integer was found, or `false` if the sequence finished.
+    /// - Throws: ``BytesError/checkedSequenceNotFound`` if the integer could not be identified.
+    @inlinable
+    @discardableResult
+    public mutating func checkIfPresent<RawInt: RawRepresentable>(
+        _ integer: RawInt
+    ) async throws -> Bool where RawInt.RawValue == UInt8 {
+        try await checkIfPresent(integer.rawValue)
+    }
+    
+    /// Asynchronously advances by the next little endien integer if found, throws if the next bytes in the iterator do not match, or returns false if the sequence ended.
+    ///
+    /// Use this method when you expect an integer to be next in the sequence, and it would be an error if something else were encountered.
+    ///
+    /// **Learn More:** [Integration with AsyncSequenceReader](https://github.com/mochidev/AsyncSequenceReader#integration-with-bytes)
+    /// - Parameter integer: The raw integer to check for.
+    /// - Returns: `true` if the integer was found, or `false` if the sequence finished.
+    /// - Throws: ``BytesError/checkedSequenceNotFound`` if the integer could not be identified.
+    @inlinable
+    @discardableResult
+    public mutating func checkIfPresent<RawInt: RawRepresentable>(
+        littleEndian integer: RawInt
+    ) async throws -> Bool where RawInt.RawValue: FixedWidthInteger {
+        try await checkIfPresent(integer.littleEndianBytes)
+    }
+    
+    /// Asynchronously advances by the next big endien integer if found, throws if the next bytes in the iterator do not match, or returns false if the sequence ended.
+    ///
+    /// Use this method when you expect an integer to be next in the sequence, and it would be an error if something else were encountered.
+    ///
+    /// **Learn More:** [Integration with AsyncSequenceReader](https://github.com/mochidev/AsyncSequenceReader#integration-with-bytes)
+    /// - Parameter integer: The raw integer to check for.
+    /// - Returns: `true` if the integer was found, or `false` if the sequence finished.
+    /// - Throws: ``BytesError/checkedSequenceNotFound`` if the integer could not be identified.
+    @inlinable
+    @discardableResult
+    public mutating func checkIfPresent<RawInt: RawRepresentable>(
+        bigEndian integer: RawInt
+    ) async throws -> Bool where RawInt.RawValue: FixedWidthInteger {
+        try await checkIfPresent(integer.bigEndianBytes)
     }
 }
 

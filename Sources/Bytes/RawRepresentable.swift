@@ -221,7 +221,7 @@ extension IteratorProtocol where Element == Byte {
     /// - Throws: `BytesError.invalidMemorySize` if a complete raw representable could not be returned by the time the sequence ended.
     @inlinable
     public mutating func next<T: RawRepresentable>(raw type: T.Type) throws -> T {
-        try T(rawBytes: next(bytes: Bytes.self, count: MemoryLayout<T.RawValue>.size))
+        try T(rawBytes: next(Bytes.self, count: MemoryLayout<T.RawValue>.size))
     }
     
     /// Advances to the next raw representable in the squence and returns it, or ends the sequence if there is no next element.
@@ -234,7 +234,7 @@ extension IteratorProtocol where Element == Byte {
     /// - Throws: `BytesError.invalidMemorySize` if a complete raw representable could not be returned by the time the sequence ended.
     @inlinable
     public mutating func nextIfPresent<T: RawRepresentable>(raw type: T.Type) throws -> T? {
-        try nextIfPresent(bytes: Bytes.self, count: MemoryLayout<T.RawValue>.size).map { try T(rawBytes: $0) }
+        try nextIfPresent(Bytes.self, count: MemoryLayout<T.RawValue>.size).map { try T(rawBytes: $0) }
     }
 }
 
@@ -249,7 +249,7 @@ extension IteratorProtocol where Element == Byte {
     /// - Throws: `BytesError.invalidMemorySize` if a complete integer could not be returned by the time the sequence ended.
     @inlinable
     public mutating func next<T: RawRepresentable>(littleEndian type: T.Type) throws -> T where T.RawValue: FixedWidthInteger {
-        try T(littleEndianBytes: next(bytes: Bytes.self, count: MemoryLayout<T.RawValue>.size))
+        try T(littleEndianBytes: next(Bytes.self, count: MemoryLayout<T.RawValue>.size))
     }
     
     /// Advances to the next big endian integer in the squence and returns it, or throws if it could not.
@@ -262,7 +262,7 @@ extension IteratorProtocol where Element == Byte {
     /// - Throws: `BytesError.invalidMemorySize` if a complete integer could not be returned by the time the sequence ended.
     @inlinable
     public mutating func next<T: RawRepresentable>(bigEndian type: T.Type) throws -> T where T.RawValue: FixedWidthInteger {
-        try T(bigEndianBytes: next(bytes: Bytes.self, count: MemoryLayout<T.RawValue>.size))
+        try T(bigEndianBytes: next(Bytes.self, count: MemoryLayout<T.RawValue>.size))
     }
     
     /// Advances to the next little endian integer in the squence and returns it, or ends the sequence if there is no next element.
@@ -275,7 +275,7 @@ extension IteratorProtocol where Element == Byte {
     /// - Throws: `BytesError.invalidMemorySize` if a complete integer could not be returned by the time the sequence ended.
     @inlinable
     public mutating func nextIfPresent<T: RawRepresentable>(littleEndian type: T.Type) throws -> T? where T.RawValue: FixedWidthInteger {
-        try nextIfPresent(bytes: Bytes.self, count: MemoryLayout<T.RawValue>.size).map { try T(littleEndianBytes: $0) }
+        try nextIfPresent(Bytes.self, count: MemoryLayout<T.RawValue>.size).map { try T(littleEndianBytes: $0) }
     }
     
     /// Advances to the next big endian integer in the squence and returns it, or ends the sequence if there is no next element.
@@ -288,7 +288,7 @@ extension IteratorProtocol where Element == Byte {
     /// - Throws: `BytesError.invalidMemorySize` if a complete integer could not be returned by the time the sequence ended.
     @inlinable
     public mutating func nextIfPresent<T: RawRepresentable>(bigEndian type: T.Type) throws -> T? where T.RawValue: FixedWidthInteger {
-        try nextIfPresent(bytes: Bytes.self, count: MemoryLayout<T.RawValue>.size).map { try T(bigEndianBytes: $0) }
+        try nextIfPresent(Bytes.self, count: MemoryLayout<T.RawValue>.size).map { try T(bigEndianBytes: $0) }
     }
 }
 
@@ -309,7 +309,7 @@ extension AsyncIteratorProtocol where Element == Byte {
     /// - Throws: `BytesError.invalidMemorySize` if a complete raw representable could not be returned by the time the sequence ended.
     @inlinable
     public mutating func next<T: RawRepresentable>(raw type: T.Type) async throws -> T {
-        try T(rawBytes: await next(bytes: Bytes.self, count: MemoryLayout<T.RawValue>.size))
+        try T(rawBytes: await next(Bytes.self, count: MemoryLayout<T.RawValue>.size))
     }
     
     /// Asynchronously advances to the next raw representable in the squence and returns it, or ends the sequence if there is no next element.
@@ -322,7 +322,7 @@ extension AsyncIteratorProtocol where Element == Byte {
     /// - Throws: `BytesError.invalidMemorySize` if a complete raw representable could not be returned by the time the sequence ended.
     @inlinable
     public mutating func nextIfPresent<T: RawRepresentable>(raw type: T.Type) async throws -> T? {
-        try await nextIfPresent(bytes: Bytes.self, count: MemoryLayout<T.RawValue>.size).map { try T(rawBytes: $0) }
+        try await nextIfPresent(Bytes.self, count: MemoryLayout<T.RawValue>.size).map { try T(rawBytes: $0) }
     }
 }
 
@@ -338,7 +338,7 @@ extension AsyncIteratorProtocol where Element == Byte {
     /// - Throws: `BytesError.invalidMemorySize` if a complete integer could not be returned by the time the sequence ended.
     @inlinable
     public mutating func next<T: RawRepresentable>(littleEndian type: T.Type) async throws -> T where T.RawValue: FixedWidthInteger {
-        try T(littleEndianBytes: await next(bytes: Bytes.self, count: MemoryLayout<T.RawValue>.size))
+        try T(littleEndianBytes: await next(Bytes.self, count: MemoryLayout<T.RawValue>.size))
     }
     
     /// Asynchronously advances to the next big endian integer in the squence and returns it, or throws if it could not.
@@ -351,7 +351,7 @@ extension AsyncIteratorProtocol where Element == Byte {
     /// - Throws: `BytesError.invalidMemorySize` if a complete integer could not be returned by the time the sequence ended.
     @inlinable
     public mutating func next<T: RawRepresentable>(bigEndian type: T.Type) async throws -> T where T.RawValue: FixedWidthInteger {
-        try T(bigEndianBytes: await next(bytes: Bytes.self, count: MemoryLayout<T.RawValue>.size))
+        try T(bigEndianBytes: await next(Bytes.self, count: MemoryLayout<T.RawValue>.size))
     }
     
     /// Asynchronously advances to the next little endian integer in the squence and returns it, or ends the sequence if there is no next element.
@@ -364,7 +364,7 @@ extension AsyncIteratorProtocol where Element == Byte {
     /// - Throws: `BytesError.invalidMemorySize` if a complete integer could not be returned by the time the sequence ended.
     @inlinable
     public mutating func nextIfPresent<T: RawRepresentable>(littleEndian type: T.Type) async throws -> T? where T.RawValue: FixedWidthInteger {
-        try await nextIfPresent(bytes: Bytes.self, count: MemoryLayout<T.RawValue>.size).map { try T(littleEndianBytes: $0) }
+        try await nextIfPresent(Bytes.self, count: MemoryLayout<T.RawValue>.size).map { try T(littleEndianBytes: $0) }
     }
     
     /// Asynchronously advances to the next big endian integer in the squence and returns it, or ends the sequence if there is no next element.
@@ -377,7 +377,7 @@ extension AsyncIteratorProtocol where Element == Byte {
     /// - Throws: `BytesError.invalidMemorySize` if a complete integer could not be returned by the time the sequence ended.
     @inlinable
     public mutating func nextIfPresent<T: RawRepresentable>(bigEndian type: T.Type) async throws -> T? where T.RawValue: FixedWidthInteger {
-        try await nextIfPresent(bytes: Bytes.self, count: MemoryLayout<T.RawValue>.size).map { try T(bigEndianBytes: $0) }
+        try await nextIfPresent(Bytes.self, count: MemoryLayout<T.RawValue>.size).map { try T(bigEndianBytes: $0) }
     }
 }
 

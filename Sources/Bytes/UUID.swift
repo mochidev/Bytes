@@ -133,7 +133,7 @@ extension IteratorProtocol where Element == Byte {
     /// - Throws: `BytesError.invalidMemorySize` if 16 bytes are not available.
     @inlinable
     public mutating func next(_ type: UUID.Type) throws -> UUID {
-        try UUID(bytes: next(bytes: Bytes.self, count: MemoryLayout<uuid_t>.size))
+        try UUID(bytes: next(Bytes.self, count: MemoryLayout<uuid_t>.size))
     }
     
     /// Asynchronously advances to the next UUID String, or throws if it could not.
@@ -144,7 +144,7 @@ extension IteratorProtocol where Element == Byte {
     /// - Throws: `BytesError.invalidMemorySize` if 36 bytes are not available.
     @inlinable
     public mutating func next(string type: UUID.Type) throws -> UUID {
-        try UUID(stringBytes: next(bytes: Bytes.self, count: MemoryLayout<UUIDTextualBytes>.size))
+        try UUID(stringBytes: next(Bytes.self, count: MemoryLayout<UUIDTextualBytes>.size))
     }
     
     /// Asynchronously advances to the next binary UUID, or ends the sequence if there is no next element.
@@ -155,7 +155,7 @@ extension IteratorProtocol where Element == Byte {
     /// - Throws: `BytesError.invalidMemorySize` if 16 bytes are not available.
     @inlinable
     public mutating func nextIfPresent(_ type: UUID.Type) throws -> UUID? {
-        try nextIfPresent(bytes: Bytes.self, count: MemoryLayout<uuid_t>.size).map { try UUID(bytes: $0) }
+        try nextIfPresent(Bytes.self, count: MemoryLayout<uuid_t>.size).map { try UUID(bytes: $0) }
     }
     
     /// Asynchronously advances to the next UUID String, or ends the sequence if there is no next element.
@@ -166,7 +166,7 @@ extension IteratorProtocol where Element == Byte {
     /// - Throws: `BytesError.invalidMemorySize` if 36 bytes are not available.
     @inlinable
     public mutating func nextIfPresent(string type: UUID.Type) throws -> UUID? {
-        try nextIfPresent(bytes: Bytes.self, count: MemoryLayout<UUIDTextualBytes>.size).map { try UUID(stringBytes: $0) }
+        try nextIfPresent(Bytes.self, count: MemoryLayout<UUIDTextualBytes>.size).map { try UUID(stringBytes: $0) }
     }
 }
 
@@ -185,7 +185,7 @@ extension AsyncIteratorProtocol where Element == Byte {
     /// - Throws: `BytesError.invalidMemorySize` if 16 bytes are not available.
     @inlinable
     public mutating func next(_ type: UUID.Type) async throws -> UUID {
-        try UUID(bytes: await next(bytes: Bytes.self, count: MemoryLayout<uuid_t>.size))
+        try UUID(bytes: await next(Bytes.self, count: MemoryLayout<uuid_t>.size))
     }
     
     /// Asynchronously advances to the next UUID String, or throws if it could not.
@@ -196,7 +196,7 @@ extension AsyncIteratorProtocol where Element == Byte {
     /// - Throws: `BytesError.invalidMemorySize` if 36 bytes are not available.
     @inlinable
     public mutating func next(string type: UUID.Type) async throws -> UUID {
-        try UUID(stringBytes: await next(bytes: Bytes.self, count: MemoryLayout<UUIDTextualBytes>.size))
+        try UUID(stringBytes: await next(Bytes.self, count: MemoryLayout<UUIDTextualBytes>.size))
     }
     
     /// Asynchronously advances to the next binary UUID, or ends the sequence if there is no next element.
@@ -207,7 +207,7 @@ extension AsyncIteratorProtocol where Element == Byte {
     /// - Throws: `BytesError.invalidMemorySize` if 16 bytes are not available.
     @inlinable
     public mutating func nextIfPresent(_ type: UUID.Type) async throws -> UUID? {
-        try await nextIfPresent(bytes: Bytes.self, count: MemoryLayout<uuid_t>.size).map { try UUID(bytes: $0) }
+        try await nextIfPresent(Bytes.self, count: MemoryLayout<uuid_t>.size).map { try UUID(bytes: $0) }
     }
     
     /// Asynchronously advances to the next UUID String, or ends the sequence if there is no next element.
@@ -218,7 +218,7 @@ extension AsyncIteratorProtocol where Element == Byte {
     /// - Throws: `BytesError.invalidMemorySize` if 36 bytes are not available.
     @inlinable
     public mutating func nextIfPresent(string type: UUID.Type) async throws -> UUID? {
-        try await nextIfPresent(bytes: Bytes.self, count: MemoryLayout<UUIDTextualBytes>.size).map { try UUID(stringBytes: $0) }
+        try await nextIfPresent(Bytes.self, count: MemoryLayout<UUIDTextualBytes>.size).map { try UUID(stringBytes: $0) }
     }
 }
 

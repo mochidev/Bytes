@@ -82,7 +82,7 @@ extension AsyncChunkedBytes: AsyncSequence {
         /// This iterator buffers bytes up to `capacity`, then returnes then as a single chunk.
         @inlinable
         public mutating func next() async rethrows -> Bytes? {
-            try await baseIterator.nextIfPresent(bytes: Bytes.self, max: capacity)
+            try await baseIterator.nextIfPresent(Bytes.self, max: capacity)
         }
     }
     

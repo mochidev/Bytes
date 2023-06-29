@@ -225,9 +225,9 @@ extension IteratorProtocol where Element == Byte {
         _ byte: UInt8
     ) throws {
         let value = next()
-        if value != byte {
-            throw BytesError.checkedSequenceNotFound
-        }
+        
+        guard value == byte
+        else { throw BytesError.checkedSequenceNotFound }
     }
     
     /// Advances by the specified bytes if found, or throws if the next bytes in the iterator do not match.
@@ -262,9 +262,9 @@ extension IteratorProtocol where Element == Byte {
         _ byte: UInt8
     ) throws -> Bool {
         guard let value = next() else { return false }
-        if value != byte {
-            throw BytesError.checkedSequenceNotFound
-        }
+        
+        guard value == byte
+        else { throw BytesError.checkedSequenceNotFound }
         
         return true
     }

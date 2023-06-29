@@ -46,6 +46,16 @@ Enums and other types that conform to `RawRepresentable` are also supported out 
 
 An array or set of Integers can be serialized using `bigEndianBytes`/ `littleEndianBytes`, and initialized using `init(bigEndianBytes: Bytes)`/`init(littleEndianBytes: Bytes)`. The same can be done with collections of UUIDs and `RawRepresentable` enums by using the APIs specific to their types.
 
+### Checking for Values
+
+Sometimes, while reading a sequence of bytes you just want to verify that the next byte in a sequence is a constant. This is easy to do with the `check()` family of methods on iterators:
+
+```swift
+try iterator.check(0) // Check for 0x00, throw if not found
+try iterator.check([0x0d, 0x0a]) // Check for \r\n, throw if not found
+try iterator.checkIfPresent([0x0d, 0x0a]) // Check for \r\n, return false if iterator is finished, throw if not finished and not found
+```
+
 ### Complex Example
 
 Since `Bytes` is just an array, all the methods you are used to are available, including working with slices. If you are working with more complex serialization, consider the example below:

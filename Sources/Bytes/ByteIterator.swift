@@ -212,4 +212,88 @@ extension IteratorProtocol where Element == Byte {
     public mutating func nextIfPresent(bytes type: Bytes.Type, max maxCount: Int) -> Bytes? {
         nextIfPresent(type, max: maxCount)
     }
+    
+    /// Advances by the specified byte if found, or throws if the next byte does not match.
+    ///
+    /// Use this method when you expect a byte to be next in the sequence, and it would be an error if something else were encountered.
+    ///
+    /// **Learn More:** [Integration with AsyncSequenceReader](https://github.com/mochidev/AsyncSequenceReader#integration-with-bytes)
+    /// - Parameter byte: The byte to check for.
+    /// - Throws: ``BytesError/checkedSequenceNotFound`` if the bytes could not be identified.
+    @inlinable
+    public mutating func check(
+        _ byte: UInt8
+    ) throws {
+        let value = next()
+        if value != byte {
+            throw BytesError.checkedSequenceNotFound
+        }
+    }
+    
+    /// Advances by the specified bytes if found, or throws if the next bytes in the iterator do not match.
+    ///
+    /// Use this method when you expect a collection of bytes to be next in the sequence, and it would be an error if something else were encountered.
+    ///
+    /// If the bytes collection is an empty array, this method won't do anything.
+    ///
+    /// **Learn More:** [Integration with AsyncSequenceReader](https://github.com/mochidev/AsyncSequenceReader#integration-with-bytes)
+    /// - Parameter bytes: The bytes to check for.
+    /// - Throws: ``BytesError/checkedSequenceNotFound`` if the bytes could not be identified.
+    @inlinable
+    public mutating func check<Bytes: BytesCollection>(
+        _ bytes: Bytes
+    ) throws {
+        for byte in bytes {
+            try check(byte)
+        }
+    }
+    
+    /// Advances by the specified byte if found, throws if the next byte does not match, or returns false if the sequence ended.
+    ///
+    /// Use this method when you expect a byte to be next in the sequence, and it would be an error if something else were encountered.
+    ///
+    /// **Learn More:** [Integration with AsyncSequenceReader](https://github.com/mochidev/AsyncSequenceReader#integration-with-bytes)
+    /// - Parameter byte: The byte to check for.
+    /// - Returns: `true` if the byte was found, or `false` if the sequence finished.
+    /// - Throws: ``BytesError/checkedSequenceNotFound`` if the bytes could not be identified.
+    @inlinable
+    @discardableResult
+    public mutating func checkIfPresent(
+        _ byte: UInt8
+    ) throws -> Bool {
+        guard let value = next() else { return false }
+        if value != byte {
+            throw BytesError.checkedSequenceNotFound
+        }
+        
+        return true
+    }
+    
+    /// Advances by the specified bytes if found, throws if the next bytes in the iterator do not match, or returns false if the sequence ended.
+    ///
+    /// Use this method when you expect a collection of bytes to be next in the sequence, and it would be an error if something else were encountered.
+    ///
+    /// If the bytes collection is an empty array, this method won't do anything.
+    ///
+    /// **Learn More:** [Integration with AsyncSequenceReader](https://github.com/mochidev/AsyncSequenceReader#integration-with-bytes)
+    /// - Parameter bytes: The bytes to check for.
+    /// - Returns: `true` if the bytes were found, or `false` if the sequence finished.
+    /// - Throws: ``BytesError/checkedSequenceNotFound`` if the bytes could not be identified.
+    @inlinable
+    @discardableResult
+    public mutating func checkIfPresent<Bytes: BytesCollection>(
+        _ bytes: Bytes
+    ) throws -> Bool {
+        var first = true
+        for byte in bytes {
+            if first {
+                guard try checkIfPresent(byte) else { return false }
+                first = false
+            } else {
+                try check(byte)
+            }
+        }
+        
+        return true
+    }
 }

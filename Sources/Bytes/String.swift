@@ -54,7 +54,7 @@ extension IteratorProtocol where Element == Byte {
     /// - Throws: `BytesError.invalidMemorySize` if a complete string could not be returned by the time the sequence ended.
     @inlinable
     public mutating func next(utf8 type: String.Type, count: Int) throws -> String {
-        String(utf8Bytes: try next(bytes: Bytes.self, count: count))
+        String(utf8Bytes: try next(Bytes.self, count: count))
     }
     
     /// Advances to the UTF-8 encoded String with the specified minimum size, continuing until the specified maximum size, or throws if it could not.
@@ -67,7 +67,7 @@ extension IteratorProtocol where Element == Byte {
     /// - Throws: `BytesError.invalidMemorySize` if a complete string could not be returned by the time the sequence ended.
     @inlinable
     public mutating func next(utf8 type: String.Type, min minCount: Int = 0, max maxCount: Int) throws -> String {
-        String(utf8Bytes: try next(bytes: Bytes.self, min: minCount, max: maxCount))
+        String(utf8Bytes: try next(Bytes.self, min: minCount, max: maxCount))
     }
     
     /// Advances to the UTF-8 encoded String of size `count`, or ends the sequence if there is no next element.
@@ -79,7 +79,7 @@ extension IteratorProtocol where Element == Byte {
     /// - Throws: `BytesError.invalidMemorySize` if a complete string could not be returned by the time the sequence ended.
     @inlinable
     public mutating func nextIfPresent(utf8 type: String.Type, count: Int) throws -> String? {
-        try nextIfPresent(bytes: Bytes.self, count: count).map { String(utf8Bytes: $0) }
+        try nextIfPresent(Bytes.self, count: count).map { String(utf8Bytes: $0) }
     }
     
     /// Advances to the UTF-8 encoded String with the specified minimum size, continuing until the specified maximum size, or ends the sequence if there is no next element.
@@ -92,7 +92,7 @@ extension IteratorProtocol where Element == Byte {
     /// - Throws: `BytesError.invalidMemorySize` if a complete string could not be returned by the time the sequence ended.
     @inlinable
     public mutating func nextIfPresent(utf8 type: String.Type, min minCount: Int = 0, max maxCount: Int) throws -> String? {
-        try nextIfPresent(bytes: Bytes.self, min: minCount, max: maxCount).map { String(utf8Bytes: $0) }
+        try nextIfPresent(Bytes.self, min: minCount, max: maxCount).map { String(utf8Bytes: $0) }
     }
 }
 
@@ -112,7 +112,7 @@ extension AsyncIteratorProtocol where Element == Byte {
     /// - Throws: `BytesError.invalidMemorySize` if a complete string could not be returned by the time the sequence ended.
     @inlinable
     public mutating func next(utf8 type: String.Type, count: Int) async throws -> String {
-        String(utf8Bytes: try await next(bytes: Bytes.self, count: count))
+        String(utf8Bytes: try await next(Bytes.self, count: count))
     }
     
     /// Asynchronously advances to the UTF-8 encoded String with the specified minimum size, continuing until the specified maximum size, or throws if it could not.
@@ -125,7 +125,7 @@ extension AsyncIteratorProtocol where Element == Byte {
     /// - Throws: `BytesError.invalidMemorySize` if a complete string could not be returned by the time the sequence ended.
     @inlinable
     public mutating func next(utf8 type: String.Type, min minCount: Int = 0, max maxCount: Int) async throws -> String {
-        String(utf8Bytes: try await next(bytes: Bytes.self, min: minCount, max: maxCount))
+        String(utf8Bytes: try await next(Bytes.self, min: minCount, max: maxCount))
     }
     
     /// Asynchronously advances to the UTF-8 encoded String of size `count`, or ends the sequence if there is no next element.
@@ -137,7 +137,7 @@ extension AsyncIteratorProtocol where Element == Byte {
     /// - Throws: `BytesError.invalidMemorySize` if a complete string could not be returned by the time the sequence ended.
     @inlinable
     public mutating func nextIfPresent(utf8 type: String.Type, count: Int) async throws -> String? {
-        try await nextIfPresent(bytes: Bytes.self, count: count).map { String(utf8Bytes: $0) }
+        try await nextIfPresent(Bytes.self, count: count).map { String(utf8Bytes: $0) }
     }
     
     /// Asynchronously advances to the UTF-8 encoded String with the specified minimum size, continuing until the specified maximum size, or ends the sequence if there is no next element.
@@ -150,7 +150,7 @@ extension AsyncIteratorProtocol where Element == Byte {
     /// - Throws: `BytesError.invalidMemorySize` if a complete string could not be returned by the time the sequence ended.
     @inlinable
     public mutating func nextIfPresent(utf8 type: String.Type, min minCount: Int = 0, max maxCount: Int) async throws -> String? {
-        try await nextIfPresent(bytes: Bytes.self, min: minCount, max: maxCount).map { String(utf8Bytes: $0) }
+        try await nextIfPresent(Bytes.self, min: minCount, max: maxCount).map { String(utf8Bytes: $0) }
     }
 }
 

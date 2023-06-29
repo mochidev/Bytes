@@ -13,30 +13,37 @@ extension AsyncIteratorProtocol where Element == Byte {
     /// Asynchronously advances a byte array of size `count`, or throws if it could not.
     ///
     /// **Learn More:** [Integration with AsyncSequenceReader](https://github.com/mochidev/AsyncSequenceReader#integration-with-bytes)
-    /// - Parameter type: This should be set to `Bytes.self`.
+    /// - Parameter bytes: This should be set to `Bytes.self`.
     /// - Parameter count: The number of bytes to form into a byte array.
     /// - Returns: A byte array of size `count`.
-    /// - Throws: `BytesError.invalidMemorySize` if a complete byte array could not be returned by the time the sequence ended.
+    /// - Throws: ``BytesError/invalidMemorySize(targetSize:targetType:actualSize:)`` if a complete byte array could not be returned by the time the sequence ended.
     @inlinable
     public mutating func next(
-        bytes type: Bytes.Type,
+        _ bytes: Bytes.Type,
         count: Int
     ) async throws -> Bytes {
         assert(count >= 0, "count must be larger than 0")
-        return try await next(bytes: type, min: count, max: count)
+        return try await next(bytes, min: count, max: count)
+    }
+    
+    /// Please use ``next(_:count:)`` instead.
+    @available(*, deprecated, renamed: "next(_:count:)")
+    @inlinable
+    public mutating func next(bytes type: Bytes.Type, count: Int) async throws -> Bytes {
+        try await next(type, count: count)
     }
     
     /// Asynchronously advances a byte array with the specified minimum size, continuing until the specified maximum size, or throws if it could not.
     ///
     /// **Learn More:** [Integration with AsyncSequenceReader](https://github.com/mochidev/AsyncSequenceReader#integration-with-bytes)
-    /// - Parameter type: This should be set to `Bytes.self`.
+    /// - Parameter bytes: This should be set to `Bytes.self`.
     /// - Parameter minCount: The minimum number of bytes to form into a byte array.
     /// - Parameter maxCount: The maximum number of bytes to form into a byte array.
     /// - Returns: A byte array of size at least `minCount` and at most `maxCount`.
-    /// - Throws: `BytesError.invalidMemorySize` if a complete byte array could not be returned by the time the sequence ended.
+    /// - Throws: ``BytesError/invalidMemorySize(targetSize:targetType:actualSize:)`` if a complete byte array could not be returned by the time the sequence ended.
     @inlinable
     public mutating func next(
-        bytes type: Bytes.Type,
+        _ bytes: Bytes.Type,
         min minCount: Int,
         max maxCount: Int
     ) async throws -> Bytes {
@@ -62,15 +69,22 @@ extension AsyncIteratorProtocol where Element == Byte {
         return result
     }
     
+    /// Please use ``next(_:min:max:)`` instead.
+    @available(*, deprecated, renamed: "next(_:min:max:)")
+    @inlinable
+    public mutating func next(bytes type: Bytes.Type, min minCount: Int, max maxCount: Int) async throws -> Bytes {
+        try await next(type, min: minCount, max: maxCount)
+    }
+    
     /// Asynchronously advances a byte array with the specified maximum size.
     ///
     /// **Learn More:** [Integration with AsyncSequenceReader](https://github.com/mochidev/AsyncSequenceReader#integration-with-bytes)
-    /// - Parameter type: This should be set to `Bytes.self`.
+    /// - Parameter bytes: This should be set to `Bytes.self`.
     /// - Parameter maxCount: The maximum number of bytes to form into a byte array.
     /// - Returns: A byte array of size at least `minCount` and at most `maxCount`.
     @inlinable
     public mutating func next(
-        bytes type: Bytes.Type,
+        _ bytes: Bytes.Type,
         max maxCount: Int
     ) async rethrows -> Bytes {
         precondition(maxCount >= 0, "maxCount must be larger than 0")
@@ -90,33 +104,47 @@ extension AsyncIteratorProtocol where Element == Byte {
         return result
     }
     
+    /// Please use ``next(_:max:)`` instead.
+    @available(*, deprecated, renamed: "next(_:max:)")
+    @inlinable
+    public mutating func next(bytes type: Bytes.Type, max maxCount: Int) async rethrows -> Bytes {
+        try await next(type, max: maxCount)
+    }
+    
     /// Asynchronously advances a byte array of size `count`, or ends the sequence if there is no next element.
     ///
     /// **Learn More:** [Integration with AsyncSequenceReader](https://github.com/mochidev/AsyncSequenceReader#integration-with-bytes)
-    /// - Parameter type: This should be set to `Bytes.self`.
+    /// - Parameter bytes: This should be set to `Bytes.self`.
     /// - Parameter count: The number of bytes to form into a byte array.
     /// - Returns: A byte array of size `count`, or `nil` if the sequence is finished.
-    /// - Throws: `BytesError.invalidMemorySize` if a complete byte array could not be returned by the time the sequence ended.
+    /// - Throws: ``BytesError/invalidMemorySize(targetSize:targetType:actualSize:)`` if a complete byte array could not be returned by the time the sequence ended.
     @inlinable
     public mutating func nextIfPresent(
-        bytes type: Bytes.Type,
+        _ bytes: Bytes.Type,
         count: Int
     ) async throws -> Bytes? {
         assert(count >= 0, "count must be larger than 0")
-        return try await nextIfPresent(bytes: type, min: count, max: count)
+        return try await nextIfPresent(bytes, min: count, max: count)
+    }
+    
+    /// Please use ``nextIfPresent(_:count:)`` instead.
+    @available(*, deprecated, renamed: "nextIfPresent(_:count:)")
+    @inlinable
+    public mutating func nextIfPresent(bytes type: Bytes.Type, count: Int) async throws -> Bytes? {
+        return try await nextIfPresent(type, count: count)
     }
     
     /// Asynchronously advances a byte array with the specified minimum size, continuing until the specified maximum size, or ends the sequence if there is no next element.
     ///
     /// **Learn More:** [Integration with AsyncSequenceReader](https://github.com/mochidev/AsyncSequenceReader#integration-with-bytes)
-    /// - Parameter type: This should be set to `Bytes.self`.
+    /// - Parameter bytes: This should be set to `Bytes.self`.
     /// - Parameter minCount: The minimum number of bytes to form into a byte array.
     /// - Parameter maxCount: The maximum number of bytes to form into a byte array.
     /// - Returns: A byte array of size at least `minCount` and at most `maxCount`, or `nil` if the sequence is finished.
-    /// - Throws: `BytesError.invalidMemorySize` if a complete byte array could not be returned by the time the sequence ended.
+    /// - Throws: ``BytesError/invalidMemorySize(targetSize:targetType:actualSize:)`` if a complete byte array could not be returned by the time the sequence ended.
     @inlinable
     public mutating func nextIfPresent(
-        bytes type: Bytes.Type,
+        _ bytes: Bytes.Type,
         min minCount: Int,
         max maxCount: Int
     ) async throws -> Bytes? {
@@ -144,15 +172,22 @@ extension AsyncIteratorProtocol where Element == Byte {
         return result
     }
     
+    /// Please use ``nextIfPresent(_:min:max:)`` instead.
+    @available(*, deprecated, renamed: "nextIfPresent(_:min:max:)")
+    @inlinable
+    public mutating func nextIfPresent(bytes type: Bytes.Type, min minCount: Int, max maxCount: Int) async throws -> Bytes? {
+        try await nextIfPresent(type, min: minCount, max: maxCount)
+    }
+    
     /// Asynchronously advances a byte array with the specified maximum size, or ends the sequence if there is no next element.
     ///
     /// **Learn More:** [Integration with AsyncSequenceReader](https://github.com/mochidev/AsyncSequenceReader#integration-with-bytes)
-    /// - Parameter type: This should be set to `Bytes.self`.
+    /// - Parameter bytes: This should be set to `Bytes.self`.
     /// - Parameter maxCount: The maximum number of bytes to form into a byte array.
     /// - Returns: A byte array of size at most `maxCount`, or `nil` if the sequence is finished.
     @inlinable
     public mutating func nextIfPresent(
-        bytes type: Bytes.Type,
+        _ bytes: Bytes.Type,
         max maxCount: Int
     ) async rethrows -> Bytes? {
         precondition(maxCount >= 0, "maxCount must be larger than 0")
@@ -172,6 +207,13 @@ extension AsyncIteratorProtocol where Element == Byte {
         guard !result.isEmpty else { return nil }
         
         return result
+    }
+    
+    /// Please use ``nextIfPresent(_:max:)`` instead.
+    @available(*, deprecated, renamed: "nextIfPresent(_:max:)")
+    @inlinable
+    public mutating func nextIfPresent(bytes type: Bytes.Type, max maxCount: Int) async rethrows -> Bytes? {
+        try await nextIfPresent(type, max: maxCount)
     }
 }
 

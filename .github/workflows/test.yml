@@ -6,16 +6,28 @@ on:
     - main
 
 jobs:
-  Test:
+  Test-Release:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
     - name: Checkout Source
-      uses: actions/checkout@v2
-#    - name: Build
-#      run: |
-#        swift build --build-tests --enable-index-store --configuration release  -Xswiftc -warnings-as-errors -Xcc -Werror
+      uses: actions/checkout@v3
+    - name: Build
+      run: |
+        swift build --build-tests --configuration release -Xswiftc -enable-testing -Xswiftc -warnings-as-errors -Xcc -Werror
     - name: Run Tests
       run: |
-        swift test --enable-index-store --configuration release
-#        swift test --skip-build --enable-index-store --configuration release
+        swift test --skip-build --configuration release
+
+  Test-Debug:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+    - name: Checkout Source
+      uses: actions/checkout@v3
+    - name: Build
+      run: |
+        swift build --build-tests --configuration debug -Xswiftc -enable-testing -Xswiftc -warnings-as-errors -Xcc -Werror
+    - name: Run Tests
+      run: |
+        swift test --skip-build --configuration debug

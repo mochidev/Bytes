@@ -1,47 +1,10 @@
-# Bytes
+# ``Bytes``
 
-<p align="center">
-    <a href="https://swiftpackageindex.com/mochidev/Bytes">
-        <img src="https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2Fmochidev%2FBytes%2Fbadge%3Ftype%3Dswift-versions" />
-    </a>
-    <a href="https://swiftpackageindex.com/mochidev/Bytes">
-        <img src="https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2Fmochidev%2FBytes%2Fbadge%3Ftype%3Dplatforms" />
-    </a>
-    <a href="https://github.com/mochidev/Bytes/actions?query=workflow%3A%22Test+Bytes%22">
-        <img src="https://github.com/mochidev/Bytes/workflows/Test%20Bytes/badge.svg" alt="Test Status" />
-    </a>
-</p>
+``Bytes`` aims to be your go-to Swift library for transforming basic types to and from buffers of bytes that can be serialized and written to the network, a file, or a database.
 
-`Bytes` aims to be your go-to Swift library for transforming basic types to and from buffers of bytes that can be serialized and written to the network, a file, or a database.
+## Overview
 
-## Quick Links
-
-- [Documentation](https://swiftpackageindex.com/mochidev/Bytes/documentation)
-
-## Installation
-
-Add `Bytes` as a dependency in your `Package.swift` file to start using it. Then, add `import Bytes` to any file you wish to use the library in.
-
-Please check the [releases](https://github.com/mochidev/Bytes/releases) for recommended versions.
-
-```swift
-dependencies: [
-    .package(url: "https://github.com/mochidev/Bytes.git", .upToNextMinor(from: "0.2.2")),
-],
-...
-targets: [
-    .target(
-        name: "MyPackage",
-        dependencies: [
-            "Bytes",
-        ]
-    )
-]
-```
-
-## What is `Bytes`?
-
-`Bytes` is a type alias for `[UInt8]`, which means you can use them anywhere a buffer of bytes would be expected. Although extensions on `Int`, `String`, `UUID`, and even enumerations are provided, this library ultimately lets you transform any fixed-size structure to and from `Bytes`:
+``Bytes`` is a type alias for `[UInt8]`, which means you can use them anywhere a buffer of bytes would be expected. Although extensions on `Int`, `String`, `UUID`, and even enumerations are provided, this library ultimately lets you transform any fixed-size structure to and from `Bytes`:
 
 ```swift
 struct Example {
@@ -169,9 +132,3 @@ extension AsyncIteratorProtocol where Element == Byte {
 
 #endif
 ```
-
-## Contributing
-
-Contribution is welcome! Please take a look at the issues already available, or start a new issue to discuss a new feature. Although guarantees can't be made regarding feature requests, PRs that fit within the goals of the project and that have been discussed beforehand are more than welcome!
-
-Please make sure that all submissions have clean commit histories, are well documented, and thoroughly tested. **Please rebase your PR** before submission rather than merge in `main`. Linear histories are required, so merge commits in PRs will not be accepted.

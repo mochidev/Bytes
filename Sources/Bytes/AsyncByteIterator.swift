@@ -215,6 +215,90 @@ extension AsyncIteratorProtocol where Element == Byte {
     public mutating func nextIfPresent(bytes type: Bytes.Type, max maxCount: Int) async rethrows -> Bytes? {
         try await nextIfPresent(type, max: maxCount)
     }
+    
+    /// Asynchronously advances by the specified byte if found, or throws if the next byte does not match.
+    ///
+    /// Use this method when you expect a byte to be next in the sequence, and it would be an error if something else were encountered.
+    ///
+    /// **Learn More:** [Integration with AsyncSequenceReader](https://github.com/mochidev/AsyncSequenceReader#integration-with-bytes)
+    /// - Parameter byte: The byte to check for.
+    /// - Throws: ``BytesError/checkedSequenceNotFound`` if the bytes could not be identified.
+    @inlinable
+    public mutating func check(
+        _ byte: UInt8
+    ) async throws {
+        let value = try await next()
+        if value != byte {
+            throw BytesError.checkedSequenceNotFound
+        }
+    }
+    
+    /// Asynchronously advances by the specified bytes if found, or throws if the next bytes in the iterator do not match.
+    ///
+    /// Use this method when you expect a collection of bytes to be next in the sequence, and it would be an error if something else were encountered.
+    ///
+    /// If the bytes collection is an empty array, this method won't do anything.
+    ///
+    /// **Learn More:** [Integration with AsyncSequenceReader](https://github.com/mochidev/AsyncSequenceReader#integration-with-bytes)
+    /// - Parameter bytes: The bytes to check for.
+    /// - Throws: ``BytesError/checkedSequenceNotFound`` if the bytes could not be identified.
+    @inlinable
+    public mutating func check<Bytes: BytesCollection>(
+        _ bytes: Bytes
+    ) async throws {
+        for byte in bytes {
+            try await check(byte)
+        }
+    }
+    
+    /// Asynchronously advances by the specified byte if found, throws if the next byte does not match, or returns false if the sequence ended.
+    ///
+    /// Use this method when you expect a byte to be next in the sequence, and it would be an error if something else were encountered.
+    ///
+    /// **Learn More:** [Integration with AsyncSequenceReader](https://github.com/mochidev/AsyncSequenceReader#integration-with-bytes)
+    /// - Parameter byte: The byte to check for.
+    /// - Returns: `true` if the byte was found, or `false` if the sequence finished.
+    /// - Throws: ``BytesError/checkedSequenceNotFound`` if the bytes could not be identified.
+    @inlinable
+    @discardableResult
+    public mutating func checkIfPresent(
+        _ byte: UInt8
+    ) async throws -> Bool {
+        guard let value = try await next() else { return false }
+        if value != byte {
+            throw BytesError.checkedSequenceNotFound
+        }
+        
+        return true
+    }
+    
+    /// Asynchronously advances by the specified bytes if found, throws if the next bytes in the iterator do not match, or returns false if the sequence ended.
+    ///
+    /// Use this method when you expect a collection of bytes to be next in the sequence, and it would be an error if something else were encountered.
+    ///
+    /// If the bytes collection is an empty array, this method won't do anything.
+    ///
+    /// **Learn More:** [Integration with AsyncSequenceReader](https://github.com/mochidev/AsyncSequenceReader#integration-with-bytes)
+    /// - Parameter bytes: The bytes to check for.
+    /// - Returns: `true` if the bytes were found, or `false` if the sequence finished.
+    /// - Throws: ``BytesError/checkedSequenceNotFound`` if the bytes could not be identified.
+    @inlinable
+    @discardableResult
+    public mutating func checkIfPresent<Bytes: BytesCollection>(
+        _ bytes: Bytes
+    ) async throws -> Bool {
+        var first = true
+        for byte in bytes {
+            if first {
+                guard try await checkIfPresent(byte) else { return false }
+                first = false
+            } else {
+                try await  check(byte)
+            }
+        }
+        
+        return true
+    }
 }
 
 #endif

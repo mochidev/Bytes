@@ -95,6 +95,20 @@ extension IteratorProtocol where Element == Byte {
         try nextIfPresent(Bytes.self, min: minCount, max: maxCount).map { String(utf8Bytes: $0) }
     }
     
+    /// Advances by the specified UTF-8 encoded Character if found, or throws if the next bytes in the iterator do not match.
+    ///
+    /// Use this method when you expect a Character to be next in the sequence, and it would be an error if something else were encountered.
+    ///
+    /// **Learn More:** [Integration with AsyncSequenceReader](https://github.com/mochidev/AsyncSequenceReader#integration-with-bytes)
+    /// - Parameter character: The character to check for.
+    /// - Throws: ``BytesError/checkedSequenceNotFound`` if the character could not be identified.
+    @inlinable
+    public mutating func check(
+        utf8 character: Character
+    ) throws {
+        try check(character.utf8Bytes)
+    }
+    
     /// Advances by the specified UTF-8 encoded String if found, or throws if the next bytes in the iterator do not match.
     ///
     /// Use this method when you expect a String to be next in the sequence, and it would be an error if something else were encountered.
@@ -111,6 +125,22 @@ extension IteratorProtocol where Element == Byte {
         utf8 string: String
     ) throws {
         try check(string.utf8Bytes)
+    }
+    
+    /// Advances by the specified UTF-8 encoded Character if found, throws if the next bytes in the iterator do not match, or returns false if the sequence ended.
+    ///
+    /// Use this method when you expect a Character to be next in the sequence, and it would be an error if something else were encountered.
+    ///
+    /// **Learn More:** [Integration with AsyncSequenceReader](https://github.com/mochidev/AsyncSequenceReader#integration-with-bytes)
+    /// - Parameter character: The character to check for.
+    /// - Returns: `true` if the character was found, or `false` if the sequence finished.
+    /// - Throws: ``BytesError/checkedSequenceNotFound`` if the character could not be identified.
+    @inlinable
+    @discardableResult
+    public mutating func checkIfPresent(
+        utf8 character: Character
+    ) throws -> Bool {
+        try checkIfPresent(character.utf8Bytes)
     }
     
     /// Advances by the specified UTF-8 encoded String if found, throws if the next bytes in the iterator do not match, or returns false if the sequence ended.

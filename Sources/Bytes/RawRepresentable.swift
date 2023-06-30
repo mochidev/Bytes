@@ -236,6 +236,36 @@ extension IteratorProtocol where Element == Byte {
     public mutating func nextIfPresent<T: RawRepresentable>(raw type: T.Type) throws -> T? {
         try nextIfPresent(Bytes.self, count: MemoryLayout<T.RawValue>.size).map { try T(rawBytes: $0) }
     }
+    
+    /// Advances by the specified raw representable value if found, or throws if the next bytes in the iterator do not match.
+    ///
+    /// Use this method when you expect a raw value to be next in the sequence, and it would be an error if something else were encountered.
+    ///
+    /// **Learn More:** [Integration with AsyncSequenceReader](https://github.com/mochidev/AsyncSequenceReader#integration-with-bytes)
+    /// - Parameter value: The raw value to check for.
+    /// - Throws: ``BytesError/checkedSequenceNotFound`` if the string could not be identified.
+    @inlinable
+    public mutating func check<Raw: RawRepresentable>(
+        raw value: Raw
+    ) throws {
+        try check(value.rawBytes)
+    }
+    
+    /// Advances by the specified raw representable value if found, throws if the next bytes in the iterator do not match, or returns false if the sequence ended.
+    ///
+    /// Use this method when you expect a raw value to be next in the sequence, and it would be an error if something else were encountered.
+    ///
+    /// **Learn More:** [Integration with AsyncSequenceReader](https://github.com/mochidev/AsyncSequenceReader#integration-with-bytes)
+    /// - Parameter value: The raw value to check for.
+    /// - Returns: `true` if the string was found, or `false` if the sequence finished.
+    /// - Throws: ``BytesError/checkedSequenceNotFound`` if the string could not be identified.
+    @inlinable
+    @discardableResult
+    public mutating func checkIfPresent<Raw: RawRepresentable>(
+        raw value: Raw
+    ) throws -> Bool {
+        try checkIfPresent(value.rawBytes)
+    }
 }
 
 extension IteratorProtocol where Element == Byte {
@@ -382,6 +412,76 @@ extension IteratorProtocol where Element == Byte {
     }
 }
 
+extension IteratorProtocol where Element == Byte {
+    /// Advances by the specified UTF-8 encoded raw value Character if found, or throws if the next bytes in the iterator do not match.
+    ///
+    /// Use this method when you expect a raw value Character to be next in the sequence, and it would be an error if something else were encountered.
+    ///
+    /// **Learn More:** [Integration with AsyncSequenceReader](https://github.com/mochidev/AsyncSequenceReader#integration-with-bytes)
+    /// - Parameter character: The character to check for.
+    /// - Throws: ``BytesError/checkedSequenceNotFound`` if the character could not be identified.
+    @inlinable
+    public mutating func check<RawCharacter: RawRepresentable>(
+        utf8 character: RawCharacter
+    ) throws where RawCharacter.RawValue == Character {
+        try check(character.utf8Bytes)
+    }
+    
+    /// Advances by the specified UTF-8 encoded raw value String if found, or throws if the next bytes in the iterator do not match.
+    ///
+    /// Use this method when you expect a raw value String to be next in the sequence, and it would be an error if something else were encountered.
+    ///
+    /// If the String is empty, this method won't do anything.
+    ///
+    /// - Note: The string will not check for null termination unless a null character is specified.
+    ///
+    /// **Learn More:** [Integration with AsyncSequenceReader](https://github.com/mochidev/AsyncSequenceReader#integration-with-bytes)
+    /// - Parameter string: The string to check for.
+    /// - Throws: ``BytesError/checkedSequenceNotFound`` if the string could not be identified.
+    @inlinable
+    public mutating func check<RawString: RawRepresentable>(
+        utf8 string: RawString
+    ) throws where RawString.RawValue: StringProtocol {
+        try check(string.utf8Bytes)
+    }
+    
+    /// Advances by the specified UTF-8 encoded raw value Character if found, throws if the next bytes in the iterator do not match, or returns false if the sequence ended.
+    ///
+    /// Use this method when you expect a raw value Character to be next in the sequence, and it would be an error if something else were encountered.
+    ///
+    /// **Learn More:** [Integration with AsyncSequenceReader](https://github.com/mochidev/AsyncSequenceReader#integration-with-bytes)
+    /// - Parameter character: The character to check for.
+    /// - Returns: `true` if the character was found, or `false` if the sequence finished.
+    /// - Throws: ``BytesError/checkedSequenceNotFound`` if the character could not be identified.
+    @inlinable
+    @discardableResult
+    public mutating func checkIfPresent<RawCharacter: RawRepresentable>(
+        utf8 character: RawCharacter
+    ) throws -> Bool where RawCharacter.RawValue == Character {
+        try checkIfPresent(character.utf8Bytes)
+    }
+    
+    /// Advances by the specified UTF-8 encoded raw value String if found, throws if the next bytes in the iterator do not match, or returns false if the sequence ended.
+    ///
+    /// Use this method when you expect a raw value String to be next in the sequence, and it would be an error if something else were encountered.
+    ///
+    /// If the String is empty, this method won't do anything.
+    ///
+    /// - Note: The string will not check for null termination unless a null character is specified.
+    ///
+    /// **Learn More:** [Integration with AsyncSequenceReader](https://github.com/mochidev/AsyncSequenceReader#integration-with-bytes)
+    /// - Parameter string: The string to check for.
+    /// - Returns: `true` if the string was found, or `false` if the sequence finished.
+    /// - Throws: ``BytesError/checkedSequenceNotFound`` if the string could not be identified.
+    @inlinable
+    @discardableResult
+    public mutating func checkIfPresent<RawString: RawRepresentable>(
+        utf8 string: RawString
+    ) throws -> Bool where RawString.RawValue: StringProtocol {
+        try checkIfPresent(string.utf8Bytes)
+    }
+}
+
 
 // MARK: - AsyncByteIterator
 
@@ -413,6 +513,36 @@ extension AsyncIteratorProtocol where Element == Byte {
     @inlinable
     public mutating func nextIfPresent<T: RawRepresentable>(raw type: T.Type) async throws -> T? {
         try await nextIfPresent(Bytes.self, count: MemoryLayout<T.RawValue>.size).map { try T(rawBytes: $0) }
+    }
+    
+    /// Asynchronously advances by the specified raw representable value if found, or throws if the next bytes in the iterator do not match.
+    ///
+    /// Use this method when you expect a raw value to be next in the sequence, and it would be an error if something else were encountered.
+    ///
+    /// **Learn More:** [Integration with AsyncSequenceReader](https://github.com/mochidev/AsyncSequenceReader#integration-with-bytes)
+    /// - Parameter value: The raw value to check for.
+    /// - Throws: ``BytesError/checkedSequenceNotFound`` if the string could not be identified.
+    @inlinable
+    public mutating func check<Raw: RawRepresentable>(
+        raw value: Raw
+    ) async throws {
+        try await check(value.rawBytes)
+    }
+    
+    /// Asynchronously advances by the specified raw representable value if found, throws if the next bytes in the iterator do not match, or returns false if the sequence ended.
+    ///
+    /// Use this method when you expect a raw value to be next in the sequence, and it would be an error if something else were encountered.
+    ///
+    /// **Learn More:** [Integration with AsyncSequenceReader](https://github.com/mochidev/AsyncSequenceReader#integration-with-bytes)
+    /// - Parameter value: The raw value to check for.
+    /// - Returns: `true` if the string was found, or `false` if the sequence finished.
+    /// - Throws: ``BytesError/checkedSequenceNotFound`` if the string could not be identified.
+    @inlinable
+    @discardableResult
+    public mutating func checkIfPresent<Raw: RawRepresentable>(
+        raw value: Raw
+    ) async throws -> Bool {
+        try await checkIfPresent(value.rawBytes)
     }
 }
 
@@ -558,6 +688,77 @@ extension AsyncIteratorProtocol where Element == Byte {
         bigEndian integer: RawInt
     ) async throws -> Bool where RawInt.RawValue: FixedWidthInteger {
         try await checkIfPresent(integer.bigEndianBytes)
+    }
+}
+
+@available(macOS 10.15, iOS 13.0, watchOS 6.0, tvOS 13.0, *)
+extension AsyncIteratorProtocol where Element == Byte {
+    /// Asynchronously advances by the specified UTF-8 encoded raw value Character if found, or throws if the next bytes in the iterator do not match.
+    ///
+    /// Use this method when you expect a raw value Character to be next in the sequence, and it would be an error if something else were encountered.
+    ///
+    /// **Learn More:** [Integration with AsyncSequenceReader](https://github.com/mochidev/AsyncSequenceReader#integration-with-bytes)
+    /// - Parameter character: The character to check for.
+    /// - Throws: ``BytesError/checkedSequenceNotFound`` if the character could not be identified.
+    @inlinable
+    public mutating func check<RawCharacter: RawRepresentable>(
+        utf8 character: RawCharacter
+    ) async throws where RawCharacter.RawValue == Character {
+        try await check(character.utf8Bytes)
+    }
+    
+    /// Asynchronously advances by the specified UTF-8 encoded raw value String if found, or throws if the next bytes in the iterator do not match.
+    ///
+    /// Use this method when you expect a raw value String to be next in the sequence, and it would be an error if something else were encountered.
+    ///
+    /// If the String is empty, this method won't do anything.
+    ///
+    /// - Note: The string will not check for null termination unless a null character is specified.
+    ///
+    /// **Learn More:** [Integration with AsyncSequenceReader](https://github.com/mochidev/AsyncSequenceReader#integration-with-bytes)
+    /// - Parameter string: The string to check for.
+    /// - Throws: ``BytesError/checkedSequenceNotFound`` if the string could not be identified.
+    @inlinable
+    public mutating func check<RawString: RawRepresentable>(
+        utf8 string: RawString
+    ) async throws where RawString.RawValue: StringProtocol {
+        try await check(string.utf8Bytes)
+    }
+    
+    /// Asynchronously advances by the specified UTF-8 encoded raw value Character if found, throws if the next bytes in the iterator do not match, or returns false if the sequence ended.
+    ///
+    /// Use this method when you expect a raw value Character to be next in the sequence, and it would be an error if something else were encountered.
+    ///
+    /// **Learn More:** [Integration with AsyncSequenceReader](https://github.com/mochidev/AsyncSequenceReader#integration-with-bytes)
+    /// - Parameter character: The character to check for.
+    /// - Returns: `true` if the character was found, or `false` if the sequence finished.
+    /// - Throws: ``BytesError/checkedSequenceNotFound`` if the character could not be identified.
+    @inlinable
+    @discardableResult
+    public mutating func checkIfPresent<RawCharacter: RawRepresentable>(
+        utf8 character: RawCharacter
+    ) async throws -> Bool where RawCharacter.RawValue == Character {
+        try await checkIfPresent(character.utf8Bytes)
+    }
+    
+    /// Asynchronously advances by the specified UTF-8 encoded raw value String if found, throws if the next bytes in the iterator do not match, or returns false if the sequence ended.
+    ///
+    /// Use this method when you expect a raw value String to be next in the sequence, and it would be an error if something else were encountered.
+    ///
+    /// If the String is empty, this method won't do anything.
+    ///
+    /// - Note: The string will not check for null termination unless a null character is specified.
+    ///
+    /// **Learn More:** [Integration with AsyncSequenceReader](https://github.com/mochidev/AsyncSequenceReader#integration-with-bytes)
+    /// - Parameter string: The string to check for.
+    /// - Returns: `true` if the character was found, or `false` if the sequence finished.
+    /// - Throws: ``BytesError/checkedSequenceNotFound`` if the character could not be identified.
+    @inlinable
+    @discardableResult
+    public mutating func checkIfPresent<RawString: RawRepresentable>(
+        utf8 string: RawString
+    ) async throws -> Bool where RawString.RawValue: StringProtocol {
+        try await checkIfPresent(string.utf8Bytes)
     }
 }
 

@@ -32,6 +32,12 @@ final class IntegerTests: XCTestCase {
         XCTAssertEqual(try Int64(littleEndianBytes: [0x11, 0x32, 0x54, 0x76, 0x98, 0xba, 0xdc, 0xfe]), Int64(-0x0123456789abcdef))
     }
     
+    func testUnalignedMemoryAccess() throws {
+        let bytes: Bytes = [0x0, 0x0, 0x0, 0x01, 0x23, 0x45, 0x67, 0x0]
+        
+        XCTAssertEqual(try UInt32(bigEndianBytes: bytes.dropFirst(3).dropLast()), UInt32(0x01234567))
+    }
+    
     func testInvalidBytes() throws {
         XCTAssertThrowsError(try UInt8(bigEndianBytes: [])) {
             BytesError.testInvalidMemorySize($0, targetSize: 1, targetType: "UInt8", actualSize: 0)

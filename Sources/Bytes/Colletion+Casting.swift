@@ -39,21 +39,17 @@ extension BidirectionalCollection where Element == Byte {
     public func casting<R>() throws -> R {
         try canBeCasted(to: R.self)
         
-        guard
-            let result = self.withContiguousStorageIfAvailable({
-                $0.withUnsafeBytes {
-                    $0.baseAddress!.assumingMemoryBound(to: R.self).pointee
-                }
-            })
-        else {
-            guard self.count <= 4*1024 else { // If bytes is less than 4KB, then perform a copy first
-                throw BytesError.contiguousMemoryUnavailable(type: "\(Self.self)")
-            }
-            return Bytes(self).withUnsafeBytes {
-                $0.baseAddress!.assumingMemoryBound(to: R.self).pointee
-            }
+        if let result = self.withContiguousStorageIfAvailable({
+            $0.withUnsafeBytes { $0.loadUnaligned(as: R.self) }
+        }) {
+            return result
         }
-        return result
+        
+        /// If bytes is less than 4KB, then perform a copy first
+        guard self.count <= 4*1024
+        else { throw BytesError.contiguousMemoryUnavailable(type: "\(Self.self)") }
+        
+        return Bytes(self).withUnsafeBytes { $0.loadUnaligned(as: R.self) }
     }
     
     /// Create a new Bytes sequence from the memory occupied by the passed in value.

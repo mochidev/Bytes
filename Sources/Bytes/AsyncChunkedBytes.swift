@@ -7,8 +7,6 @@
 //  mochidev-swift-bytes: F44D5591194F47C0834EC1EBD0102932
 //
 
-#if compiler(>=5.5) && canImport(_Concurrency)
-
 @available(macOS 10.15, iOS 13.0, watchOS 6.0, tvOS 13.0, *)
 extension AsyncSequence where Element == Byte {
     /// Creates an asynchronous sequence that splits the receiving sequence into chunks of uniform size.
@@ -92,5 +90,3 @@ extension AsyncChunkedBytes: AsyncSequence {
         AsyncIterator(base.makeAsyncIterator(), capacity: capacity)
     }
 }
-
-#endif

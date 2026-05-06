@@ -168,8 +168,6 @@ extension IteratorProtocol where Element == Byte {
 
 // MARK: - AsyncByteIterator
 
-#if compiler(>=5.5) && canImport(_Concurrency)
-
 @available(macOS 10.15, iOS 13.0, watchOS 6.0, tvOS 13.0, *)
 extension AsyncIteratorProtocol where Element == Byte {
     /// Asynchronously advances to the UTF-8 encoded String of size `count`, or throws if it could not.
@@ -260,5 +258,3 @@ extension AsyncIteratorProtocol where Element == Byte {
         try await checkIfPresent(string.utf8Bytes)
     }
 }
-
-#endif

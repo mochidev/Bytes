@@ -128,7 +128,7 @@ Bytes can also be used to pull data from `AsyncSequence` iterators. To learn mor
 
 For instance, improving the above example:
 ```swift
-#if compiler(>=5.5) && canImport(_Concurrency)
+import Bytes
 
 @available(macOS 10.15, iOS 13.0, watchOS 6.0, tvOS 13.0, *)
 extension AsyncIteratorProtocol where Element == Byte {
@@ -141,6 +141,4 @@ extension AsyncIteratorProtocol where Element == Byte {
         )
     }
 }
-
-#endif
 ```

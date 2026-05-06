@@ -1,9 +1,10 @@
 //
 //  RawRepresentable.swift
-//  Bytes
+//  https://github.com/mochidev/Bytes
 //
 //  Created by Dimitri Bouniol on 11/7/20.
-//  Copyright © 2020 Mochi Development, Inc. All rights reserved.
+//  Copyright © 2020-26 Mochi Development, Inc. All rights reserved.
+//  mochidev-swift-bytes: F44D5591194F47C0834EC1EBD0102932
 //
 
 extension RawRepresentable {

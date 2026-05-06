@@ -1,0 +1,194 @@
+name: Swift Version Compatibility
+
+on:
+  pull_request:
+    branches:
+    - main
+  push:
+    branches:
+      - main
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref || github.run_id }}
+  cancel-in-progress: ${{ github.ref_name != 'main' }}
+
+jobs:
+  Build-Release-5-10:
+    name: Build Swift 5.10 Release
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+    - name: Checkout Source
+      uses: actions/checkout@v6
+    - name: Set Swift Version
+      uses: vapor/swiftly-action@v0.2
+      with:
+        toolchain: "5.10"
+    - name: Swift Version
+      run: |
+        swift --version
+    - name: Build
+      run: |
+        swift build --configuration release
+
+  Build-Debug-5-10:
+    name: Build Swift 5.10 Debug
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+    - name: Checkout Source
+      uses: actions/checkout@v6
+    - name: Set Swift Version
+      uses: vapor/swiftly-action@v0.2
+      with:
+        toolchain: "5.10"
+    - name: Swift Version
+      run: |
+        swift --version
+    - name: Build
+      run: |
+        swift build --configuration debug
+
+  Build-Release-6-0:
+    name: Build Swift 6.0 Release
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+    - name: Checkout Source
+      uses: actions/checkout@v6
+    - name: Set Swift Version
+      uses: vapor/swiftly-action@v0.2
+      with:
+        toolchain: "6.0"
+    - name: Swift Version
+      run: |
+        swift --version
+    - name: Build
+      run: |
+        swift build --configuration release
+
+  Build-Debug-6-0:
+    name: Build Swift 6.0 Debug
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+    - name: Checkout Source
+      uses: actions/checkout@v6
+    - name: Set Swift Version
+      uses: vapor/swiftly-action@v0.2
+      with:
+        toolchain: "6.0"
+    - name: Swift Version
+      run: |
+        swift --version
+    - name: Build
+      run: |
+        swift build --configuration debug
+
+  Build-Release-6-1:
+    name: Build Swift 6.1 Release
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+    - name: Checkout Source
+      uses: actions/checkout@v6
+    - name: Set Swift Version
+      uses: vapor/swiftly-action@v0.2
+      with:
+        toolchain: "6.1"
+    - name: Swift Version
+      run: |
+        swift --version
+    - name: Build
+      run: |
+        swift build --configuration release
+
+  Build-Debug-6-1:
+    name: Build Swift 6.1 Debug
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+    - name: Checkout Source
+      uses: actions/checkout@v6
+    - name: Set Swift Version
+      uses: vapor/swiftly-action@v0.2
+      with:
+        toolchain: "6.1"
+    - name: Swift Version
+      run: |
+        swift --version
+    - name: Build
+      run: |
+        swift build --configuration debug
+
+  Build-Release-6-2:
+    name: Build Swift 6.2 Release
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+    - name: Checkout Source
+      uses: actions/checkout@v6
+    - name: Set Swift Version
+      uses: vapor/swiftly-action@v0.2
+      with:
+        toolchain: "6.2"
+    - name: Swift Version
+      run: |
+        swift --version
+    - name: Build
+      run: |
+        swift build --configuration release
+
+  Build-Debug-6-2:
+    name: Build Swift 6.2 Debug
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+    - name: Checkout Source
+      uses: actions/checkout@v6
+    - name: Set Swift Version
+      uses: vapor/swiftly-action@v0.2
+      with:
+        toolchain: "6.2"
+    - name: Swift Version
+      run: |
+        swift --version
+    - name: Build
+      run: |
+        swift build --configuration debug
+
+  Build-Release-6-3:
+    name: Build Swift 6.3 Release
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+    - name: Checkout Source
+      uses: actions/checkout@v6
+    - name: Set Swift Version
+      uses: vapor/swiftly-action@v0.2
+      with:
+        toolchain: "6.3"
+    - name: Swift Version
+      run: |
+        swift --version
+    - name: Build
+      run: |
+        swift build --configuration release
+
+  Build-Debug-6-3:
+    name: Build Swift 6.3 Debug
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+    - name: Checkout Source
+      uses: actions/checkout@v6
+    - name: Set Swift Version
+      uses: vapor/swiftly-action@v0.2
+      with:
+        toolchain: "6.3"
+    - name: Swift Version
+      run: |
+        swift --version
+    - name: Build
+      run: |
+        swift build --configuration debug

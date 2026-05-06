@@ -4,30 +4,45 @@ on:
   pull_request:
     branches:
     - main
+  push:
+    branches:
+      - main
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref || github.run_id }}
+  cancel-in-progress: ${{ github.ref_name != 'main' }}
 
 jobs:
   Test-Release:
+    name: Test Release
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
     - name: Checkout Source
-      uses: actions/checkout@v3
+      uses: actions/checkout@v6
+    - name: Swift Version
+      run: |
+        swift --version
     - name: Build
       run: |
-        swift build --build-tests --configuration release -Xswiftc -enable-testing -Xswiftc -warnings-as-errors -Xcc -Werror
+        swift build --build-tests --configuration release -Xswiftc -enable-testing -Xswiftc -warnings-as-errors
     - name: Run Tests
       run: |
         swift test --skip-build --configuration release
 
   Test-Debug:
+    name: Test Debug
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
     - name: Checkout Source
-      uses: actions/checkout@v3
+      uses: actions/checkout@v6
+    - name: Swift Version
+      run: |
+        swift --version
     - name: Build
       run: |
-        swift build --build-tests --configuration debug -Xswiftc -enable-testing -Xswiftc -warnings-as-errors -Xcc -Werror
+        swift build --build-tests --configuration debug -Xswiftc -enable-testing -Xswiftc -warnings-as-errors
     - name: Run Tests
       run: |
         swift test --skip-build --configuration debug

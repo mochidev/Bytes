@@ -1,16 +1,17 @@
 //
 //  RawRepresentableTests.swift
-//  Bytes
+//  https://github.com/mochidev/Bytes
 //
 //  Created by Dimitri Bouniol on 11/8/20.
-//  Copyright © 2020 Mochi Development, Inc. All rights reserved.
+//  Copyright © 2020-26 Mochi Development, Inc. All rights reserved.
+//  mochidev-swift-bytes: F44D5591194F47C0834EC1EBD0102932
 //
 
 import XCTest
 import Bytes
 
 final class RawRepresentableTests: XCTestCase {
-    @frozen enum RawEnum: RawRepresentable {
+    enum RawEnum: RawRepresentable {
         init?(rawValue: SimpleStruct) {
             switch rawValue.value {
             case 0:

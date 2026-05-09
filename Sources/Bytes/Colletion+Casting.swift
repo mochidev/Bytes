@@ -7,7 +7,7 @@
 //  mochidev-swift-bytes: F44D5591194F47C0834EC1EBD0102932
 //
 
-extension BidirectionalCollection where Element == Byte {
+extension Collection where Element == Byte {
     /// Check if a sequence of Bytes can be safely casted to an element.
     /// - Parameter target: The type of element to cast to.
     /// - Throws: `BytesError.invalidMemorySize` if the size of the bytes sequence is not equal to the element's size.

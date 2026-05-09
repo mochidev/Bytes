@@ -13,6 +13,7 @@
 import PackageDescription
 
 let swiftSettings: [PackageDescription.SwiftSetting] = [
+    .enableUpcomingFeature("ExistentialAny"),
 ]
 
 let package = Package(

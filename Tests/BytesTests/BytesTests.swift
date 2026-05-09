@@ -12,7 +12,7 @@ import Bytes
 
 extension BytesError {
     static func testInvalidMemorySize(
-        _ expression: @autoclosure () throws -> Error,
+        _ expression: @autoclosure () throws -> any Error,
         targetSize: @autoclosure () throws -> Int,
         targetType: @autoclosure () throws -> String,
         actualSize: @autoclosure () throws -> Int,
@@ -35,7 +35,7 @@ extension BytesError {
     }
     
     static func testContiguousMemoryUnavailable(
-        _ expression: @autoclosure () throws -> Error,
+        _ expression: @autoclosure () throws -> any Error,
         collectionType: @autoclosure () throws -> String,
         _ message: @autoclosure () -> String = "",
         file: StaticString = #file,
@@ -71,7 +71,7 @@ extension BytesError {
     }
     
     static func testInvalidRawRepresentableByteSequence(
-        _ expression: @autoclosure () throws -> Error,
+        _ expression: @autoclosure () throws -> any Error,
         _ message: @autoclosure () -> String = "",
         file: StaticString = #file,
         line: UInt = #line) rethrows {
@@ -88,7 +88,7 @@ extension BytesError {
     }
     
     static func testInvalidUUIDByteSequence(
-        _ expression: @autoclosure () throws -> Error,
+        _ expression: @autoclosure () throws -> any Error,
         _ message: @autoclosure () -> String = "",
         file: StaticString = #file,
         line: UInt = #line) rethrows {

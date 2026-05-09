@@ -496,6 +496,9 @@ extension AsyncIteratorProtocol where Element == Byte {
     /// - Parameter type: The type of raw representable to decode.
     /// - Returns: A raw representable type as a fixed width integer of type `type`.
     /// - Throws: `BytesError.invalidMemorySize` if a complete raw representable could not be returned by the time the sequence ended.
+    #if swift(>=6.2)
+    @concurrent
+    #endif
     @inlinable
     public mutating func next<T: RawRepresentable>(raw type: T.Type) async throws -> T {
         try T(rawBytes: await next(Bytes.self, count: MemoryLayout<T.RawValue>.size))
@@ -509,6 +512,9 @@ extension AsyncIteratorProtocol where Element == Byte {
     /// - Parameter type: The type of raw representable to decode.
     /// - Returns: A raw representable of type `type`, or `nil` if the sequence is finished.
     /// - Throws: `BytesError.invalidMemorySize` if a complete raw representable could not be returned by the time the sequence ended.
+    #if swift(>=6.2)
+    @concurrent
+    #endif
     @inlinable
     public mutating func nextIfPresent<T: RawRepresentable>(raw type: T.Type) async throws -> T? {
         try await nextIfPresent(Bytes.self, count: MemoryLayout<T.RawValue>.size).map { try T(rawBytes: $0) }
@@ -521,6 +527,9 @@ extension AsyncIteratorProtocol where Element == Byte {
     /// **Learn More:** [Integration with AsyncSequenceReader](https://github.com/mochidev/AsyncSequenceReader#integration-with-bytes)
     /// - Parameter value: The raw value to check for.
     /// - Throws: ``BytesError/checkedSequenceNotFound`` if the string could not be identified.
+    #if swift(>=6.2)
+    @concurrent
+    #endif
     @inlinable
     public mutating func check<Raw: RawRepresentable>(
         raw value: Raw
@@ -536,6 +545,9 @@ extension AsyncIteratorProtocol where Element == Byte {
     /// - Parameter value: The raw value to check for.
     /// - Returns: `true` if the string was found, or `false` if the sequence finished.
     /// - Throws: ``BytesError/checkedSequenceNotFound`` if the string could not be identified.
+    #if swift(>=6.2)
+    @concurrent
+    #endif
     @inlinable
     @discardableResult
     public mutating func checkIfPresent<Raw: RawRepresentable>(
@@ -555,6 +567,9 @@ extension AsyncIteratorProtocol where Element == Byte {
     /// - Parameter type: The type of raw representable to decode.
     /// - Returns: A raw representable type as a fixed width integer of type `type`.
     /// - Throws: `BytesError.invalidMemorySize` if a complete integer could not be returned by the time the sequence ended.
+    #if swift(>=6.2)
+    @concurrent
+    #endif
     @inlinable
     public mutating func next<T: RawRepresentable>(littleEndian type: T.Type) async throws -> T where T.RawValue: FixedWidthInteger {
         try T(littleEndianBytes: await next(Bytes.self, count: MemoryLayout<T.RawValue>.size))
@@ -568,6 +583,9 @@ extension AsyncIteratorProtocol where Element == Byte {
     /// - Parameter type: The type of raw representable to decode.
     /// - Returns: A raw representable type as a fixed width integer of type `type`.
     /// - Throws: `BytesError.invalidMemorySize` if a complete integer could not be returned by the time the sequence ended.
+    #if swift(>=6.2)
+    @concurrent
+    #endif
     @inlinable
     public mutating func next<T: RawRepresentable>(bigEndian type: T.Type) async throws -> T where T.RawValue: FixedWidthInteger {
         try T(bigEndianBytes: await next(Bytes.self, count: MemoryLayout<T.RawValue>.size))
@@ -581,6 +599,9 @@ extension AsyncIteratorProtocol where Element == Byte {
     /// - Parameter type: The type of raw representable to decode.
     /// - Returns: A raw representable type as a fixed width integer of type `type`, or `nil` if the sequence is finished.
     /// - Throws: `BytesError.invalidMemorySize` if a complete integer could not be returned by the time the sequence ended.
+    #if swift(>=6.2)
+    @concurrent
+    #endif
     @inlinable
     public mutating func nextIfPresent<T: RawRepresentable>(littleEndian type: T.Type) async throws -> T? where T.RawValue: FixedWidthInteger {
         try await nextIfPresent(Bytes.self, count: MemoryLayout<T.RawValue>.size).map { try T(littleEndianBytes: $0) }
@@ -594,6 +615,9 @@ extension AsyncIteratorProtocol where Element == Byte {
     /// - Parameter type: The type of raw representable to decode.
     /// - Returns: A raw representable type as a fixed width integer of type `type`, or `nil` if the sequence is finished.
     /// - Throws: `BytesError.invalidMemorySize` if a complete integer could not be returned by the time the sequence ended.
+    #if swift(>=6.2)
+    @concurrent
+    #endif
     @inlinable
     public mutating func nextIfPresent<T: RawRepresentable>(bigEndian type: T.Type) async throws -> T? where T.RawValue: FixedWidthInteger {
         try await nextIfPresent(Bytes.self, count: MemoryLayout<T.RawValue>.size).map { try T(bigEndianBytes: $0) }
@@ -606,6 +630,9 @@ extension AsyncIteratorProtocol where Element == Byte {
     /// **Learn More:** [Integration with AsyncSequenceReader](https://github.com/mochidev/AsyncSequenceReader#integration-with-bytes)
     /// - Parameter integer: The raw integer to check for.
     /// - Throws: ``BytesError/checkedSequenceNotFound`` if the integer could not be identified.
+    #if swift(>=6.2)
+    @concurrent
+    #endif
     @inlinable
     public mutating func check<RawInt: RawRepresentable>(
         _ integer: RawInt
@@ -620,6 +647,9 @@ extension AsyncIteratorProtocol where Element == Byte {
     /// **Learn More:** [Integration with AsyncSequenceReader](https://github.com/mochidev/AsyncSequenceReader#integration-with-bytes)
     /// - Parameter integer: The raw integer to check for.
     /// - Throws: ``BytesError/checkedSequenceNotFound`` if the integer could not be identified.
+    #if swift(>=6.2)
+    @concurrent
+    #endif
     @inlinable
     public mutating func check<RawInt: RawRepresentable>(
         littleEndian integer: RawInt
@@ -634,6 +664,9 @@ extension AsyncIteratorProtocol where Element == Byte {
     /// **Learn More:** [Integration with AsyncSequenceReader](https://github.com/mochidev/AsyncSequenceReader#integration-with-bytes)
     /// - Parameter integer: The raw integer to check for.
     /// - Throws: ``BytesError/checkedSequenceNotFound`` if the integer could not be identified.
+    #if swift(>=6.2)
+    @concurrent
+    #endif
     @inlinable
     public mutating func check<RawInt: RawRepresentable>(
         bigEndian integer: RawInt
@@ -649,6 +682,9 @@ extension AsyncIteratorProtocol where Element == Byte {
     /// - Parameter integer: The raw integer to check for.
     /// - Returns: `true` if the integer was found, or `false` if the sequence finished.
     /// - Throws: ``BytesError/checkedSequenceNotFound`` if the integer could not be identified.
+    #if swift(>=6.2)
+    @concurrent
+    #endif
     @inlinable
     @discardableResult
     public mutating func checkIfPresent<RawInt: RawRepresentable>(
@@ -665,6 +701,9 @@ extension AsyncIteratorProtocol where Element == Byte {
     /// - Parameter integer: The raw integer to check for.
     /// - Returns: `true` if the integer was found, or `false` if the sequence finished.
     /// - Throws: ``BytesError/checkedSequenceNotFound`` if the integer could not be identified.
+    #if swift(>=6.2)
+    @concurrent
+    #endif
     @inlinable
     @discardableResult
     public mutating func checkIfPresent<RawInt: RawRepresentable>(
@@ -681,6 +720,9 @@ extension AsyncIteratorProtocol where Element == Byte {
     /// - Parameter integer: The raw integer to check for.
     /// - Returns: `true` if the integer was found, or `false` if the sequence finished.
     /// - Throws: ``BytesError/checkedSequenceNotFound`` if the integer could not be identified.
+    #if swift(>=6.2)
+    @concurrent
+    #endif
     @inlinable
     @discardableResult
     public mutating func checkIfPresent<RawInt: RawRepresentable>(
@@ -699,6 +741,9 @@ extension AsyncIteratorProtocol where Element == Byte {
     /// **Learn More:** [Integration with AsyncSequenceReader](https://github.com/mochidev/AsyncSequenceReader#integration-with-bytes)
     /// - Parameter character: The character to check for.
     /// - Throws: ``BytesError/checkedSequenceNotFound`` if the character could not be identified.
+    #if swift(>=6.2)
+    @concurrent
+    #endif
     @inlinable
     public mutating func check<RawCharacter: RawRepresentable>(
         utf8 character: RawCharacter
@@ -717,6 +762,9 @@ extension AsyncIteratorProtocol where Element == Byte {
     /// **Learn More:** [Integration with AsyncSequenceReader](https://github.com/mochidev/AsyncSequenceReader#integration-with-bytes)
     /// - Parameter string: The string to check for.
     /// - Throws: ``BytesError/checkedSequenceNotFound`` if the string could not be identified.
+    #if swift(>=6.2)
+    @concurrent
+    #endif
     @inlinable
     public mutating func check<RawString: RawRepresentable>(
         utf8 string: RawString
@@ -732,6 +780,9 @@ extension AsyncIteratorProtocol where Element == Byte {
     /// - Parameter character: The character to check for.
     /// - Returns: `true` if the character was found, or `false` if the sequence finished.
     /// - Throws: ``BytesError/checkedSequenceNotFound`` if the character could not be identified.
+    #if swift(>=6.2)
+    @concurrent
+    #endif
     @inlinable
     @discardableResult
     public mutating func checkIfPresent<RawCharacter: RawRepresentable>(
@@ -752,6 +803,9 @@ extension AsyncIteratorProtocol where Element == Byte {
     /// - Parameter string: The string to check for.
     /// - Returns: `true` if the character was found, or `false` if the sequence finished.
     /// - Throws: ``BytesError/checkedSequenceNotFound`` if the character could not be identified.
+    #if swift(>=6.2)
+    @concurrent
+    #endif
     @inlinable
     @discardableResult
     public mutating func checkIfPresent<RawString: RawRepresentable>(

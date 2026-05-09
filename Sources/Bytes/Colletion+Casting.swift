@@ -7,8 +7,6 @@
 //  mochidev-swift-bytes: F44D5591194F47C0834EC1EBD0102932
 //
 
-import Foundation
-
 extension BidirectionalCollection where Element == Byte {
     /// Check if a sequence of Bytes can be safely casted to an element.
     /// - Parameter target: The type of element to cast to.
@@ -41,7 +39,7 @@ extension BidirectionalCollection where Element == Byte {
         try canBeCasted(to: R.self)
         
         if let result = self.withContiguousStorageIfAvailable({
-            $0.withUnsafeBytes { $0.loadUnaligned(as: R.self) }
+            UnsafeRawBufferPointer($0).loadUnaligned(as: R.self)
         }) {
             return result
         }

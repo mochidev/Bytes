@@ -16,6 +16,9 @@ extension AsyncIteratorProtocol where Element == Byte {
     /// - Parameter count: The number of bytes to form into a byte array.
     /// - Returns: A byte array of size `count`.
     /// - Throws: ``BytesError/invalidMemorySize(targetSize:targetType:actualSize:)`` if a complete byte array could not be returned by the time the sequence ended.
+    #if swift(>=6.2)
+    @concurrent
+    #endif
     @inlinable
     public mutating func next(
         _ bytes: Bytes.Type,
@@ -27,6 +30,9 @@ extension AsyncIteratorProtocol where Element == Byte {
     
     /// Please use ``next(_:count:)`` instead.
     @available(*, deprecated, renamed: "next(_:count:)")
+    #if swift(>=6.2)
+    @concurrent
+    #endif
     @inlinable
     public mutating func next(bytes type: Bytes.Type, count: Int) async throws -> Bytes {
         try await next(type, count: count)
@@ -40,6 +46,9 @@ extension AsyncIteratorProtocol where Element == Byte {
     /// - Parameter maxCount: The maximum number of bytes to form into a byte array.
     /// - Returns: A byte array of size at least `minCount` and at most `maxCount`.
     /// - Throws: ``BytesError/invalidMemorySize(targetSize:targetType:actualSize:)`` if a complete byte array could not be returned by the time the sequence ended.
+    #if swift(>=6.2)
+    @concurrent
+    #endif
     @inlinable
     public mutating func next(
         _ bytes: Bytes.Type,
@@ -70,6 +79,9 @@ extension AsyncIteratorProtocol where Element == Byte {
     
     /// Please use ``next(_:min:max:)`` instead.
     @available(*, deprecated, renamed: "next(_:min:max:)")
+    #if swift(>=6.2)
+    @concurrent
+    #endif
     @inlinable
     public mutating func next(bytes type: Bytes.Type, min minCount: Int, max maxCount: Int) async throws -> Bytes {
         try await next(type, min: minCount, max: maxCount)
@@ -81,6 +93,9 @@ extension AsyncIteratorProtocol where Element == Byte {
     /// - Parameter bytes: This should be set to `Bytes.self`.
     /// - Parameter maxCount: The maximum number of bytes to form into a byte array.
     /// - Returns: A byte array of size at least `minCount` and at most `maxCount`.
+    #if swift(>=6.2)
+    @concurrent
+    #endif
     @inlinable
     public mutating func next(
         _ bytes: Bytes.Type,
@@ -105,6 +120,9 @@ extension AsyncIteratorProtocol where Element == Byte {
     
     /// Please use ``next(_:max:)`` instead.
     @available(*, deprecated, renamed: "next(_:max:)")
+    #if swift(>=6.2)
+    @concurrent
+    #endif
     @inlinable
     public mutating func next(bytes type: Bytes.Type, max maxCount: Int) async rethrows -> Bytes {
         try await next(type, max: maxCount)
@@ -117,6 +135,9 @@ extension AsyncIteratorProtocol where Element == Byte {
     /// - Parameter count: The number of bytes to form into a byte array.
     /// - Returns: A byte array of size `count`, or `nil` if the sequence is finished.
     /// - Throws: ``BytesError/invalidMemorySize(targetSize:targetType:actualSize:)`` if a complete byte array could not be returned by the time the sequence ended.
+    #if swift(>=6.2)
+    @concurrent
+    #endif
     @inlinable
     public mutating func nextIfPresent(
         _ bytes: Bytes.Type,
@@ -128,6 +149,9 @@ extension AsyncIteratorProtocol where Element == Byte {
     
     /// Please use ``nextIfPresent(_:count:)`` instead.
     @available(*, deprecated, renamed: "nextIfPresent(_:count:)")
+    #if swift(>=6.2)
+    @concurrent
+    #endif
     @inlinable
     public mutating func nextIfPresent(bytes type: Bytes.Type, count: Int) async throws -> Bytes? {
         return try await nextIfPresent(type, count: count)
@@ -141,6 +165,9 @@ extension AsyncIteratorProtocol where Element == Byte {
     /// - Parameter maxCount: The maximum number of bytes to form into a byte array.
     /// - Returns: A byte array of size at least `minCount` and at most `maxCount`, or `nil` if the sequence is finished.
     /// - Throws: ``BytesError/invalidMemorySize(targetSize:targetType:actualSize:)`` if a complete byte array could not be returned by the time the sequence ended.
+    #if swift(>=6.2)
+    @concurrent
+    #endif
     @inlinable
     public mutating func nextIfPresent(
         _ bytes: Bytes.Type,
@@ -173,6 +200,9 @@ extension AsyncIteratorProtocol where Element == Byte {
     
     /// Please use ``nextIfPresent(_:min:max:)`` instead.
     @available(*, deprecated, renamed: "nextIfPresent(_:min:max:)")
+    #if swift(>=6.2)
+    @concurrent
+    #endif
     @inlinable
     public mutating func nextIfPresent(bytes type: Bytes.Type, min minCount: Int, max maxCount: Int) async throws -> Bytes? {
         try await nextIfPresent(type, min: minCount, max: maxCount)
@@ -184,6 +214,9 @@ extension AsyncIteratorProtocol where Element == Byte {
     /// - Parameter bytes: This should be set to `Bytes.self`.
     /// - Parameter maxCount: The maximum number of bytes to form into a byte array.
     /// - Returns: A byte array of size at most `maxCount`, or `nil` if the sequence is finished.
+    #if swift(>=6.2)
+    @concurrent
+    #endif
     @inlinable
     public mutating func nextIfPresent(
         _ bytes: Bytes.Type,
@@ -210,6 +243,9 @@ extension AsyncIteratorProtocol where Element == Byte {
     
     /// Please use ``nextIfPresent(_:max:)`` instead.
     @available(*, deprecated, renamed: "nextIfPresent(_:max:)")
+    #if swift(>=6.2)
+    @concurrent
+    #endif
     @inlinable
     public mutating func nextIfPresent(bytes type: Bytes.Type, max maxCount: Int) async rethrows -> Bytes? {
         try await nextIfPresent(type, max: maxCount)
@@ -222,6 +258,9 @@ extension AsyncIteratorProtocol where Element == Byte {
     /// **Learn More:** [Integration with AsyncSequenceReader](https://github.com/mochidev/AsyncSequenceReader#integration-with-bytes)
     /// - Parameter byte: The byte to check for.
     /// - Throws: ``BytesError/checkedSequenceNotFound`` if the bytes could not be identified.
+    #if swift(>=6.2)
+    @concurrent
+    #endif
     @inlinable
     public mutating func check(
         _ byte: UInt8
@@ -241,6 +280,9 @@ extension AsyncIteratorProtocol where Element == Byte {
     /// **Learn More:** [Integration with AsyncSequenceReader](https://github.com/mochidev/AsyncSequenceReader#integration-with-bytes)
     /// - Parameter bytes: The bytes to check for.
     /// - Throws: ``BytesError/checkedSequenceNotFound`` if the bytes could not be identified.
+    #if swift(>=6.2)
+    @concurrent
+    #endif
     @inlinable
     public mutating func check<Bytes: BytesCollection>(
         _ bytes: Bytes
@@ -258,6 +300,9 @@ extension AsyncIteratorProtocol where Element == Byte {
     /// - Parameter byte: The byte to check for.
     /// - Returns: `true` if the byte was found, or `false` if the sequence finished.
     /// - Throws: ``BytesError/checkedSequenceNotFound`` if the bytes could not be identified.
+    #if swift(>=6.2)
+    @concurrent
+    #endif
     @inlinable
     @discardableResult
     public mutating func checkIfPresent(
@@ -281,6 +326,9 @@ extension AsyncIteratorProtocol where Element == Byte {
     /// - Parameter bytes: The bytes to check for.
     /// - Returns: `true` if the bytes were found, or `false` if the sequence finished.
     /// - Throws: ``BytesError/checkedSequenceNotFound`` if the bytes could not be identified.
+    #if swift(>=6.2)
+    @concurrent
+    #endif
     @inlinable
     @discardableResult
     public mutating func checkIfPresent<Bytes: BytesCollection>(

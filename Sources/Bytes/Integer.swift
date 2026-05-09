@@ -227,6 +227,9 @@ extension AsyncIteratorProtocol where Element == Byte {
     /// - Parameter type: The type of integer to decode.
     /// - Returns: An integer of type `type`.
     /// - Throws: `BytesError.invalidMemorySize` if a complete integer could not be returned by the time the sequence ended.
+    #if swift(>=6.2)
+    @concurrent
+    #endif
     @inlinable
     public mutating func next<T: FixedWidthInteger>(littleEndian type: T.Type) async throws -> T {
         try T(littleEndianBytes: await next(Bytes.self, count: MemoryLayout<T>.size))
@@ -240,6 +243,9 @@ extension AsyncIteratorProtocol where Element == Byte {
     /// - Parameter type: The type of integer to decode.
     /// - Returns: An integer of type `type`.
     /// - Throws: `BytesError.invalidMemorySize` if a complete integer could not be returned by the time the sequence ended.
+    #if swift(>=6.2)
+    @concurrent
+    #endif
     @inlinable
     public mutating func next<T: FixedWidthInteger>(bigEndian type: T.Type) async throws -> T {
         try T(bigEndianBytes: await next(Bytes.self, count: MemoryLayout<T>.size))
@@ -253,6 +259,9 @@ extension AsyncIteratorProtocol where Element == Byte {
     /// - Parameter type: The type of integer to decode.
     /// - Returns: An integer of type `type`, or `nil` if the sequence is finished.
     /// - Throws: `BytesError.invalidMemorySize` if a complete integer could not be returned by the time the sequence ended.
+    #if swift(>=6.2)
+    @concurrent
+    #endif
     @inlinable
     public mutating func nextIfPresent<T: FixedWidthInteger>(littleEndian type: T.Type) async throws -> T? {
         try await nextIfPresent(Bytes.self, count: MemoryLayout<T>.size).map { try T(littleEndianBytes: $0) }
@@ -266,6 +275,9 @@ extension AsyncIteratorProtocol where Element == Byte {
     /// - Parameter type: The type of integer to decode.
     /// - Returns: An integer of type `type`, or `nil` if the sequence is finished.
     /// - Throws: `BytesError.invalidMemorySize` if a complete integer could not be returned by the time the sequence ended.
+    #if swift(>=6.2)
+    @concurrent
+    #endif
     @inlinable
     public mutating func nextIfPresent<T: FixedWidthInteger>(bigEndian type: T.Type) async throws -> T? {
         try await nextIfPresent(Bytes.self, count: MemoryLayout<T>.size).map { try T(bigEndianBytes: $0) }
@@ -278,6 +290,9 @@ extension AsyncIteratorProtocol where Element == Byte {
     /// **Learn More:** [Integration with AsyncSequenceReader](https://github.com/mochidev/AsyncSequenceReader#integration-with-bytes)
     /// - Parameter integer: The integer to check for.
     /// - Throws: ``BytesError/checkedSequenceNotFound`` if the integer could not be identified.
+    #if swift(>=6.2)
+    @concurrent
+    #endif
     @inlinable
     public mutating func check<Int: FixedWidthInteger>(
         littleEndian integer: Int
@@ -292,6 +307,9 @@ extension AsyncIteratorProtocol where Element == Byte {
     /// **Learn More:** [Integration with AsyncSequenceReader](https://github.com/mochidev/AsyncSequenceReader#integration-with-bytes)
     /// - Parameter integer: The integer to check for.
     /// - Throws: ``BytesError/checkedSequenceNotFound`` if the integer could not be identified.
+    #if swift(>=6.2)
+    @concurrent
+    #endif
     @inlinable
     public mutating func check<Int: FixedWidthInteger>(
         bigEndian integer: Int
@@ -307,6 +325,9 @@ extension AsyncIteratorProtocol where Element == Byte {
     /// - Parameter integer: The integer to check for.
     /// - Returns: `true` if the integer was found, or `false` if the sequence finished.
     /// - Throws: ``BytesError/checkedSequenceNotFound`` if the integer could not be identified.
+    #if swift(>=6.2)
+    @concurrent
+    #endif
     @inlinable
     @discardableResult
     public mutating func checkIfPresent<Int: FixedWidthInteger>(
@@ -323,6 +344,9 @@ extension AsyncIteratorProtocol where Element == Byte {
     /// - Parameter integer: The integer to check for.
     /// - Returns: `true` if the integer was found, or `false` if the sequence finished.
     /// - Throws: ``BytesError/checkedSequenceNotFound`` if the integer could not be identified.
+    #if swift(>=6.2)
+    @concurrent
+    #endif
     @inlinable
     @discardableResult
     public mutating func checkIfPresent<Int: FixedWidthInteger>(

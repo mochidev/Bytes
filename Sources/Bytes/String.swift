@@ -177,6 +177,9 @@ extension AsyncIteratorProtocol where Element == Byte {
     /// - Parameter count: The number of bytes to form into a string.
     /// - Returns: A string of size `count`.
     /// - Throws: `BytesError.invalidMemorySize` if a complete string could not be returned by the time the sequence ended.
+    #if swift(>=6.2)
+    @concurrent
+    #endif
     @inlinable
     public mutating func next(utf8 type: String.Type, count: Int) async throws -> String {
         String(utf8Bytes: try await next(Bytes.self, count: count))
@@ -190,6 +193,9 @@ extension AsyncIteratorProtocol where Element == Byte {
     /// - Parameter maxCount: The maximum number of bytes to form into a string.
     /// - Returns: A string of size at least `minCount` and at most `maxCount`.
     /// - Throws: `BytesError.invalidMemorySize` if a complete string could not be returned by the time the sequence ended.
+    #if swift(>=6.2)
+    @concurrent
+    #endif
     @inlinable
     public mutating func next(utf8 type: String.Type, min minCount: Int = 0, max maxCount: Int) async throws -> String {
         String(utf8Bytes: try await next(Bytes.self, min: minCount, max: maxCount))
@@ -202,6 +208,9 @@ extension AsyncIteratorProtocol where Element == Byte {
     /// - Parameter count: The number of bytes to form into a string.
     /// - Returns: A string of size `count`, or `nil` if the sequence is finished.
     /// - Throws: `BytesError.invalidMemorySize` if a complete string could not be returned by the time the sequence ended.
+    #if swift(>=6.2)
+    @concurrent
+    #endif
     @inlinable
     public mutating func nextIfPresent(utf8 type: String.Type, count: Int) async throws -> String? {
         try await nextIfPresent(Bytes.self, count: count).map { String(utf8Bytes: $0) }
@@ -215,6 +224,9 @@ extension AsyncIteratorProtocol where Element == Byte {
     /// - Parameter maxCount: The maximum number of bytes to form into a string.
     /// - Returns: A string of size at least `minCount` and at most `maxCount`, or `nil` if the sequence is finished.
     /// - Throws: `BytesError.invalidMemorySize` if a complete string could not be returned by the time the sequence ended.
+    #if swift(>=6.2)
+    @concurrent
+    #endif
     @inlinable
     public mutating func nextIfPresent(utf8 type: String.Type, min minCount: Int = 0, max maxCount: Int) async throws -> String? {
         try await nextIfPresent(Bytes.self, min: minCount, max: maxCount).map { String(utf8Bytes: $0) }
@@ -231,6 +243,9 @@ extension AsyncIteratorProtocol where Element == Byte {
     /// **Learn More:** [Integration with AsyncSequenceReader](https://github.com/mochidev/AsyncSequenceReader#integration-with-bytes)
     /// - Parameter string: The string to check for.
     /// - Throws: ``BytesError/checkedSequenceNotFound`` if the string could not be identified.
+    #if swift(>=6.2)
+    @concurrent
+    #endif
     @inlinable
     public mutating func check<String: StringProtocol>(
         utf8 string: String
@@ -250,6 +265,9 @@ extension AsyncIteratorProtocol where Element == Byte {
     /// - Parameter string: The string to check for.
     /// - Returns: `true` if the string was found, or `false` if the sequence finished.
     /// - Throws: ``BytesError/checkedSequenceNotFound`` if the string could not be identified.
+    #if swift(>=6.2)
+    @concurrent
+    #endif
     @inlinable
     @discardableResult
     public mutating func checkIfPresent<String: StringProtocol>(

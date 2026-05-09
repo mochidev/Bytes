@@ -7,7 +7,11 @@
 //  mochidev-swift-bytes: F44D5591194F47C0834EC1EBD0102932
 //
 
+#if swift(>=6)
+public import Foundation
+#else
 import Foundation
+#endif
 
 /// Internal structure to use when measuring UUID bytes in collections
 @usableFromInline
@@ -250,6 +254,9 @@ extension AsyncIteratorProtocol where Element == Byte {
     /// - Parameter type: This should be set to `UUID.self`.
     /// - Returns: A UUID.
     /// - Throws: `BytesError.invalidMemorySize` if 16 bytes are not available.
+    #if swift(>=6.2)
+    @concurrent
+    #endif
     @inlinable
     public mutating func next(_ type: UUID.Type) async throws -> UUID {
         try UUID(bytes: await next(Bytes.self, count: MemoryLayout<uuid_t>.size))
@@ -261,6 +268,9 @@ extension AsyncIteratorProtocol where Element == Byte {
     /// - Parameter type: This should be set to `UUID.self`.
     /// - Returns: A UUID.
     /// - Throws: `BytesError.invalidMemorySize` if 36 bytes are not available.
+    #if swift(>=6.2)
+    @concurrent
+    #endif
     @inlinable
     public mutating func next(string type: UUID.Type) async throws -> UUID {
         try UUID(stringBytes: await next(Bytes.self, count: MemoryLayout<UUIDTextualBytes>.size))
@@ -272,6 +282,9 @@ extension AsyncIteratorProtocol where Element == Byte {
     /// - Parameter type: This should be set to `UUID.self`.
     /// - Returns: A UUID, or `nil` if the sequence is finished.
     /// - Throws: `BytesError.invalidMemorySize` if 16 bytes are not available.
+    #if swift(>=6.2)
+    @concurrent
+    #endif
     @inlinable
     public mutating func nextIfPresent(_ type: UUID.Type) async throws -> UUID? {
         try await nextIfPresent(Bytes.self, count: MemoryLayout<uuid_t>.size).map { try UUID(bytes: $0) }
@@ -283,6 +296,9 @@ extension AsyncIteratorProtocol where Element == Byte {
     /// - Parameter type: This should be set to `UUID.self`.
     /// - Returns: A UUID, or `nil` if the sequence is finished.
     /// - Throws: `BytesError.invalidMemorySize` if 36 bytes are not available.
+    #if swift(>=6.2)
+    @concurrent
+    #endif
     @inlinable
     public mutating func nextIfPresent(string type: UUID.Type) async throws -> UUID? {
         try await nextIfPresent(Bytes.self, count: MemoryLayout<UUIDTextualBytes>.size).map { try UUID(stringBytes: $0) }
@@ -295,6 +311,9 @@ extension AsyncIteratorProtocol where Element == Byte {
     /// **Learn More:** [Integration with AsyncSequenceReader](https://github.com/mochidev/AsyncSequenceReader#integration-with-bytes)
     /// - Parameter uuid: The UUID to check for.
     /// - Throws: ``BytesError/checkedSequenceNotFound`` if the string could not be identified.
+    #if swift(>=6.2)
+    @concurrent
+    #endif
     @inlinable
     public mutating func check(
         _ uuid: UUID
@@ -309,6 +328,9 @@ extension AsyncIteratorProtocol where Element == Byte {
     /// **Learn More:** [Integration with AsyncSequenceReader](https://github.com/mochidev/AsyncSequenceReader#integration-with-bytes)
     /// - Parameter uuid: The UUID to check for.
     /// - Throws: ``BytesError/checkedSequenceNotFound`` if the string could not be identified.
+    #if swift(>=6.2)
+    @concurrent
+    #endif
     @inlinable
     public mutating func check(
         string uuid: UUID
@@ -327,6 +349,9 @@ extension AsyncIteratorProtocol where Element == Byte {
     /// - Parameter uuid: The UUID to check for.
     /// - Returns: `true` if the string was found, or `false` if the sequence finished.
     /// - Throws: ``BytesError/checkedSequenceNotFound`` if the string could not be identified.
+    #if swift(>=6.2)
+    @concurrent
+    #endif
     @inlinable
     @discardableResult
     public mutating func checkIfPresent(
@@ -343,6 +368,9 @@ extension AsyncIteratorProtocol where Element == Byte {
     /// - Parameter uuid: The UUID to check for.
     /// - Returns: `true` if the string was found, or `false` if the sequence finished.
     /// - Throws: ``BytesError/checkedSequenceNotFound`` if the string could not be identified.
+    #if swift(>=6.2)
+    @concurrent
+    #endif
     @inlinable
     @discardableResult
     public mutating func checkIfPresent(

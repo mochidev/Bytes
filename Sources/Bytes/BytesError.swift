@@ -22,6 +22,45 @@ public protocol ByteCastingError: Error, Equatable, Hashable {}
 
 
 extension BytesError {
+    /// An error thrown while casting values to a given target type.
+    public enum Casting: ByteCastingError {
+        /// Consuming the sequence failed because an insufficient or invalid number of bytes were available before the sequence ended.
+        case invalidMemorySize(targetSize: Int, targetType: String, actualSize: Int)
+        /// Consuming the sequence failed because the underlying buffer is not contiguous and is over 4KB in size.
+        /// - Note: Copy the sequence first if you know the expected casting size is correct.
+        case contiguousMemoryUnavailable(type: String)
+        
+        @inlinable
+        public init(_ error: BytesError.InvalidMemorySize) {
+            self = .invalidMemorySize(targetSize: error.targetSize, targetType: error.targetType, actualSize: error.actualSize)
+        }
+    }
+    
+    /// An error thrown while casting values to a given target type, wrapped in a ``BytesError/Iteration`` error.
+    public typealias IteratedCasting<Failure: Error> = Iteration<Casting, Failure>
+    /// An error thrown while casting values to a given target type, wrapped in a ``BytesError/Transformation`` error.
+    public typealias TransformedCasting<Failure: Error> = Transformation<Casting, Failure>
+}
+
+extension ByteCastingError where Self == BytesError.Casting {
+    /// Consuming the sequence failed because an insufficient or invalid number of bytes were available before the sequence ended.
+    @inlinable
+    @_disfavoredOverload
+    public static func invalidMemorySize(targetSize: Int, targetType: String, actualSize: Int) -> Self {
+        .invalidMemorySize(targetSize: targetSize, targetType: targetType, actualSize: actualSize)
+    }
+    
+    /// Consuming the sequence failed because the underlying buffer is not contiguous and is over 4KB in size.
+    /// - Note: Copy the sequence first if you know the expected casting size is correct.
+    @inlinable
+    @_disfavoredOverload
+    public static func contiguousMemoryUnavailable(type: String) -> Self {
+        .contiguousMemoryUnavailable(type: type)
+    }
+}
+
+
+extension BytesError {
     /// An error thrown when the checked byte was not found as the next consumable element.
     public struct CheckedSequenceNotFound: ByteCastingError {
         /// An error thrown when the checked byte was not found as the next consumable element.
@@ -31,6 +70,8 @@ extension BytesError {
     
     /// An error thrown when the checked byte was not found as the next consumable element, wrapped in a ``BytesError/Iteration`` error.
     public typealias IteratedCheckedSequenceNotFound<Failure: Error> = Iteration<CheckedSequenceNotFound, Failure>
+    /// An error thrown when the checked byte was not found as the next consumable element, wrapped in a ``BytesError/Transformation`` error.
+    public typealias TransformedCheckedSequenceNotFound<Failure: Error> = Transformation<CheckedSequenceNotFound, Failure>
 }
 
 extension ByteCastingError where Self == BytesError.CheckedSequenceNotFound {
@@ -62,6 +103,8 @@ extension BytesError {
     
     /// An error thrown when an insufficient or invalid number of bytes were available before the sequence ended, wrapped in a ``BytesError/Iteration`` error.
     public typealias IteratedInvalidMemorySize<Failure: Error> = Iteration<InvalidMemorySize, Failure>
+    /// An error thrown when an insufficient or invalid number of bytes were available before the sequence ended, wrapped in a ``BytesError/Transformation`` error.
+    public typealias TransformedInvalidMemorySize<Failure: Error> = Transformation<InvalidMemorySize, Failure>
 }
 
 extension ByteCastingError where Self == BytesError.InvalidMemorySize {
@@ -88,3 +131,20 @@ extension BytesError {
 
 extension BytesError.Iteration: Equatable where IterationFailure: Equatable {}
 extension BytesError.Iteration: Hashable where IterationFailure: Hashable {}
+
+
+extension BytesError {
+    /// An error thrown when consuming a sequence.
+    public enum Transformation<
+        ConsumptionFailure: ByteCastingError,
+        TransformationFailure: Error
+    >: Error {
+        /// An error was thrown consuming the sequence of bytes.
+        case consumptionFailure(ConsumptionFailure)
+        /// An error was thrown during transformation.
+        case transformationFailure(TransformationFailure)
+    }
+}
+
+extension BytesError.Transformation: Equatable where TransformationFailure: Equatable {}
+extension BytesError.Transformation: Hashable where TransformationFailure: Hashable {}

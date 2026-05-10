@@ -8,35 +8,39 @@
 //
 
 extension Collection where Element == Byte {
-    /// Check if a sequence of Bytes can be safely casted to an element.
+    /// Check if a sequence of ``Bytes`` can be safely casted to an element.
     /// - Parameter target: The type of element to cast to.
-    /// - Throws: `BytesError.invalidMemorySize` if the size of the bytes sequence is not equal to the element's size.
+    /// - Throws: ``BytesError/InvalidMemorySize/invalidMemorySize(targetSize:targetType:actualSize:)`` if the size of the bytes sequence is not equal to the element's size.
     @inlinable
-    func canBeCasted<Element>(to target: Element.Type) throws {
+    func canBeCasted<Element>(to target: Element.Type) throws(BytesError.InvalidMemorySize) {
         guard MemoryLayout<Element>.size == self.count else {
-            throw BytesError.invalidMemorySize(targetSize: MemoryLayout<Element>.size, targetType: "\(Element.self)", actualSize: self.count)
+            throw .invalidMemorySize(targetSize: MemoryLayout<Element>.size, targetType: "\(Element.self)", actualSize: self.count)
         }
     }
     
-    /// Cast an _entire_ Bytes sequence to the target's type.
+    /// Cast an _entire_ ``Bytes`` sequence to the target's type.
     /// - Parameter target: The type of the target.
     /// - Throws:
-    ///     - `BytesError.invalidMemorySize` if the memory layout of the bytes sequence does not match the desired type.
-    ///     - `BytesError.contiguousMemoryUnavailable` if contiguous memory could not be made available.
-    /// - Returns: An instance of the target represented by the Bytes sequence.
+    ///     - ``BytesError/Casting/invalidMemorySize(targetSize:targetType:actualSize:)-enum.case`` if the memory layout of the bytes sequence does not match the desired type.
+    ///     - ``BytesError/Casting/contiguousMemoryUnavailable(type:)-enum.case`` if contiguous memory could not be made available.
+    /// - Returns: An instance of the target represented by the ``Bytes`` sequence.
     @inlinable
-    public func casting<R>(to target: R.Type) throws -> R {
+    public func casting<R>(to target: R.Type) throws(BytesError.Casting) -> R {
         try casting()
     }
     
-    /// Cast an _entire_ Bytes sequence to the lhs's type.
+    /// Cast an _entire_ ``Bytes`` sequence to the lhs's type.
     /// - Throws:
-    ///     - `BytesError.invalidMemorySize` if the memory layout of the bytes sequence does not match the desired type.
-    ///     - `BytesError.contiguousMemoryUnavailable` if contiguous memory could not be made available.
-    /// - Returns: An instance represented by the Bytes sequence.
+    ///     - ``BytesError/Casting/invalidMemorySize(targetSize:targetType:actualSize:)-enum.case`` if the memory layout of the bytes sequence does not match the desired type.
+    ///     - ``BytesError/Casting/contiguousMemoryUnavailable(type:)-enum.case`` if contiguous memory could not be made available.
+    /// - Returns: An instance represented by the ``Bytes`` sequence.
     @inlinable
-    public func casting<R>() throws -> R {
-        try canBeCasted(to: R.self)
+    public func casting<R>() throws(BytesError.Casting) -> R {
+        do {
+            try canBeCasted(to: R.self)
+        } catch {
+            throw .init(error)
+        }
         
         if let result = self.withContiguousStorageIfAvailable({
             UnsafeRawBufferPointer($0).loadUnaligned(as: R.self)
@@ -46,30 +50,30 @@ extension Collection where Element == Byte {
         
         /// If bytes is less than 4KB, then perform a copy first
         guard self.count <= 4*1024
-        else { throw BytesError.contiguousMemoryUnavailable(type: "\(Self.self)") }
+        else { throw .contiguousMemoryUnavailable(type: "\(Self.self)") }
         
         return Bytes(self).withUnsafeBytes { $0.loadUnaligned(as: R.self) }
     }
     
-    /// Create a new Bytes sequence from the memory occupied by the passed in value.
+    /// Create a new ``Bytes`` sequence from the memory occupied by the passed in value.
     /// - Parameter value: The value to cast to a sequence of bytes.
     @inlinable
     public init<T>(casting value: T) where Self: RangeReplaceableCollection {
         self = withUnsafeBytes(of: value) { Self($0) }
     }
     
-    /// Check if a sequence of Bytes can be safely mapped to a collection of elements.
+    /// Check if a sequence of ``Bytes`` can be safely mapped to a collection of elements.
     /// - Parameter target: The type of element to map to.
-    /// - Throws: `BytesError.invalidMemorySize` if the total size of the bytes sequence is not a multiple of the element's size.
+    /// - Throws: ``BytesError/InvalidMemorySize/invalidMemorySize(targetSize:targetType:actualSize:)`` if the total size of the bytes sequence is not a multiple of the element's size.
     /// - Returns: `(elementSize: Int, numberOfBytes: Int, elementCount: Int)`, to aid in building the new collection.
     @inlinable
-    func canBeMapped<Element>(to target: Element.Type) throws -> (elementSize: Int, numberOfBytes: Int, elementCount: Int) {
+    func canBeMapped<Element>(to target: Element.Type) throws(BytesError.InvalidMemorySize) -> (elementSize: Int, numberOfBytes: Int, elementCount: Int) {
         let elementSize = MemoryLayout<Element>.size
         let numberOfBytes = self.count
         let (elementCount, remainingElementSize) = numberOfBytes.quotientAndRemainder(dividingBy: elementSize)
         
         guard remainingElementSize == 0 else {
-            throw BytesError.invalidMemorySize(targetSize: (elementCount+1)*elementSize, targetType: "\(Element.self)", actualSize: numberOfBytes)
+            throw .invalidMemorySize(targetSize: (elementCount+1)*elementSize, targetType: "\(Element.self)", actualSize: numberOfBytes)
         }
         
         return (elementSize, numberOfBytes, elementCount)
@@ -77,19 +81,19 @@ extension Collection where Element == Byte {
 }
 
 extension Collection {
-    /// Create a new Bytes sequence mapping each element accordingly.
+    /// Create a new ``Bytes`` sequence mapping each element accordingly.
     /// - Parameter transform: The transformation to perform on each element.
-    /// - Returns: A Bytes sequence.
+    /// - Returns: A ``Bytes`` sequence.
     @inlinable
     public func bytes(mapping transform: (Self.Element) -> Bytes) -> Bytes {
         bytes(for: Element.self, mapping: transform)
     }
     
-    /// Create a new Bytes sequence mapping each element accordingly.
+    /// Create a new ``Bytes`` sequence mapping each element accordingly.
     /// - Parameters:
     ///   - target: The element that was used to encode the byte sequence.
     ///   - transform: The transformation to perform on each element.
-    /// - Returns: A Bytes sequence.
+    /// - Returns: A ``Bytes`` sequence.
     @inlinable
     public func bytes<EncodedElement>(for target: EncodedElement.Type, mapping transform: (Self.Element) -> Bytes) -> Bytes {
         var bytes = Bytes()
@@ -106,9 +110,9 @@ extension RangeReplaceableCollection {
     /// - Parameters:
     ///   - bytes: The bytes to transform.
     ///   - transform: The transformation to perform on each element.
-    /// - Throws: `BytesError.invalidMemorySize` if the total size of the bytes sequence is not a multiple of the element's size.
+    /// - Throws: ``BytesError/InvalidMemorySize/invalidMemorySize(targetSize:targetType:actualSize:)`` if the total size of the bytes sequence is not a multiple of the element's size.
     @inlinable
-    public init<Bytes: BytesCollection>(bytes: Bytes, mapping transform: (Bytes.SubSequence) throws -> Self.Element) throws {
+    public init<Bytes: BytesCollection, TransformationFailure: Error>(bytes: Bytes, mapping transform: (Bytes.SubSequence) throws(TransformationFailure) -> Self.Element) throws(BytesError.TransformedInvalidMemorySize<TransformationFailure>) {
         try self.init(bytes: bytes, element: Element.self, mapping: transform)
     }
     
@@ -117,17 +121,36 @@ extension RangeReplaceableCollection {
     ///   - bytes: The bytes to transform.
     ///   - element: The element that was used to encode the byte sequence.
     ///   - transform: The transformation to perform on each element.
-    /// - Throws: `BytesError.invalidMemorySize` if the total size of the bytes sequence is not a multiple of the element's size.
+    /// - Throws: ``BytesError/InvalidMemorySize/invalidMemorySize(targetSize:targetType:actualSize:)`` if the total size of the bytes sequence is not a multiple of the element's size.
     @inlinable
-    public init<Bytes: BytesCollection, EncodedElement>(bytes: Bytes, element: EncodedElement.Type, mapping transform: (Bytes.SubSequence) throws -> Self.Element) throws {
-        let (elementSize, numberOfBytes, elementCount) = try bytes.canBeMapped(to: EncodedElement.self)
+    public init<
+        Bytes: BytesCollection,
+        EncodedElement,
+        TransformationFailure: Error
+    >(
+        bytes: Bytes,
+        element: EncodedElement.Type,
+        mapping transform: (Bytes.SubSequence) throws(TransformationFailure) -> Self.Element
+    ) throws(BytesError.TransformedInvalidMemorySize<TransformationFailure>) {
+        let elementSize: Int
+        let numberOfBytes: Int
+        let elementCount: Int
+        do {
+            (elementSize, numberOfBytes, elementCount) = try bytes.canBeMapped(to: EncodedElement.self)
+        } catch {
+            throw .consumptionFailure(error)
+        }
         
         var result = Self()
         result.reserveCapacity(elementCount)
         
         for sliceStart in stride(from: 0, to: numberOfBytes, by: elementSize) {
             let slice = bytes[sliceStart..<(sliceStart+elementSize)]
-            result.append(try transform(slice))
+            do {
+                result.append(try transform(slice))
+            } catch {
+                throw .transformationFailure(error)
+            }
         }
         
         self = result
@@ -139,9 +162,15 @@ extension Set {
     /// - Parameters:
     ///   - bytes: The bytes to transform.
     ///   - transform: The transformation to perform on each element.
-    /// - Throws: `BytesError.invalidMemorySize` if the total size of the bytes sequence is not a multiple of the element's size.
+    /// - Throws: ``BytesError/InvalidMemorySize/invalidMemorySize(targetSize:targetType:actualSize:)`` if the total size of the bytes sequence is not a multiple of the element's size.
     @inlinable
-    public init<Bytes: BytesCollection>(bytes: Bytes, mapping transform: (Bytes.SubSequence) throws -> Self.Element) throws {
+    public init<
+        Bytes: BytesCollection,
+        TransformationFailure: Error
+    >(
+        bytes: Bytes,
+        mapping transform: (Bytes.SubSequence) throws(TransformationFailure) -> Self.Element
+    ) throws(BytesError.TransformedInvalidMemorySize<TransformationFailure>) {
         try self.init(bytes: bytes, element: Element.self, mapping: transform)
     }
     
@@ -150,17 +179,36 @@ extension Set {
     ///   - bytes: The bytes to transform.
     ///   - element: The element that was used to encode the byte sequence.
     ///   - transform: The transformation to perform on each element.
-    /// - Throws: `BytesError.invalidMemorySize` if the total size of the bytes sequence is not a multiple of the element's size.
+    /// - Throws: ``BytesError/InvalidMemorySize/invalidMemorySize(targetSize:targetType:actualSize:)`` if the total size of the bytes sequence is not a multiple of the element's size.
     @inlinable
-    public init<Bytes: BytesCollection, EncodedElement>(bytes: Bytes, element: EncodedElement.Type, mapping transform: (Bytes.SubSequence) throws -> Self.Element) throws {
-        let (elementSize, numberOfBytes, elementCount) = try bytes.canBeMapped(to: EncodedElement.self)
+    public init<
+        Bytes: BytesCollection,
+        EncodedElement,
+        TransformationFailure: Error
+    >(
+        bytes: Bytes,
+        element: EncodedElement.Type,
+        mapping transform: (Bytes.SubSequence) throws(TransformationFailure) -> Self.Element
+    ) throws(BytesError.TransformedInvalidMemorySize<TransformationFailure>) {
+        let elementSize: Int
+        let numberOfBytes: Int
+        let elementCount: Int
+        do {
+            (elementSize, numberOfBytes, elementCount) = try bytes.canBeMapped(to: EncodedElement.self)
+        } catch {
+            throw .consumptionFailure(error)
+        }
         
         var result = Self()
         result.reserveCapacity(elementCount)
         
         for sliceStart in stride(from: 0, to: numberOfBytes, by: elementSize) {
             let slice = bytes[sliceStart..<(sliceStart+elementSize)]
-            result.insert(try transform(slice))
+            do {
+                result.insert(try transform(slice))
+            } catch {
+                throw .transformationFailure(error)
+            }
         }
         
         self = result

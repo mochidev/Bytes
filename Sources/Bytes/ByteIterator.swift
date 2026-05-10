@@ -14,12 +14,12 @@ extension IteratorProtocol where Element == Byte {
     /// - Parameter bytes: This should be set to `Bytes.self`.
     /// - Parameter count: The number of bytes to form into a byte array.
     /// - Returns: A byte array of size `count`.
-    /// - Throws: ``BytesError/invalidMemorySize(targetSize:targetType:actualSize:)`` if a complete byte array could not be returned by the time the sequence ended.
+    /// - Throws: ``BytesError/BufferSizeError/invalidBufferSize(targetSize:targetType:actualSize:)`` if a complete byte array could not be returned by the time the sequence ended.
     @inlinable
     public mutating func next(
         _ bytes: Bytes.Type,
         count: Int
-    ) throws -> Bytes {
+    ) throws(BytesError.BufferSizeError) -> Bytes {
         assert(count >= 0, "count must be larger than 0")
         return try next(bytes, min: count, max: count)
     }
@@ -31,13 +31,13 @@ extension IteratorProtocol where Element == Byte {
     /// - Parameter minCount: The minimum number of bytes to form into a byte array.
     /// - Parameter maxCount: The maximum number of bytes to form into a byte array.
     /// - Returns: A byte array of size at least `minCount` and at most `maxCount`.
-    /// - Throws: ``BytesError/invalidMemorySize(targetSize:targetType:actualSize:)`` if a complete byte array could not be returned by the time the sequence ended.
+    /// - Throws: ``BytesError/BufferSizeError/invalidBufferSize(targetSize:targetType:actualSize:)`` if a complete byte array could not be returned by the time the sequence ended.
     @inlinable
     public mutating func next(
         _ bytes: Bytes.Type,
         min minCount: Int,
         max maxCount: Int
-    ) throws -> Bytes {
+    ) throws(BytesError.BufferSizeError) -> Bytes {
         precondition(minCount <= maxCount, "maxCount must be larger than or equal to minCount")
         precondition(minCount >= 0, "minCount must be larger than 0")
         guard maxCount > 0 else { return [] }
@@ -54,7 +54,7 @@ extension IteratorProtocol where Element == Byte {
         }
         
         guard result.count >= minCount else {
-            throw BytesError.invalidMemorySize(targetSize: minCount, targetType: "\(Bytes.self)", actualSize: result.count)
+            throw .invalidBufferSize(targetSize: minCount, targetType: "\(Bytes.self)", actualSize: result.count)
         }
         
         return result
@@ -94,12 +94,12 @@ extension IteratorProtocol where Element == Byte {
     /// - Parameter bytes: This should be set to `Bytes.self`.
     /// - Parameter count: The number of bytes to form into a byte array.
     /// - Returns: A byte array of size `count`, or `nil` if the sequence is finished.
-    /// - Throws: ``BytesError/invalidMemorySize(targetSize:targetType:actualSize:)`` if a complete byte array could not be returned by the time the sequence ended.
+    /// - Throws: ``BytesError/BufferSizeError/invalidBufferSize(targetSize:targetType:actualSize:)`` if a complete byte array could not be returned by the time the sequence ended.
     @inlinable
     public mutating func nextIfPresent(
         _ bytes: Bytes.Type,
         count: Int
-    ) throws -> Bytes? {
+    ) throws(BytesError.BufferSizeError) -> Bytes? {
         assert(count >= 0, "count must be larger than 0")
         return try nextIfPresent(bytes, min: count, max: count)
     }
@@ -111,13 +111,13 @@ extension IteratorProtocol where Element == Byte {
     /// - Parameter minCount: The minimum number of bytes to form into a byte array.
     /// - Parameter maxCount: The maximum number of bytes to form into a byte array.
     /// - Returns: A byte array of size at least `minCount` and at most `maxCount`, or `nil` if the sequence is finished.
-    /// - Throws: ``BytesError/invalidMemorySize(targetSize:targetType:actualSize:)`` if a complete byte array could not be returned by the time the sequence ended.
+    /// - Throws: ``BytesError/BufferSizeError/invalidBufferSize(targetSize:targetType:actualSize:)`` if a complete byte array could not be returned by the time the sequence ended.
     @inlinable
     public mutating func nextIfPresent(
         _ bytes: Bytes.Type,
         min minCount: Int,
         max maxCount: Int
-    ) throws -> Bytes? {
+    ) throws(BytesError.BufferSizeError) -> Bytes? {
         precondition(minCount <= maxCount, "maxCount must be larger than or equal to minCount")
         precondition(minCount >= 0, "minCount must be larger than 0")
         guard maxCount > 0 else { return [] }
@@ -136,7 +136,7 @@ extension IteratorProtocol where Element == Byte {
         guard !result.isEmpty else { return nil }
         
         guard result.count >= minCount else {
-            throw BytesError.invalidMemorySize(targetSize: minCount, targetType: "\(Bytes.self)", actualSize: result.count)
+            throw .invalidBufferSize(targetSize: minCount, targetType: "\(Bytes.self)", actualSize: result.count)
         }
         
         return result
@@ -178,15 +178,15 @@ extension IteratorProtocol where Element == Byte {
     ///
     /// **Learn More:** [Integration with AsyncSequenceReader](https://github.com/mochidev/AsyncSequenceReader#integration-with-bytes)
     /// - Parameter byte: The byte to check for.
-    /// - Throws: ``BytesError/checkedSequenceNotFound`` if the bytes could not be identified.
+    /// - Throws: ``BytesError/SequenceCheckError/checkedSequenceNotFound`` if the bytes could not be identified.
     @inlinable
     public mutating func check(
         _ byte: UInt8
-    ) throws {
+    ) throws(BytesError.SequenceCheckError) {
         let value = next()
         
         guard value == byte
-        else { throw BytesError.checkedSequenceNotFound }
+        else { throw .checkedSequenceNotFound }
     }
     
     /// Advances by the specified bytes if found, or throws if the next bytes in the iterator do not match.
@@ -197,11 +197,11 @@ extension IteratorProtocol where Element == Byte {
     ///
     /// **Learn More:** [Integration with AsyncSequenceReader](https://github.com/mochidev/AsyncSequenceReader#integration-with-bytes)
     /// - Parameter bytes: The bytes to check for.
-    /// - Throws: ``BytesError/checkedSequenceNotFound`` if the bytes could not be identified.
+    /// - Throws: ``BytesError/SequenceCheckError/checkedSequenceNotFound`` if the bytes could not be identified.
     @inlinable
     public mutating func check<Bytes: BytesCollection>(
         _ bytes: Bytes
-    ) throws {
+    ) throws(BytesError.SequenceCheckError) {
         for byte in bytes {
             try check(byte)
         }
@@ -214,16 +214,16 @@ extension IteratorProtocol where Element == Byte {
     /// **Learn More:** [Integration with AsyncSequenceReader](https://github.com/mochidev/AsyncSequenceReader#integration-with-bytes)
     /// - Parameter byte: The byte to check for.
     /// - Returns: `true` if the byte was found, or `false` if the sequence finished.
-    /// - Throws: ``BytesError/checkedSequenceNotFound`` if the bytes could not be identified.
+    /// - Throws: ``BytesError/SequenceCheckError/checkedSequenceNotFound`` if the bytes could not be identified.
     @inlinable
     @discardableResult
     public mutating func checkIfPresent(
         _ byte: UInt8
-    ) throws -> Bool {
+    ) throws(BytesError.SequenceCheckError) -> Bool {
         guard let value = next() else { return false }
         
         guard value == byte
-        else { throw BytesError.checkedSequenceNotFound }
+        else { throw .checkedSequenceNotFound }
         
         return true
     }
@@ -237,12 +237,12 @@ extension IteratorProtocol where Element == Byte {
     /// **Learn More:** [Integration with AsyncSequenceReader](https://github.com/mochidev/AsyncSequenceReader#integration-with-bytes)
     /// - Parameter bytes: The bytes to check for.
     /// - Returns: `true` if the bytes were found, or `false` if the sequence finished.
-    /// - Throws: ``BytesError/checkedSequenceNotFound`` if the bytes could not be identified.
+    /// - Throws: ``BytesError/SequenceCheckError/checkedSequenceNotFound`` if the bytes could not be identified.
     @inlinable
     @discardableResult
     public mutating func checkIfPresent<Bytes: BytesCollection>(
         _ bytes: Bytes
-    ) throws -> Bool {
+    ) throws(BytesError.SequenceCheckError) -> Bool {
         var first = true
         for byte in bytes {
             if first {

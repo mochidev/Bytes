@@ -11,9 +11,6 @@
 // MARK: - BytesError
 
 public enum BytesError: Error {
-    case invalidMemorySize(targetSize: Int, targetType: String, actualSize: Int)
-    case contiguousMemoryUnavailable(type: String)
-    
     case invalidCharacterByteSequence
     case invalidRawRepresentableByteSequence
     case invalidUUIDByteSequence
@@ -64,6 +61,54 @@ extension ByteCastingErrorWrapper where
     @inlinable
     public static func invalidBufferSize(targetSize: Int, targetType: String, actualSize: Int) -> Self {
         .castingFailure(.invalidBufferSize(targetSize: targetSize, targetType: targetType, actualSize: actualSize))
+    }
+}
+
+extension ByteCastingErrorWrapper where
+    CastingFailure: ByteCastingErrorWrapper,
+    CastingFailure.CastingFailure == BytesError.BufferSizeError
+{
+    /// An error thrown when an insufficient or invalid number of bytes were available before the ``Bytes`` sequence ended, wrapped in a parent error.
+    @inlinable
+    public static func invalidBufferSize(targetSize: Int, targetType: String, actualSize: Int) -> Self {
+        .castingFailure(.invalidBufferSize(targetSize: targetSize, targetType: targetType, actualSize: actualSize))
+    }
+}
+
+
+// MARK: - ContiguousBytesError
+
+extension BytesError {
+    /// An error thrown when the receiving buffer cannot efficiently be made contiguous for casting.
+    public enum ContiguousBytesError<CastingFailure: ByteCastingError>: ByteCastingError, ByteCastingErrorWrapper {
+        /// An error thrown while casting the specified bytes.
+        case castingFailure(CastingFailure)
+        /// An error was thrown because the underlying buffer is not contiguous and is over 4KB in size.
+        /// - Note: Copy the sequence first if you know the expected casting size is correct.
+        case contiguousBytesUnavailable(type: String)
+    }
+}
+
+extension ByteCastingError {
+    /// An error was thrown because the underlying buffer is not contiguous and is over 4KB in size.
+    /// - Note: Copy the sequence first if you know the expected casting size is correct.
+    @inlinable
+    @_disfavoredOverload
+    public static func contiguousBytesUnavailable<CastingFailure: ByteCastingError>(
+        type: String
+    ) -> BytesError.ContiguousBytesError<CastingFailure> {
+        .contiguousBytesUnavailable(type: type)
+    }
+}
+
+extension ByteCastingErrorWrapper {
+    /// An error was thrown because the underlying buffer is not contiguous and is over 4KB in size, wrapped in a parent error.
+    /// - Note: Copy the sequence first if you know the expected casting size is correct.
+    @inlinable
+    public static func contiguousBytesUnavailable<InnerCastingFailure: ByteCastingError>(
+        type: String
+    ) -> Self where CastingFailure == BytesError.ContiguousBytesError<InnerCastingFailure> {
+        .castingFailure(.contiguousBytesUnavailable(type: type))
     }
 }
 
@@ -119,15 +164,67 @@ extension ByteCastingErrorWrapper where
 }
 
 
+// MARK: - TransformationError
+
+extension BytesError {
+    /// An error thrown when consuming a sequence.
+    public enum TransformationError<
+        CastingFailure: ByteCastingError,
+        TransformationFailure: Error
+    >: Error, ByteCastingErrorWrapper {
+        /// An error was thrown casting bytes off the sequence.
+        case castingFailure(CastingFailure)
+        /// An error was thrown during transformation.
+        case transformationFailure(TransformationFailure)
+    }
+}
+
+extension BytesError.TransformationError: Equatable where TransformationFailure: Equatable {}
+extension BytesError.TransformationError: Hashable where TransformationFailure: Hashable {}
+
+
 // MARK: - Bytes Error Type Alias Tree
 
 extension BytesError {
+    /// A namespace for errors wrapped within a ``ContiguousBytesError``.
+    public enum ContiguousBytes {
+        /// A ``BytesError/BufferSizeError`` error thrown when an insufficient or invalid number of bytes were available before the sequence ended, wrapped in a ``BytesError/ContiguousBytesError``.
+        public typealias BufferSizeError = ContiguousBytesError<BytesError.BufferSizeError>
+    }
+    
     /// A namespace for errors wrapped within a ``IterationError``.
     public enum Iteration<IterationFailure: Error> {
         /// A ``BytesError/BufferSizeError`` error thrown when an insufficient or invalid number of bytes were available before the sequence ended, wrapped in a ``BytesError/IterationError``.
         public typealias BufferSizeError = IterationError<BytesError.BufferSizeError, IterationFailure>
-                
+        
+        /// A ``BytesError/ContiguousBytesError`` error thrown when the receiving buffer cannot efficiently be made contiguous for casting, wrapped in a ``BytesError/IterationError``.
+        public typealias ContiguousBytesError<CastingFailure: ByteCastingError> = IterationError<BytesError.ContiguousBytesError<CastingFailure>, IterationFailure>
+        
+        /// A namespace for errors wrapped within ``BytesError/ContiguousBytesError`` and ``BytesError/IterationError`` respectively.
+        public enum ContiguousBytes {
+            /// A ``BytesError/BufferSizeError`` error thrown when an insufficient or invalid number of bytes were available before the sequence ended, wrapped within ``BytesError/ContiguousBytesError`` and ``BytesError/IterationError`` respectively.
+            public typealias BufferSizeError = ContiguousBytesError<BytesError.BufferSizeError>
+        }
+        
         /// A ``BytesError/SequenceCheckError`` error thrown when the checked byte was not found as the next consumable element, wrapped in a ``BytesError/IterationError``.
         public typealias SequenceCheckError = IterationError<BytesError.SequenceCheckError, IterationFailure>
+    }
+    
+    /// A namespace for errors wrapped within a ``TransformationError``.
+    public enum Transformation<TransformationFailure: Error> {
+        /// A ``BytesError/BufferSizeError`` error thrown when an insufficient or invalid number of bytes were available before the sequence ended, wrapped in a ``BytesError/TransformationError``.
+        public typealias BufferSizeError = TransformationError<BytesError.BufferSizeError, TransformationFailure>
+        
+        /// A ``BytesError/ContiguousBytesError`` error thrown when the receiving buffer cannot efficiently be made contiguous for casting, wrapped in a ``BytesError/TransformationError``.
+        public typealias ContiguousBytesError<CastingFailure: ByteCastingError> = TransformationError<BytesError.ContiguousBytesError<CastingFailure>, TransformationFailure>
+        
+        /// A namespace for errors wrapped within ``BytesError/ContiguousBytesError`` and ``BytesError/TransformationError`` respectively.
+        public enum ContiguousBytes {
+            /// A ``BytesError/BufferSizeError`` error thrown when an insufficient or invalid number of bytes were available before the sequence ended, wrapped within ``BytesError/ContiguousBytesError`` and ``BytesError/TransformationError`` respectively.
+            public typealias BufferSizeError = ContiguousBytesError<BytesError.BufferSizeError>
+        }
+        
+        /// A ``BytesError/SequenceCheckError`` error thrown when the checked byte was not found as the next consumable element, wrapped in a ``BytesError/TransformationError``.
+        public typealias SequenceCheckError = TransformationError<BytesError.SequenceCheckError, TransformationFailure>
     }
 }

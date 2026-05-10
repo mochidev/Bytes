@@ -24,7 +24,10 @@ extension BytesError {
         let messageResult = message()
         
         switch expressionResult {
-        case let Self.invalidMemorySize(a1, a2, a3):
+        case
+            let BytesError.BufferSizeError.invalidBufferSize(a1, a2, a3),
+            let BytesError.ContiguousBytes.BufferSizeError.castingFailure(.invalidBufferSize(a1, a2, a3)),
+            let BytesError.Transformation<any Error>.BufferSizeError.castingFailure(.invalidBufferSize(a1, a2, a3)):
             XCTAssertEqual(a1, try targetSize(), messageResult, file: (file), line: line)
             XCTAssertEqual(a2, try targetType(), messageResult, file: (file), line: line)
             XCTAssertEqual(a3, try actualSize(), messageResult, file: (file), line: line)
@@ -48,7 +51,7 @@ extension BytesError {
         let messageResult = message()
         
         switch expressionResult {
-        case let Self.contiguousMemoryUnavailable(a1):
+        case let BytesError.ContiguousBytes.BufferSizeError.contiguousBytesUnavailable(a1):
             XCTAssertEqual(a1, try collectionType(), messageResult, file: (file), line: line)
         default:
             if messageResult.isEmpty {
@@ -89,7 +92,10 @@ extension BytesError {
         let messageResult = message()
         
         switch expressionResult {
-        case Self.invalidRawRepresentableByteSequence: break
+        case
+            Self.invalidRawRepresentableByteSequence,
+            BytesError.Transformation<any Error>.BufferSizeError.transformationFailure(Self.invalidRawRepresentableByteSequence):
+            break
         default:
             if messageResult.isEmpty {
                 XCTFail("\(type(of: expressionResult)).\(expressionResult) is not BytesError.invalidRawRepresentableByteSequence", file: (file), line: line)
@@ -109,7 +115,10 @@ extension BytesError {
         let messageResult = message()
         
         switch expressionResult {
-        case Self.invalidUUIDByteSequence: break
+        case
+            Self.invalidUUIDByteSequence,
+            BytesError.Transformation<any Error>.BufferSizeError.transformationFailure(Self.invalidUUIDByteSequence):
+            break
         default:
             if messageResult.isEmpty {
                 XCTFail("\(type(of: expressionResult)).\(expressionResult) is not BytesError.invalidUUIDByteSequence", file: (file), line: line)

@@ -182,6 +182,19 @@ extension BytesError {
 extension BytesError.TransformationError: Equatable where TransformationFailure: Equatable {}
 extension BytesError.TransformationError: Hashable where TransformationFailure: Hashable {}
 
+extension BytesError.Transformation<BytesError.ContiguousBytes.BufferSizeError>.BufferSizeError {
+    /// Flatted a ``BytesError/TransformationError`` whose cases both contain a ``BytesError/BufferSizeError`` into a single ``BytesError/ContiguousBytes/BufferSizeError`` error.
+    @inlinable
+    public var flattened: BytesError.ContiguousBytes.BufferSizeError {
+        switch self {
+        case .castingFailure(let error):
+            .castingFailure(error)
+        case .transformationFailure(let error):
+            error
+        }
+    }
+}
+
 
 // MARK: - Bytes Error Type Alias Tree
 

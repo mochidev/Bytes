@@ -107,6 +107,18 @@ extension BytesError {
     public typealias TransformedInvalidMemorySize<Failure: Error> = Transformation<InvalidMemorySize, Failure>
 }
 
+extension BytesError.TransformedInvalidMemorySize<BytesError.Casting> {
+    @inlinable
+    public var flattened: BytesError.Casting {
+        switch self {
+        case .consumptionFailure(let error):
+            .init(error)
+        case .transformationFailure(let error):
+            error
+        }
+    }
+}
+
 extension ByteCastingError where Self == BytesError.InvalidMemorySize {
     /// An error thrown when an insufficient or invalid number of bytes were available before the sequence ended.
     @inlinable

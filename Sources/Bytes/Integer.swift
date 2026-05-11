@@ -14,13 +14,13 @@ extension FixedWidthInteger {
         Bytes(casting: self.bigEndian)
     }
     
-    /// Initialize a fixed width integer from a contiguous sequence of Bytes representing a big endian type.
-    /// - Parameter bigEndianBytes: The Bytes to interpret as a big endian integer.
+    /// Initialize a fixed width integer from a contiguous sequence of ``Bytes`` representing a big endian type.
+    /// - Parameter bigEndianBytes: The ``Bytes`` to interpret as a big endian integer.
     /// - Throws:
-    ///     - `BytesError.invalidMemorySize` if the byte sequence does not match the size of the integer type.
-    ///     - `BytesError.contiguousMemoryUnavailable` if the byte sequence cannot be made to be contiguous.
+    ///     - ``BytesError/Casting/invalidMemorySize(targetSize:targetType:actualSize:)-enum.case`` if the byte sequence does not match the size of the integer type.
+    ///     - ``BytesError/Casting/contiguousMemoryUnavailable(type:)-enum.case`` if the byte sequence cannot be made to be contiguous.
     @inlinable
-    public init<Bytes: BytesCollection>(bigEndianBytes: Bytes) throws {
+    public init<Bytes: BytesCollection>(bigEndianBytes: Bytes) throws(BytesError.Casting) {
         self.init(bigEndian: try bigEndianBytes.casting())
     }
     
@@ -30,13 +30,13 @@ extension FixedWidthInteger {
         Bytes(casting: self.littleEndian)
     }
     
-    /// Initialize a fixed width integer from a contiguous sequence of Bytes representing a little endian type.
-    /// - Parameter bigEndianBytes: The Bytes to interpret as a little endian integer.
+    /// Initialize a fixed width integer from a contiguous sequence of ``Bytes`` representing a little endian type.
+    /// - Parameter littleEndianBytes: The ``Bytes`` to interpret as a little endian integer.
     /// - Throws:
-    ///     - `BytesError.invalidMemorySize` if the byte sequence does not match the size of the integer type.
-    ///     - `BytesError.contiguousMemoryUnavailable` if the byte sequence cannot be made to be contiguous.
+    ///     - ``BytesError/Casting/invalidMemorySize(targetSize:targetType:actualSize:)-enum.case`` if the byte sequence does not match the size of the integer type.
+    ///     - ``BytesError/Casting/contiguousMemoryUnavailable(type:)-enum.case`` if the byte sequence cannot be made to be contiguous.
     @inlinable
-    public init<Bytes: BytesCollection>(littleEndianBytes: Bytes) throws {
+    public init<Bytes: BytesCollection>(littleEndianBytes: Bytes) throws(BytesError.Casting) {
         self.init(littleEndian: try littleEndianBytes.casting())
     }
 }
@@ -48,14 +48,18 @@ extension Collection where Element: FixedWidthInteger {
         self.bytes(mapping: \.bigEndianBytes)
     }
     
-    /// Initialize a collection of integers with a sequence of Bytes representing a sequence of big endian types.
-    /// - Parameter bigEndianBytes: The Bytes to interpret as a sequence of big endian integers.
+    /// Initialize a collection of integers with a sequence of ``Bytes`` representing a sequence of big endian types.
+    /// - Parameter bigEndianBytes: The ``Bytes`` to interpret as a sequence of big endian integers.
     /// - Throws:
-    ///     - `BytesError.invalidMemorySize` if the byte sequence is not a multiple of the size of the integer type.
-    ///     - `BytesError.contiguousMemoryUnavailable` if a byte sub-sequence cannot be made to be contiguous.
+    ///     - ``BytesError/Casting/invalidMemorySize(targetSize:targetType:actualSize:)-enum.case`` if the byte sequence is not a multiple of the size of the integer type.
+    ///     - ``BytesError/Casting/contiguousMemoryUnavailable(type:)-enum.case`` if a byte sub-sequence cannot be made to be contiguous.
     @inlinable
-    public init<Bytes: BytesCollection>(bigEndianBytes: Bytes) throws where Self: RangeReplaceableCollection {
-        try self.init(bytes: bigEndianBytes, mapping: Element.init(bigEndianBytes:))
+    public init<Bytes: BytesCollection>(bigEndianBytes: Bytes) throws(BytesError.Casting) where Self: RangeReplaceableCollection {
+        do {
+            try self.init(bytes: bigEndianBytes, mapping: Element.init(bigEndianBytes:))
+        } catch {
+            throw error.flattened
+        }
     }
     
     /// The little endian representations of a collection of integers.
@@ -64,36 +68,48 @@ extension Collection where Element: FixedWidthInteger {
         self.bytes(mapping: \.littleEndianBytes)
     }
     
-    /// Initialize a collection of integers with a sequence of Bytes representing a sequence of little endian types.
-    /// - Parameter littleEndianBytes: The Bytes to interpret as a sequence of little endian integers.
+    /// Initialize a collection of integers with a sequence of ``Bytes`` representing a sequence of little endian types.
+    /// - Parameter littleEndianBytes: The ``Bytes`` to interpret as a sequence of little endian integers.
     /// - Throws:
-    ///     - `BytesError.invalidMemorySize` if the byte sequence is not a multiple of the size of the integer type.
-    ///     - `BytesError.contiguousMemoryUnavailable` if a byte sub-sequence cannot be made to be contiguous.
+    ///     - ``BytesError/Casting/invalidMemorySize(targetSize:targetType:actualSize:)-enum.case`` if the byte sequence is not a multiple of the size of the integer type.
+    ///     - ``BytesError/Casting/contiguousMemoryUnavailable(type:)-enum.case`` if a byte sub-sequence cannot be made to be contiguous.
     @inlinable
-    public init<Bytes: BytesCollection>(littleEndianBytes: Bytes) throws where Self: RangeReplaceableCollection {
-        try self.init(bytes: littleEndianBytes, mapping: Element.init(littleEndianBytes:))
+    public init<Bytes: BytesCollection>(littleEndianBytes: Bytes) throws(BytesError.Casting) where Self: RangeReplaceableCollection {
+        do {
+            try self.init(bytes: littleEndianBytes, mapping: Element.init(littleEndianBytes:))
+        } catch {
+            throw error.flattened
+        }
     }
 }
 
 extension Set where Element: FixedWidthInteger {
-    /// Initialize a Set of integers with a sequence of Bytes representing a sequence of big endian types.
-    /// - Parameter bigEndianBytes: The Bytes to interpret as a sequence of big endian integers.
+    /// Initialize a Set of integers with a sequence of ``Bytes`` representing a sequence of big endian types.
+    /// - Parameter bigEndianBytes: The ``Bytes`` to interpret as a sequence of big endian integers.
     /// - Throws:
-    ///     - `BytesError.invalidMemorySize` if the byte sequence is not a multiple of the size of the integer type.
-    ///     - `BytesError.contiguousMemoryUnavailable` if a byte sub-sequence cannot be made to be contiguous.
+    ///     - ``BytesError/Casting/invalidMemorySize(targetSize:targetType:actualSize:)-enum.case`` if the byte sequence is not a multiple of the size of the integer type.
+    ///     - ``BytesError/Casting/contiguousMemoryUnavailable(type:)-enum.case`` if a byte sub-sequence cannot be made to be contiguous.
     @inlinable
-    public init<Bytes: BytesCollection>(bigEndianBytes: Bytes) throws {
-        try self.init(bytes: bigEndianBytes, mapping: Element.init(bigEndianBytes:))
+    public init<Bytes: BytesCollection>(bigEndianBytes: Bytes) throws(BytesError.Casting) {
+        do {
+            try self.init(bytes: bigEndianBytes, mapping: Element.init(bigEndianBytes:))
+        } catch {
+            throw error.flattened
+        }
     }
     
-    /// Initialize a Set of integers with a sequence of Bytes representing a sequence of little endian types.
-    /// - Parameter littleEndianBytes: The Bytes to interpret as a sequence of little endian integers.
+    /// Initialize a Set of integers with a sequence of ``Bytes`` representing a sequence of little endian types.
+    /// - Parameter littleEndianBytes: The ``Bytes`` to interpret as a sequence of little endian integers.
     /// - Throws:
-    ///     - `BytesError.invalidMemorySize` if the byte sequence is not a multiple of the size of the integer type.
-    ///     - `BytesError.contiguousMemoryUnavailable` if a byte sub-sequence cannot be made to be contiguous.
+    ///     - ``BytesError/Casting/invalidMemorySize(targetSize:targetType:actualSize:)-enum.case`` if the byte sequence is not a multiple of the size of the integer type.
+    ///     - ``BytesError/Casting/contiguousMemoryUnavailable(type:)-enum.case`` if a byte sub-sequence cannot be made to be contiguous.
     @inlinable
-    public init<Bytes: BytesCollection>(littleEndianBytes: Bytes) throws {
-        try self.init(bytes: littleEndianBytes, mapping: Element.init(littleEndianBytes:))
+    public init<Bytes: BytesCollection>(littleEndianBytes: Bytes) throws(BytesError.Casting) {
+        do {
+            try self.init(bytes: littleEndianBytes, mapping: Element.init(littleEndianBytes:))
+        } catch {
+            throw error.flattened
+        }
     }
 }
 
@@ -108,10 +124,11 @@ extension IteratorProtocol where Element == Byte {
     /// **Learn More:** [Integration with AsyncSequenceReader](https://github.com/mochidev/AsyncSequenceReader#integration-with-bytes)
     /// - Parameter type: The type of integer to decode.
     /// - Returns: An integer of type `type`.
-    /// - Throws: `BytesError.invalidMemorySize` if a complete integer could not be returned by the time the sequence ended.
+    /// - Throws: ``BytesError/InvalidMemorySize/invalidMemorySize(targetSize:targetType:actualSize:)`` if a complete integer could not be returned by the time the sequence ended.
     @inlinable
-    public mutating func next<T: FixedWidthInteger>(littleEndian type: T.Type) throws -> T {
-        try T(littleEndianBytes: next(Bytes.self, count: MemoryLayout<T>.size))
+    public mutating func next<T: FixedWidthInteger>(littleEndian type: T.Type) throws(BytesError.InvalidMemorySize) -> T {
+        /// We know the inner `try` validates the size already, so the outer one can never fail, and we can simplify the reported error types.
+        try! T(littleEndianBytes: try next(Bytes.self, count: MemoryLayout<T>.size))
     }
     
     /// Advances to the next big endian integer in the squence and returns it, or throws if it could not.
@@ -121,10 +138,11 @@ extension IteratorProtocol where Element == Byte {
     /// **Learn More:** [Integration with AsyncSequenceReader](https://github.com/mochidev/AsyncSequenceReader#integration-with-bytes)
     /// - Parameter type: The type of integer to decode.
     /// - Returns: An integer of type `type`.
-    /// - Throws: `BytesError.invalidMemorySize` if a complete integer could not be returned by the time the sequence ended.
+    /// - Throws: ``BytesError/InvalidMemorySize/invalidMemorySize(targetSize:targetType:actualSize:)`` if a complete integer could not be returned by the time the sequence ended.
     @inlinable
-    public mutating func next<T: FixedWidthInteger>(bigEndian type: T.Type) throws -> T {
-        try T(bigEndianBytes: next(Bytes.self, count: MemoryLayout<T>.size))
+    public mutating func next<T: FixedWidthInteger>(bigEndian type: T.Type) throws(BytesError.InvalidMemorySize) -> T {
+        /// We know the inner `try` validates the size already, so the outer one can never fail, and we can simplify the reported error types.
+        try! T(bigEndianBytes: try next(Bytes.self, count: MemoryLayout<T>.size))
     }
     
     /// Advances to the next little endian integer in the squence and returns it, or ends the sequence if there is no next element.
@@ -134,10 +152,12 @@ extension IteratorProtocol where Element == Byte {
     /// **Learn More:** [Integration with AsyncSequenceReader](https://github.com/mochidev/AsyncSequenceReader#integration-with-bytes)
     /// - Parameter type: The type of integer to decode.
     /// - Returns: An integer of type `type`, or `nil` if the sequence is finished.
-    /// - Throws: `BytesError.invalidMemorySize` if a complete integer could not be returned by the time the sequence ended.
+    /// - Throws: ``BytesError/InvalidMemorySize/invalidMemorySize(targetSize:targetType:actualSize:)`` if a complete integer could not be returned by the time the sequence ended.
     @inlinable
-    public mutating func nextIfPresent<T: FixedWidthInteger>(littleEndian type: T.Type) throws -> T? {
-        try nextIfPresent(Bytes.self, count: MemoryLayout<T>.size).map { try T(littleEndianBytes: $0) }
+    public mutating func nextIfPresent<T: FixedWidthInteger>(littleEndian type: T.Type) throws(BytesError.InvalidMemorySize) -> T? {
+        /// We know the first `try` validates the size already, so the mapped one can never fail, and we can simplify the reported error types.
+        try nextIfPresent(Bytes.self, count: MemoryLayout<T>.size)
+            .map { try! T(littleEndianBytes: $0) }
     }
     
     /// Advances to the next big endian integer in the squence and returns it, or ends the sequence if there is no next element.
@@ -147,10 +167,12 @@ extension IteratorProtocol where Element == Byte {
     /// **Learn More:** [Integration with AsyncSequenceReader](https://github.com/mochidev/AsyncSequenceReader#integration-with-bytes)
     /// - Parameter type: The type of integer to decode.
     /// - Returns: An integer of type `type`, or `nil` if the sequence is finished.
-    /// - Throws: `BytesError.invalidMemorySize` if a complete integer could not be returned by the time the sequence ended.
+    /// - Throws: ``BytesError/InvalidMemorySize/invalidMemorySize(targetSize:targetType:actualSize:)`` if a complete integer could not be returned by the time the sequence ended.
     @inlinable
-    public mutating func nextIfPresent<T: FixedWidthInteger>(bigEndian type: T.Type) throws -> T? {
-        try nextIfPresent(Bytes.self, count: MemoryLayout<T>.size).map { try T(bigEndianBytes: $0) }
+    public mutating func nextIfPresent<T: FixedWidthInteger>(bigEndian type: T.Type) throws(BytesError.InvalidMemorySize) -> T? {
+        /// We know the first `try` validates the size already, so the mapped one can never fail, and we can simplify the reported error types.
+        try nextIfPresent(Bytes.self, count: MemoryLayout<T>.size)
+            .map { try! T(bigEndianBytes: $0) }
     }
     
     /// Advances by the next little endien integer if found, or throws if the next bytes in the iterator do not match.
@@ -159,11 +181,11 @@ extension IteratorProtocol where Element == Byte {
     ///
     /// **Learn More:** [Integration with AsyncSequenceReader](https://github.com/mochidev/AsyncSequenceReader#integration-with-bytes)
     /// - Parameter integer: The integer to check for.
-    /// - Throws: ``BytesError/checkedSequenceNotFound`` if the integer could not be identified.
+    /// - Throws: ``BytesError/CheckedSequenceNotFound`` if the integer could not be identified.
     @inlinable
     public mutating func check<Int: FixedWidthInteger>(
         littleEndian integer: Int
-    ) throws {
+    ) throws(BytesError.CheckedSequenceNotFound) {
         try check(integer.littleEndianBytes)
     }
     
@@ -173,11 +195,11 @@ extension IteratorProtocol where Element == Byte {
     ///
     /// **Learn More:** [Integration with AsyncSequenceReader](https://github.com/mochidev/AsyncSequenceReader#integration-with-bytes)
     /// - Parameter integer: The integer to check for.
-    /// - Throws: ``BytesError/checkedSequenceNotFound`` if the integer could not be identified.
+    /// - Throws: ``BytesError/CheckedSequenceNotFound`` if the integer could not be identified.
     @inlinable
     public mutating func check<Int: FixedWidthInteger>(
         bigEndian integer: Int
-    ) throws {
+    ) throws(BytesError.CheckedSequenceNotFound) {
         try check(integer.bigEndianBytes)
     }
     
@@ -188,12 +210,12 @@ extension IteratorProtocol where Element == Byte {
     /// **Learn More:** [Integration with AsyncSequenceReader](https://github.com/mochidev/AsyncSequenceReader#integration-with-bytes)
     /// - Parameter integer: The integer to check for.
     /// - Returns: `true` if the integer was found, or `false` if the sequence finished.
-    /// - Throws: ``BytesError/checkedSequenceNotFound`` if the integer could not be identified.
+    /// - Throws: ``BytesError/CheckedSequenceNotFound`` if the integer could not be identified.
     @inlinable
     @discardableResult
     public mutating func checkIfPresent<Int: FixedWidthInteger>(
         littleEndian integer: Int
-    ) throws -> Bool {
+    ) throws(BytesError.CheckedSequenceNotFound) -> Bool {
         try checkIfPresent(integer.littleEndianBytes)
     }
     
@@ -204,12 +226,12 @@ extension IteratorProtocol where Element == Byte {
     /// **Learn More:** [Integration with AsyncSequenceReader](https://github.com/mochidev/AsyncSequenceReader#integration-with-bytes)
     /// - Parameter integer: The integer to check for.
     /// - Returns: `true` if the integer was found, or `false` if the sequence finished.
-    /// - Throws: ``BytesError/checkedSequenceNotFound`` if the integer could not be identified.
+    /// - Throws: ``BytesError/CheckedSequenceNotFound`` if the integer could not be identified.
     @inlinable
     @discardableResult
     public mutating func checkIfPresent<Int: FixedWidthInteger>(
         bigEndian integer: Int
-    ) throws -> Bool {
+    ) throws(BytesError.CheckedSequenceNotFound) -> Bool {
         try checkIfPresent(integer.bigEndianBytes)
     }
 }
@@ -217,6 +239,7 @@ extension IteratorProtocol where Element == Byte {
 
 // MARK: - AsyncByteIterator
 
+#if canImport(Darwin)
 @available(macOS 10.15, iOS 13.0, watchOS 6.0, tvOS 13.0, *)
 extension AsyncIteratorProtocol where Element == Byte {
     /// Asynchronously advances to the next little endian integer in the squence and returns it, or throws if it could not.
@@ -226,11 +249,12 @@ extension AsyncIteratorProtocol where Element == Byte {
     /// **Learn More:** [Integration with AsyncSequenceReader](https://github.com/mochidev/AsyncSequenceReader#integration-with-bytes)
     /// - Parameter type: The type of integer to decode.
     /// - Returns: An integer of type `type`.
-    /// - Throws: `BytesError.invalidMemorySize` if a complete integer could not be returned by the time the sequence ended.
+    /// - Throws: ``BytesError/InvalidMemorySize/invalidMemorySize(targetSize:targetType:actualSize:)`` if a complete integer could not be returned by the time the sequence ended.
     #if swift(>=6.2)
     @concurrent
     #endif
     @inlinable
+    @_disfavoredOverload
     public mutating func next<T: FixedWidthInteger>(littleEndian type: T.Type) async throws -> T {
         try T(littleEndianBytes: await next(Bytes.self, count: MemoryLayout<T>.size))
     }
@@ -242,11 +266,12 @@ extension AsyncIteratorProtocol where Element == Byte {
     /// **Learn More:** [Integration with AsyncSequenceReader](https://github.com/mochidev/AsyncSequenceReader#integration-with-bytes)
     /// - Parameter type: The type of integer to decode.
     /// - Returns: An integer of type `type`.
-    /// - Throws: `BytesError.invalidMemorySize` if a complete integer could not be returned by the time the sequence ended.
+    /// - Throws: ``BytesError/InvalidMemorySize/invalidMemorySize(targetSize:targetType:actualSize:)`` if a complete integer could not be returned by the time the sequence ended.
     #if swift(>=6.2)
     @concurrent
     #endif
     @inlinable
+    @_disfavoredOverload
     public mutating func next<T: FixedWidthInteger>(bigEndian type: T.Type) async throws -> T {
         try T(bigEndianBytes: await next(Bytes.self, count: MemoryLayout<T>.size))
     }
@@ -258,11 +283,12 @@ extension AsyncIteratorProtocol where Element == Byte {
     /// **Learn More:** [Integration with AsyncSequenceReader](https://github.com/mochidev/AsyncSequenceReader#integration-with-bytes)
     /// - Parameter type: The type of integer to decode.
     /// - Returns: An integer of type `type`, or `nil` if the sequence is finished.
-    /// - Throws: `BytesError.invalidMemorySize` if a complete integer could not be returned by the time the sequence ended.
+    /// - Throws: ``BytesError/InvalidMemorySize/invalidMemorySize(targetSize:targetType:actualSize:)`` if a complete integer could not be returned by the time the sequence ended.
     #if swift(>=6.2)
     @concurrent
     #endif
     @inlinable
+    @_disfavoredOverload
     public mutating func nextIfPresent<T: FixedWidthInteger>(littleEndian type: T.Type) async throws -> T? {
         try await nextIfPresent(Bytes.self, count: MemoryLayout<T>.size).map { try T(littleEndianBytes: $0) }
     }
@@ -274,11 +300,12 @@ extension AsyncIteratorProtocol where Element == Byte {
     /// **Learn More:** [Integration with AsyncSequenceReader](https://github.com/mochidev/AsyncSequenceReader#integration-with-bytes)
     /// - Parameter type: The type of integer to decode.
     /// - Returns: An integer of type `type`, or `nil` if the sequence is finished.
-    /// - Throws: `BytesError.invalidMemorySize` if a complete integer could not be returned by the time the sequence ended.
+    /// - Throws: ``BytesError/InvalidMemorySize/invalidMemorySize(targetSize:targetType:actualSize:)`` if a complete integer could not be returned by the time the sequence ended.
     #if swift(>=6.2)
     @concurrent
     #endif
     @inlinable
+    @_disfavoredOverload
     public mutating func nextIfPresent<T: FixedWidthInteger>(bigEndian type: T.Type) async throws -> T? {
         try await nextIfPresent(Bytes.self, count: MemoryLayout<T>.size).map { try T(bigEndianBytes: $0) }
     }
@@ -289,11 +316,12 @@ extension AsyncIteratorProtocol where Element == Byte {
     ///
     /// **Learn More:** [Integration with AsyncSequenceReader](https://github.com/mochidev/AsyncSequenceReader#integration-with-bytes)
     /// - Parameter integer: The integer to check for.
-    /// - Throws: ``BytesError/checkedSequenceNotFound`` if the integer could not be identified.
+    /// - Throws: ``BytesError/CheckedSequenceNotFound`` if the integer could not be identified.
     #if swift(>=6.2)
     @concurrent
     #endif
     @inlinable
+    @_disfavoredOverload
     public mutating func check<Int: FixedWidthInteger>(
         littleEndian integer: Int
     ) async throws {
@@ -306,11 +334,12 @@ extension AsyncIteratorProtocol where Element == Byte {
     ///
     /// **Learn More:** [Integration with AsyncSequenceReader](https://github.com/mochidev/AsyncSequenceReader#integration-with-bytes)
     /// - Parameter integer: The integer to check for.
-    /// - Throws: ``BytesError/checkedSequenceNotFound`` if the integer could not be identified.
+    /// - Throws: ``BytesError/CheckedSequenceNotFound`` if the integer could not be identified.
     #if swift(>=6.2)
     @concurrent
     #endif
     @inlinable
+    @_disfavoredOverload
     public mutating func check<Int: FixedWidthInteger>(
         bigEndian integer: Int
     ) async throws {
@@ -324,11 +353,12 @@ extension AsyncIteratorProtocol where Element == Byte {
     /// **Learn More:** [Integration with AsyncSequenceReader](https://github.com/mochidev/AsyncSequenceReader#integration-with-bytes)
     /// - Parameter integer: The integer to check for.
     /// - Returns: `true` if the integer was found, or `false` if the sequence finished.
-    /// - Throws: ``BytesError/checkedSequenceNotFound`` if the integer could not be identified.
+    /// - Throws: ``BytesError/CheckedSequenceNotFound`` if the integer could not be identified.
     #if swift(>=6.2)
     @concurrent
     #endif
     @inlinable
+    @_disfavoredOverload
     @discardableResult
     public mutating func checkIfPresent<Int: FixedWidthInteger>(
         littleEndian integer: Int
@@ -343,15 +373,162 @@ extension AsyncIteratorProtocol where Element == Byte {
     /// **Learn More:** [Integration with AsyncSequenceReader](https://github.com/mochidev/AsyncSequenceReader#integration-with-bytes)
     /// - Parameter integer: The integer to check for.
     /// - Returns: `true` if the integer was found, or `false` if the sequence finished.
-    /// - Throws: ``BytesError/checkedSequenceNotFound`` if the integer could not be identified.
+    /// - Throws: ``BytesError/CheckedSequenceNotFound`` if the integer could not be identified.
     #if swift(>=6.2)
     @concurrent
     #endif
     @inlinable
+    @_disfavoredOverload
     @discardableResult
     public mutating func checkIfPresent<Int: FixedWidthInteger>(
         bigEndian integer: Int
     ) async throws -> Bool {
+        try await checkIfPresent(integer.bigEndianBytes)
+    }
+}
+#endif // canImport(Darwin)
+
+@available(macOS 15.0, iOS 18.0, watchOS 11.0, tvOS 18.0, visionOS 2.0, *)
+extension AsyncIteratorProtocol where Element == Byte {
+    /// Asynchronously advances to the next little endian integer in the squence and returns it, or throws if it could not.
+    ///
+    /// If a complete integer could not be constructed, an error is thrown and the sequence should be considered finished.
+    ///
+    /// **Learn More:** [Integration with AsyncSequenceReader](https://github.com/mochidev/AsyncSequenceReader#integration-with-bytes)
+    /// - Parameter type: The type of integer to decode.
+    /// - Parameter actor: The isolation context to run the reciever on.
+    /// - Returns: An integer of type `type`.
+    /// - Throws: ``BytesError/IteratedInvalidMemorySize`` if a complete integer could not be returned by the time the sequence ended.
+    @inlinable
+    public mutating func next<T: FixedWidthInteger>(
+        littleEndian type: T.Type,
+        isolation actor: isolated (any Actor)? = #isolation
+    ) async throws(BytesError.IteratedInvalidMemorySize<Failure>) -> T {
+        /// We know the inner `try` validates the size already, so the outer one can never fail, and we can simplify the reported error types.
+        try! T(littleEndianBytes: try await next(Bytes.self, count: MemoryLayout<T>.size))
+    }
+    
+    /// Asynchronously advances to the next big endian integer in the squence and returns it, or throws if it could not.
+    ///
+    /// If a complete integer could not be constructed, an error is thrown and the sequence should be considered finished.
+    ///
+    /// **Learn More:** [Integration with AsyncSequenceReader](https://github.com/mochidev/AsyncSequenceReader#integration-with-bytes)
+    /// - Parameter type: The type of integer to decode.
+    /// - Parameter actor: The isolation context to run the reciever on.
+    /// - Returns: An integer of type `type`.
+    /// - Throws: ``BytesError/IteratedInvalidMemorySize`` if a complete integer could not be returned by the time the sequence ended.
+    @inlinable
+    public mutating func next<T: FixedWidthInteger>(
+        bigEndian type: T.Type,
+        isolation actor: isolated (any Actor)? = #isolation
+    ) async throws(BytesError.IteratedInvalidMemorySize<Failure>) -> T {
+        /// We know the inner `try` validates the size already, so the outer one can never fail, and we can simplify the reported error types.
+        try! T(bigEndianBytes: try await next(Bytes.self, count: MemoryLayout<T>.size))
+    }
+    
+    /// Asynchronously advances to the next little endian integer in the squence and returns it, or ends the sequence if there is no next element.
+    ///
+    /// If a complete integer could not be constructed, an error is thrown and the sequence should be considered finished.
+    ///
+    /// **Learn More:** [Integration with AsyncSequenceReader](https://github.com/mochidev/AsyncSequenceReader#integration-with-bytes)
+    /// - Parameter type: The type of integer to decode.
+    /// - Parameter actor: The isolation context to run the reciever on.
+    /// - Returns: An integer of type `type`, or `nil` if the sequence is finished.
+    /// - Throws: ``BytesError/IteratedInvalidMemorySize`` if a complete integer could not be returned by the time the sequence ended.
+    @inlinable
+    public mutating func nextIfPresent<T: FixedWidthInteger>(
+        littleEndian type: T.Type,
+        isolation actor: isolated (any Actor)? = #isolation
+    ) async throws(BytesError.IteratedInvalidMemorySize<Failure>) -> T? {
+        /// We know the first `try` validates the size already, so the mapped one can never fail, and we can simplify the reported error types.
+        try await nextIfPresent(Bytes.self, count: MemoryLayout<T>.size)
+            .map { try! T(littleEndianBytes: $0) }
+    }
+    
+    /// Asynchronously advances to the next big endian integer in the squence and returns it, or ends the sequence if there is no next element.
+    ///
+    /// If a complete integer could not be constructed, an error is thrown and the sequence should be considered finished.
+    ///
+    /// **Learn More:** [Integration with AsyncSequenceReader](https://github.com/mochidev/AsyncSequenceReader#integration-with-bytes)
+    /// - Parameter type: The type of integer to decode.
+    /// - Parameter actor: The isolation context to run the reciever on.
+    /// - Returns: An integer of type `type`, or `nil` if the sequence is finished.
+    /// - Throws: ``BytesError/IteratedInvalidMemorySize`` if a complete integer could not be returned by the time the sequence ended.
+    @inlinable
+    public mutating func nextIfPresent<T: FixedWidthInteger>(
+        bigEndian type: T.Type,
+        isolation actor: isolated (any Actor)? = #isolation
+    ) async throws -> T? {
+        /// We know the first `try` validates the size already, so the mapped one can never fail, and we can simplify the reported error types.
+        try await nextIfPresent(Bytes.self, count: MemoryLayout<T>.size)
+            .map { try! T(bigEndianBytes: $0) }
+    }
+    
+    /// Asynchronously advances by the next little endien integer if found, or throws if the next bytes in the iterator do not match.
+    ///
+    /// Use this method when you expect an integer to be next in the sequence, and it would be an error if something else were encountered.
+    ///
+    /// **Learn More:** [Integration with AsyncSequenceReader](https://github.com/mochidev/AsyncSequenceReader#integration-with-bytes)
+    /// - Parameter integer: The integer to check for.
+    /// - Parameter actor: The isolation context to run the reciever on.
+    /// - Throws: ``BytesError/IteratedCheckedSequenceNotFound`` if the integer could not be identified.
+    @inlinable
+    public mutating func check<Int: FixedWidthInteger>(
+        littleEndian integer: Int,
+        isolation actor: isolated (any Actor)? = #isolation
+    ) async throws(BytesError.IteratedCheckedSequenceNotFound<Failure>) {
+        try await check(integer.littleEndianBytes)
+    }
+    
+    /// Asynchronously advances by the next big endien integer if found, or throws if the next bytes in the iterator do not match.
+    ///
+    /// Use this method when you expect an integer to be next in the sequence, and it would be an error if something else were encountered.
+    ///
+    /// **Learn More:** [Integration with AsyncSequenceReader](https://github.com/mochidev/AsyncSequenceReader#integration-with-bytes)
+    /// - Parameter integer: The integer to check for.
+    /// - Parameter actor: The isolation context to run the reciever on.
+    /// - Throws: ``BytesError/IteratedCheckedSequenceNotFound`` if the integer could not be identified.
+    @inlinable
+    public mutating func check<Int: FixedWidthInteger>(
+        bigEndian integer: Int,
+        isolation actor: isolated (any Actor)? = #isolation
+    ) async throws(BytesError.IteratedCheckedSequenceNotFound<Failure>) {
+        try await check(integer.bigEndianBytes)
+    }
+    
+    /// Asynchronously advances by the next little endien integer if found, throws if the next bytes in the iterator do not match, or returns false if the sequence ended.
+    ///
+    /// Use this method when you expect an integer to be next in the sequence, and it would be an error if something else were encountered.
+    ///
+    /// **Learn More:** [Integration with AsyncSequenceReader](https://github.com/mochidev/AsyncSequenceReader#integration-with-bytes)
+    /// - Parameter integer: The integer to check for.
+    /// - Parameter actor: The isolation context to run the reciever on.
+    /// - Returns: `true` if the integer was found, or `false` if the sequence finished.
+    /// - Throws: ``BytesError/IteratedCheckedSequenceNotFound`` if the integer could not be identified.
+    @inlinable
+    @discardableResult
+    public mutating func checkIfPresent<Int: FixedWidthInteger>(
+        littleEndian integer: Int,
+        isolation actor: isolated (any Actor)? = #isolation
+    ) async throws(BytesError.IteratedCheckedSequenceNotFound<Failure>) -> Bool {
+        try await checkIfPresent(integer.littleEndianBytes)
+    }
+    
+    /// Asynchronously advances by the next big endien integer if found, throws if the next bytes in the iterator do not match, or returns false if the sequence ended.
+    ///
+    /// Use this method when you expect an integer to be next in the sequence, and it would be an error if something else were encountered.
+    ///
+    /// **Learn More:** [Integration with AsyncSequenceReader](https://github.com/mochidev/AsyncSequenceReader#integration-with-bytes)
+    /// - Parameter integer: The integer to check for.
+    /// - Parameter actor: The isolation context to run the reciever on.
+    /// - Returns: `true` if the integer was found, or `false` if the sequence finished.
+    /// - Throws: ``BytesError/IteratedCheckedSequenceNotFound`` if the integer could not be identified.
+    @inlinable
+    @discardableResult
+    public mutating func checkIfPresent<Int: FixedWidthInteger>(
+        bigEndian integer: Int,
+        isolation actor: isolated (any Actor)? = #isolation
+    ) async throws(BytesError.IteratedCheckedSequenceNotFound<Failure>) -> Bool {
         try await checkIfPresent(integer.bigEndianBytes)
     }
 }

@@ -11,7 +11,6 @@
 // MARK: - BytesError
 
 public enum BytesError: Error {
-    case invalidCharacterByteSequence
     case invalidRawRepresentableByteSequence
     case invalidUUIDByteSequence
     
@@ -72,6 +71,38 @@ extension ByteCastingErrorWrapper where
     @inlinable
     public static func invalidBufferSize(targetSize: Int, targetType: String, actualSize: Int) -> Self {
         .castingFailure(.invalidBufferSize(targetSize: targetSize, targetType: targetType, actualSize: actualSize))
+    }
+}
+
+
+// MARK: - CharacterDecodingError
+
+extension BytesError {
+    /// An error thrown when a character could not be constructed from the byte sequence.
+    public enum CharacterDecodingError: ByteCastingError {
+        /// An error thrown when a character could not be constructed from the byte sequence.
+        case invalidCharacterByteSequence
+    }
+}
+
+extension ByteCastingError where
+    Self == BytesError.CharacterDecodingError
+{
+    /// An error thrown when a character could not be constructed from the byte sequence.
+    @inlinable
+    @_disfavoredOverload
+    public static var invalidCharacterByteSequence: Self {
+        .invalidCharacterByteSequence
+    }
+}
+
+extension ByteCastingErrorWrapper where
+    CastingFailure == BytesError.CharacterDecodingError
+{
+    /// An error thrown when a character could not be constructed from the byte sequence, wrapped in a parent error.
+    @inlinable
+    public static var invalidCharacterByteSequence: Self {
+        .castingFailure(.invalidCharacterByteSequence)
     }
 }
 
@@ -210,6 +241,9 @@ extension BytesError {
         /// A ``BytesError/BufferSizeError`` error thrown when an insufficient or invalid number of bytes were available before the sequence ended, wrapped in a ``BytesError/IterationError``.
         public typealias BufferSizeError = IterationError<BytesError.BufferSizeError, IterationFailure>
         
+        /// A ``BytesError/CharacterDecodingError`` error thrown when a character could not be constructed from the byte sequence, wrapped in a ``BytesError/IterationError``.
+        public typealias CharacterDecodingError = IterationError<BytesError.CharacterDecodingError, IterationFailure>
+        
         /// A ``BytesError/ContiguousBytesError`` error thrown when the receiving buffer cannot efficiently be made contiguous for casting, wrapped in a ``BytesError/IterationError``.
         public typealias ContiguousBytesError<CastingFailure: ByteCastingError> = IterationError<BytesError.ContiguousBytesError<CastingFailure>, IterationFailure>
         
@@ -227,6 +261,9 @@ extension BytesError {
     public enum Transformation<TransformationFailure: Error> {
         /// A ``BytesError/BufferSizeError`` error thrown when an insufficient or invalid number of bytes were available before the sequence ended, wrapped in a ``BytesError/TransformationError``.
         public typealias BufferSizeError = TransformationError<BytesError.BufferSizeError, TransformationFailure>
+        
+        /// A ``BytesError/CharacterDecodingError`` error thrown when a character could not be constructed from the byte sequence, wrapped in a ``BytesError/TransformationError``.
+        public typealias CharacterDecodingError = TransformationError<BytesError.CharacterDecodingError, TransformationFailure>
         
         /// A ``BytesError/ContiguousBytesError`` error thrown when the receiving buffer cannot efficiently be made contiguous for casting, wrapped in a ``BytesError/TransformationError``.
         public typealias ContiguousBytesError<CastingFailure: ByteCastingError> = TransformationError<BytesError.ContiguousBytesError<CastingFailure>, TransformationFailure>

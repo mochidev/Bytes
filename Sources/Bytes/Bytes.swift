@@ -9,7 +9,7 @@
 
 public typealias Byte = UInt8
 
-/// A type that has the same API as `Bytes`, `BytesSlice`, and `ContiguousBytes`.
+/// A type that has the same API as ``Bytes``, ``BytesSlice``, and ``ContiguousBytes``.
 public protocol BytesCollection: CustomDebugStringConvertible, CustomReflectable, CustomStringConvertible, ExpressibleByArrayLiteral, MutableCollection, RandomAccessCollection, RangeReplaceableCollection, Sendable where Element == Byte, Index == Int, SubSequence: BytesCollection {}
 
 public typealias Bytes = Array<Byte>

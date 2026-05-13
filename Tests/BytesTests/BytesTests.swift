@@ -72,7 +72,8 @@ extension BytesError {
         let messageResult = message()
         
         switch expressionResult {
-        case Self.invalidCharacterByteSequence: break
+        case BytesError.CharacterDecodingError.invalidCharacterByteSequence:
+            break
         default:
             if messageResult.isEmpty {
                 XCTFail("\(type(of: expressionResult)).\(expressionResult) is not BytesError.invalidCharacterByteSequence", file: (file), line: line)

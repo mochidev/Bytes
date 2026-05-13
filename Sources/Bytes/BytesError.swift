@@ -84,6 +84,24 @@ extension ByteCastingError where Self == BytesError.CheckedSequenceNotFound {
 
 
 extension BytesError {
+    /// An error thrown when the a character could not be constructed from the byte sequence.
+    public struct Character: ByteCastingError {
+        /// An error thrown when the a character could not be constructed from the byte sequence.
+        @inlinable
+        public init() {}
+    }
+}
+
+extension ByteCastingError where Self == BytesError.Character {
+    /// An error thrown when the a character could not be constructed from the byte sequence.
+    @inlinable
+    public static var invalidCharacterByteSequence: Self {
+        Self()
+    }
+}
+
+
+extension BytesError {
     /// An error thrown when an insufficient or invalid number of bytes were available before the sequence ended.
     public struct InvalidMemorySize: ByteCastingError {
         /// The required size of the buffer.

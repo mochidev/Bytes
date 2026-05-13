@@ -111,6 +111,7 @@ extension BytesError {
         let messageResult = message()
         
         if case Self.invalidCharacterByteSequence = expressionResult {
+        } else if expressionResult is BytesError.Character {
         } else if case BytesError.TransformedInvalidMemorySize<any Error>.transformationFailure(Self.invalidCharacterByteSequence) = expressionResult {
         } else if messageResult.isEmpty {
             XCTFail("\(type(of: expressionResult)).\(expressionResult) is not BytesError.invalidCharacterByteSequence", file: (file), line: line)

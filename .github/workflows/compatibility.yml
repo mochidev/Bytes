@@ -13,42 +13,6 @@ concurrency:
   cancel-in-progress: ${{ github.ref_name != 'main' }}
 
 jobs:
-  Build-Release-5-10:
-    name: Build Swift 5.10 Release
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    steps:
-    - name: Checkout Source
-      uses: actions/checkout@v6
-    - name: Set Swift Version
-      uses: vapor/swiftly-action@v0.2
-      with:
-        toolchain: "5.10"
-    - name: Swift Version
-      run: |
-        swift --version
-    - name: Build
-      run: |
-        swift build --configuration release
-
-  Build-Debug-5-10:
-    name: Build Swift 5.10 Debug
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    steps:
-    - name: Checkout Source
-      uses: actions/checkout@v6
-    - name: Set Swift Version
-      uses: vapor/swiftly-action@v0.2
-      with:
-        toolchain: "5.10"
-    - name: Swift Version
-      run: |
-        swift --version
-    - name: Build
-      run: |
-        swift build --configuration debug
-
   Build-Release-6-0:
     name: Build Swift 6.0 Release
     runs-on: ubuntu-latest

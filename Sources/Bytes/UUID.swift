@@ -7,11 +7,7 @@
 //  mochidev-swift-bytes: F44D5591194F47C0834EC1EBD0102932
 //
 
-#if swift(>=6)
 public import Foundation
-#else
-import Foundation
-#endif
 
 /// Internal structure to use when measuring UUID bytes in collections
 @usableFromInline

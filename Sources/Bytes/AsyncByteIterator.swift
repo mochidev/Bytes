@@ -28,16 +28,6 @@ extension AsyncIteratorProtocol where Element == Byte {
         return try await next(bytes, min: count, max: count)
     }
     
-    /// Please use ``next(_:count:)`` instead.
-    @available(*, deprecated, renamed: "next(_:count:)")
-    #if swift(>=6.2)
-    @concurrent
-    #endif
-    @inlinable
-    public mutating func next(bytes type: Bytes.Type, count: Int) async throws -> Bytes {
-        try await next(type, count: count)
-    }
-    
     /// Asynchronously advances a byte array with the specified minimum size, continuing until the specified maximum size, or throws if it could not.
     ///
     /// **Learn More:** [Integration with AsyncSequenceReader](https://github.com/mochidev/AsyncSequenceReader#integration-with-bytes)
@@ -77,16 +67,6 @@ extension AsyncIteratorProtocol where Element == Byte {
         return result
     }
     
-    /// Please use ``next(_:min:max:)`` instead.
-    @available(*, deprecated, renamed: "next(_:min:max:)")
-    #if swift(>=6.2)
-    @concurrent
-    #endif
-    @inlinable
-    public mutating func next(bytes type: Bytes.Type, min minCount: Int, max maxCount: Int) async throws -> Bytes {
-        try await next(type, min: minCount, max: maxCount)
-    }
-    
     /// Asynchronously advances a byte array with the specified maximum size.
     ///
     /// **Learn More:** [Integration with AsyncSequenceReader](https://github.com/mochidev/AsyncSequenceReader#integration-with-bytes)
@@ -118,16 +98,6 @@ extension AsyncIteratorProtocol where Element == Byte {
         return result
     }
     
-    /// Please use ``next(_:max:)`` instead.
-    @available(*, deprecated, renamed: "next(_:max:)")
-    #if swift(>=6.2)
-    @concurrent
-    #endif
-    @inlinable
-    public mutating func next(bytes type: Bytes.Type, max maxCount: Int) async rethrows -> Bytes {
-        try await next(type, max: maxCount)
-    }
-    
     /// Asynchronously advances a byte array of size `count`, or ends the sequence if there is no next element.
     ///
     /// **Learn More:** [Integration with AsyncSequenceReader](https://github.com/mochidev/AsyncSequenceReader#integration-with-bytes)
@@ -145,16 +115,6 @@ extension AsyncIteratorProtocol where Element == Byte {
     ) async throws -> Bytes? {
         assert(count >= 0, "count must be larger than 0")
         return try await nextIfPresent(bytes, min: count, max: count)
-    }
-    
-    /// Please use ``nextIfPresent(_:count:)`` instead.
-    @available(*, deprecated, renamed: "nextIfPresent(_:count:)")
-    #if swift(>=6.2)
-    @concurrent
-    #endif
-    @inlinable
-    public mutating func nextIfPresent(bytes type: Bytes.Type, count: Int) async throws -> Bytes? {
-        return try await nextIfPresent(type, count: count)
     }
     
     /// Asynchronously advances a byte array with the specified minimum size, continuing until the specified maximum size, or ends the sequence if there is no next element.
@@ -198,16 +158,6 @@ extension AsyncIteratorProtocol where Element == Byte {
         return result
     }
     
-    /// Please use ``nextIfPresent(_:min:max:)`` instead.
-    @available(*, deprecated, renamed: "nextIfPresent(_:min:max:)")
-    #if swift(>=6.2)
-    @concurrent
-    #endif
-    @inlinable
-    public mutating func nextIfPresent(bytes type: Bytes.Type, min minCount: Int, max maxCount: Int) async throws -> Bytes? {
-        try await nextIfPresent(type, min: minCount, max: maxCount)
-    }
-    
     /// Asynchronously advances a byte array with the specified maximum size, or ends the sequence if there is no next element.
     ///
     /// **Learn More:** [Integration with AsyncSequenceReader](https://github.com/mochidev/AsyncSequenceReader#integration-with-bytes)
@@ -239,16 +189,6 @@ extension AsyncIteratorProtocol where Element == Byte {
         guard !result.isEmpty else { return nil }
         
         return result
-    }
-    
-    /// Please use ``nextIfPresent(_:max:)`` instead.
-    @available(*, deprecated, renamed: "nextIfPresent(_:max:)")
-    #if swift(>=6.2)
-    @concurrent
-    #endif
-    @inlinable
-    public mutating func nextIfPresent(bytes type: Bytes.Type, max maxCount: Int) async rethrows -> Bytes? {
-        try await nextIfPresent(type, max: maxCount)
     }
     
     /// Asynchronously advances by the specified byte if found, or throws if the next byte does not match.

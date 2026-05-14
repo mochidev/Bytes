@@ -10,9 +10,7 @@
 
 // MARK: - BytesError
 
-public enum BytesError: Error {
-    case invalidRawRepresentableByteSequence
-}
+public enum BytesError: Error {}
 
 
 // MARK: - ByteCastingError
@@ -115,6 +113,17 @@ extension ByteCastingErrorWrapper where
     }
 }
 
+extension ByteCastingErrorWrapper where
+    CastingFailure: ByteCastingErrorWrapper,
+    CastingFailure.CastingFailure == BytesError.CharacterDecodingError
+{
+    /// An error thrown when the a character could not be constructed from the byte sequence, wrapped in a parent error.
+    @inlinable
+    public static var invalidCharacterByteSequence: Self {
+        .castingFailure(.invalidCharacterByteSequence)
+    }
+}
+
 
 // MARK: - ContiguousBytesError
 
@@ -196,6 +205,46 @@ extension BytesError.IterationError {
     }
 }
 
+// MARK: - RawRepresentableError
+
+extension BytesError {
+    /// An error thrown while initializing a `RawRepresentable` type with raw bytes.
+    public enum RawRepresentableError<CastingFailure: ByteCastingError>: ByteCastingError, ByteCastingErrorWrapper {
+        /// An error was thrown because the raw value could not be casted from the specified bytes.
+        case castingFailure(CastingFailure)
+        /// An error was thrown because the raw value evaluated to a `nil` `RawRepresentable` value.
+        case invalidRawRepresentableByteSequence(rawType: String)
+    }
+}
+
+extension ByteCastingError {
+    /// Consuming the sequence failed because the raw value evaluated to a `nil` `RawRepresentable` value.
+    @inlinable
+    @_disfavoredOverload
+    public static func invalidRawRepresentableByteSequence<CastingFailure: ByteCastingError>(rawType: String) -> BytesError.RawRepresentableError<CastingFailure> {
+        .invalidRawRepresentableByteSequence(rawType: rawType)
+    }
+}
+
+extension ByteCastingErrorWrapper {
+    /// Consuming the sequence failed because the raw value evaluated to a `nil` `RawRepresentable` value, wrapped in a parent error.
+    @inlinable
+    public static func invalidRawRepresentableByteSequence<InnerCastingFailure: ByteCastingError>(rawType: String) -> Self where CastingFailure == BytesError.RawRepresentableError<InnerCastingFailure> {
+        .castingFailure(.invalidRawRepresentableByteSequence(rawType: rawType))
+    }
+}
+
+extension ByteCastingErrorWrapper where
+    CastingFailure: ByteCastingErrorWrapper
+{
+    /// Consuming the sequence failed because the raw value evaluated to a `nil` `RawRepresentable` value, wrapped in a parent error.
+    @inlinable
+    public static func invalidRawRepresentableByteSequence<InnerCastingFailure: ByteCastingError>(rawType: String) -> Self where CastingFailure.CastingFailure == BytesError.RawRepresentableError<InnerCastingFailure> {
+        .castingFailure(.invalidRawRepresentableByteSequence(rawType: rawType))
+    }
+}
+
+
 // MARK: - SequenceCheckError
 
 extension BytesError {
@@ -219,6 +268,17 @@ extension ByteCastingError where
 
 extension ByteCastingErrorWrapper where
     CastingFailure == BytesError.SequenceCheckError
+{
+    /// An error thrown when the checked byte was not found as the next consumable element, wrapped in a parent error.
+    @inlinable
+    public static var checkedSequenceNotFound: Self {
+        .castingFailure(.checkedSequenceNotFound)
+    }
+}
+
+extension ByteCastingErrorWrapper where
+    CastingFailure: ByteCastingErrorWrapper,
+    CastingFailure.CastingFailure == BytesError.SequenceCheckError
 {
     /// An error thrown when the checked byte was not found as the next consumable element, wrapped in a parent error.
     @inlinable
@@ -274,6 +334,23 @@ extension BytesError.TransformationError where
     }
 }
 
+extension BytesError.TransformationError where
+    TransformationFailure: ByteCastingErrorWrapper,
+    TransformationFailure.CastingFailure: ByteCastingErrorWrapper,
+    TransformationFailure.CastingFailure.CastingFailure == CastingFailure
+{
+    /// Flatten a ``BytesError/TransformationError`` whose cases both contain an identical leaf error into a single non-branching error.
+    @inlinable
+    public var flattened: TransformationFailure {
+        switch self {
+        case .castingFailure(let error):
+            .castingFailure(.castingFailure(error))
+        case .transformationFailure(let error):
+            error
+        }
+    }
+}
+
 
 // MARK: - UUIDDecodingError
 
@@ -314,6 +391,45 @@ extension BytesError {
         public typealias BufferSizeError = ContiguousBytesError<BytesError.BufferSizeError>
     }
     
+    /// A namespace for errors wrapped within a ``RawRepresentableError``.
+    public enum RawRepresentable {
+        /// A ``BytesError/BufferSizeError`` error thrown when an insufficient or invalid number of bytes were available before the sequence ended, wrapped in a ``BytesError/RawRepresentableError``.
+        public typealias BufferSizeError = RawRepresentableError<BytesError.BufferSizeError>
+        
+        /// A ``BytesError/CharacterDecodingError`` error thrown when the a character could not be constructed from the byte sequence, wrapped in a ``BytesError/RawRepresentableError``.
+        public typealias CharacterDecodingError = RawRepresentableError<BytesError.CharacterDecodingError>
+        
+        /// A ``BytesError/ContiguousBytesError`` error thrown when the receiving buffer cannot efficiently be made contiguous for casting, wrapped in a ``BytesError/RawRepresentableError``.
+        public typealias ContiguousBytesError<CastingFailure: ByteCastingError> = RawRepresentableError<BytesError.ContiguousBytesError<CastingFailure>>
+        
+        /// A namespace for errors wrapped within ``BytesError/ContiguousBytesError`` and ``BytesError/RawRepresentableError`` respectively.
+        public enum ContiguousBytes {
+            /// A ``BytesError/BufferSizeError`` error thrown when an insufficient or invalid number of bytes were available before the sequence ended, wrapped within ``BytesError/ContiguousBytesError`` and ``BytesError/RawRepresentableError`` respectively.
+            public typealias BufferSizeError = ContiguousBytesError<BytesError.BufferSizeError>
+        }
+        
+        /// A ``BytesError/SequenceCheckError`` error thrown when the checked byte was not found as the next consumable element, wrapped in a ``BytesError/RawRepresentableError``.
+        public typealias SequenceCheckError = RawRepresentableError<BytesError.SequenceCheckError>
+        
+        /// A ``BytesError/UUIDDecodingError`` error thrown when a UUID could not be constructed from the byte sequence, wrapped in a ``BytesError/RawRepresentableError``.
+        public typealias UUIDDecodingError<CastingFailure: ByteCastingError> = RawRepresentableError<BytesError.UUIDDecodingError<CastingFailure>>
+        
+        /// A namespace for errors wrapped within ``BytesError/UUIDDecodingError`` and ``BytesError/RawRepresentableError`` respectively.
+        public enum UUIDDecoding {
+            /// A ``BytesError/BufferSizeError`` error thrown when an insufficient or invalid number of bytes were available before the sequence ended, wrapped within ``BytesError/UUIDDecodingError`` and ``BytesError/RawRepresentableError`` respectively.
+            public typealias BufferSizeError = UUIDDecodingError<BytesError.BufferSizeError>
+            
+            /// A ``BytesError/ContiguousBytesError`` error thrown when the receiving buffer cannot efficiently be made contiguous for casting, wrapped within ``BytesError/UUIDDecodingError`` and ``BytesError/RawRepresentableError``.
+            public typealias ContiguousBytesError<CastingFailure: ByteCastingError> = UUIDDecodingError<BytesError.ContiguousBytesError<CastingFailure>>
+            
+            /// A namespace for errors wrapped within ``BytesError/ContiguousBytesError``, ``BytesError/UUIDDecodingError`` and ``BytesError/RawRepresentableError`` respectively.
+            public enum ContiguousBytes {
+                /// A ``BytesError/BufferSizeError`` error thrown when an insufficient or invalid number of bytes were available before the sequence ended, wrapped within ``BytesError/ContiguousBytesError``, ``BytesError/UUIDDecodingError``, and ``BytesError/RawRepresentableError`` respectively.
+                public typealias BufferSizeError = ContiguousBytesError<BytesError.BufferSizeError>
+            }
+        }
+    }
+    
     /// A namespace for errors wrapped within a ``IterationError``.
     public enum Iteration<IterationFailure: Error> {
         /// A ``BytesError/BufferSizeError`` error thrown when an insufficient or invalid number of bytes were available before the sequence ended, wrapped in a ``BytesError/IterationError``.
@@ -329,6 +445,48 @@ extension BytesError {
         public enum ContiguousBytes {
             /// A ``BytesError/BufferSizeError`` error thrown when an insufficient or invalid number of bytes were available before the sequence ended, wrapped within ``BytesError/ContiguousBytesError`` and ``BytesError/IterationError`` respectively.
             public typealias BufferSizeError = ContiguousBytesError<BytesError.BufferSizeError>
+        }
+        
+        /// A ``BytesError/RawRepresentableError`` error thrown while initializing a `RawRepresentable` type with raw bytes, wrapped in a ``BytesError/IterationError``.
+        public typealias RawRepresentableError<CastingFailure: ByteCastingError> = IterationError<BytesError.RawRepresentableError<CastingFailure>, IterationFailure>
+        
+        /// A namespace for errors wrapped within ``BytesError/RawRepresentableError`` and ``BytesError/IterationError`` respectively.
+        public enum RawRepresentable {
+            /// A ``BytesError/BufferSizeError`` error thrown when an insufficient or invalid number of bytes were available before the sequence ended, within ``BytesError/RawRepresentableError`` and ``BytesError/IterationError`` respectively.
+            public typealias BufferSizeError = RawRepresentableError<BytesError.BufferSizeError>
+            
+            /// A ``BytesError/CharacterDecodingError`` error thrown when the a character could not be constructed from the byte sequence, within ``BytesError/RawRepresentableError`` and ``BytesError/IterationError`` respectively.
+            public typealias CharacterDecodingError = RawRepresentableError<BytesError.CharacterDecodingError>
+            
+            /// A ``BytesError/ContiguousBytesError`` error thrown when the receiving buffer cannot efficiently be made contiguous for casting, within ``BytesError/RawRepresentableError`` and ``BytesError/IterationError`` respectively.
+            public typealias ContiguousBytesError<CastingFailure: ByteCastingError> = RawRepresentableError<BytesError.ContiguousBytesError<CastingFailure>>
+            
+            /// A namespace for errors wrapped within ``BytesError/ContiguousBytesError`` and ``BytesError/RawRepresentableError`` respectively.
+            public enum ContiguousBytes {
+                /// A ``BytesError/BufferSizeError`` error thrown when an insufficient or invalid number of bytes were available before the sequence ended, wrapped within ``BytesError/ContiguousBytesError``, ``BytesError/RawRepresentableError``, and ``BytesError/IterationError`` respectively.
+                public typealias BufferSizeError = ContiguousBytesError<BytesError.BufferSizeError>
+            }
+            
+            /// A ``BytesError/SequenceCheckError`` error thrown when the checked byte was not found as the next consumable element, wrapped within ``BytesError/RawRepresentableError`` and ``BytesError/IterationError`` respectively.
+            public typealias SequenceCheckError = RawRepresentableError<BytesError.SequenceCheckError>
+            
+            /// A ``BytesError/UUIDDecodingError`` error thrown when a UUID could not be constructed from the byte sequence, wrapped within ``BytesError/RawRepresentableError`` and ``BytesError/IterationError`` respectively.
+            public typealias UUIDDecodingError<CastingFailure: ByteCastingError> = RawRepresentableError<BytesError.UUIDDecodingError<CastingFailure>>
+            
+            /// A namespace for errors wrapped within ``BytesError/UUIDDecodingError``, ``BytesError/RawRepresentableError``, and ``BytesError/IterationError`` respectively.
+            public enum UUIDDecoding {
+                /// A ``BytesError/BufferSizeError`` error thrown when an insufficient or invalid number of bytes were available before the sequence ended, wrapped within ``BytesError/UUIDDecodingError``, ``BytesError/RawRepresentableError``, and ``BytesError/IterationError`` respectively.
+                public typealias BufferSizeError = UUIDDecodingError<BytesError.BufferSizeError>
+                
+                /// A ``BytesError/ContiguousBytesError`` error thrown when the receiving buffer cannot efficiently be made contiguous for casting, wrapped within ``BytesError/UUIDDecodingError``, ``BytesError/RawRepresentableError``, and ``BytesError/IterationError``.
+                public typealias ContiguousBytesError<CastingFailure: ByteCastingError> = UUIDDecodingError<BytesError.ContiguousBytesError<CastingFailure>>
+                
+                /// A namespace for errors wrapped within ``BytesError/ContiguousBytesError``, ``BytesError/UUIDDecodingError``, ``BytesError/RawRepresentableError``, and ``BytesError/IterationError`` respectively.
+                public enum ContiguousBytes {
+                    /// A ``BytesError/BufferSizeError`` error thrown when an insufficient or invalid number of bytes were available before the sequence ended, wrapped within ``BytesError/ContiguousBytesError``, ``BytesError/UUIDDecodingError``, ``BytesError/RawRepresentableError``, and ``BytesError/IterationError`` respectively.
+                    public typealias BufferSizeError = ContiguousBytesError<BytesError.BufferSizeError>
+                }
+            }
         }
         
         /// A ``BytesError/SequenceCheckError`` error thrown when the checked byte was not found as the next consumable element, wrapped in a ``BytesError/IterationError``.
@@ -368,6 +526,48 @@ extension BytesError {
         public enum ContiguousBytes {
             /// A ``BytesError/BufferSizeError`` error thrown when an insufficient or invalid number of bytes were available before the sequence ended, wrapped within ``BytesError/ContiguousBytesError`` and ``BytesError/TransformationError`` respectively.
             public typealias BufferSizeError = ContiguousBytesError<BytesError.BufferSizeError>
+        }
+        
+        /// A ``BytesError/RawRepresentableError`` error thrown while initializing a `RawRepresentable` type with raw bytes, wrapped in a ``BytesError/TransformationError``.
+        public typealias RawRepresentableError<CastingFailure: ByteCastingError> = TransformationError<BytesError.RawRepresentableError<CastingFailure>, TransformationFailure>
+        
+        /// A namespace for errors wrapped within ``BytesError/RawRepresentableError`` and ``BytesError/TransformationError`` respectively.
+        public enum RawRepresentable {
+            /// A ``BytesError/BufferSizeError`` error thrown when an insufficient or invalid number of bytes were available before the sequence ended, within ``BytesError/RawRepresentableError`` and ``BytesError/TransformationError`` respectively.
+            public typealias BufferSizeError = RawRepresentableError<BytesError.BufferSizeError>
+            
+            /// A ``BytesError/CharacterDecodingError`` error thrown when the a character could not be constructed from the byte sequence, within ``BytesError/RawRepresentableError`` and ``BytesError/TransformationError`` respectively.
+            public typealias CharacterDecodingError = RawRepresentableError<BytesError.CharacterDecodingError>
+            
+            /// A ``BytesError/ContiguousBytesError`` error thrown when the receiving buffer cannot efficiently be made contiguous for casting, within ``BytesError/RawRepresentableError`` and ``BytesError/TransformationError`` respectively.
+            public typealias ContiguousBytesError<CastingFailure: ByteCastingError> = RawRepresentableError<BytesError.ContiguousBytesError<CastingFailure>>
+            
+            /// A namespace for errors wrapped within ``BytesError/ContiguousBytesError`` and ``BytesError/RawRepresentableError`` respectively.
+            public enum ContiguousBytes {
+                /// A ``BytesError/BufferSizeError`` error thrown when an insufficient or invalid number of bytes were available before the sequence ended, wrapped within ``BytesError/ContiguousBytesError``, ``BytesError/RawRepresentableError``, and ``BytesError/TransformationError`` respectively.
+                public typealias BufferSizeError = ContiguousBytesError<BytesError.BufferSizeError>
+            }
+            
+            /// A ``BytesError/SequenceCheckError`` error thrown when the checked byte was not found as the next consumable element, wrapped within ``BytesError/RawRepresentableError`` and ``BytesError/TransformationError`` respectively.
+            public typealias SequenceCheckError = RawRepresentableError<BytesError.SequenceCheckError>
+            
+            /// A ``BytesError/UUIDDecodingError`` error thrown when a UUID could not be constructed from the byte sequence, wrapped within ``BytesError/RawRepresentableError`` and ``BytesError/TransformationError`` respectively.
+            public typealias UUIDDecodingError<CastingFailure: ByteCastingError> = RawRepresentableError<BytesError.UUIDDecodingError<CastingFailure>>
+            
+            /// A namespace for errors wrapped within ``BytesError/UUIDDecodingError``, ``BytesError/RawRepresentableError``, and ``BytesError/TransformationError`` respectively.
+            public enum UUIDDecoding {
+                /// A ``BytesError/BufferSizeError`` error thrown when an insufficient or invalid number of bytes were available before the sequence ended, wrapped within ``BytesError/UUIDDecodingError``, ``BytesError/RawRepresentableError``, and ``BytesError/TransformationError`` respectively.
+                public typealias BufferSizeError = UUIDDecodingError<BytesError.BufferSizeError>
+                
+                /// A ``BytesError/ContiguousBytesError`` error thrown when the receiving buffer cannot efficiently be made contiguous for casting, wrapped within ``BytesError/UUIDDecodingError``, ``BytesError/RawRepresentableError``, and ``BytesError/TransformationError``.
+                public typealias ContiguousBytesError<CastingFailure: ByteCastingError> = UUIDDecodingError<BytesError.ContiguousBytesError<CastingFailure>>
+                
+                /// A namespace for errors wrapped within ``BytesError/ContiguousBytesError``, ``BytesError/UUIDDecodingError``, ``BytesError/RawRepresentableError``, and ``BytesError/TransformationError`` respectively.
+                public enum ContiguousBytes {
+                    /// A ``BytesError/BufferSizeError`` error thrown when an insufficient or invalid number of bytes were available before the sequence ended, wrapped within ``BytesError/ContiguousBytesError``, ``BytesError/UUIDDecodingError``, ``BytesError/RawRepresentableError``, and ``BytesError/TransformationError`` respectively.
+                    public typealias BufferSizeError = ContiguousBytesError<BytesError.BufferSizeError>
+                }
+            }
         }
         
         /// A ``BytesError/SequenceCheckError`` error thrown when the checked byte was not found as the next consumable element, wrapped in a ``BytesError/TransformationError``.

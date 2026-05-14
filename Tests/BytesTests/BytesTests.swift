@@ -18,8 +18,8 @@ extension BytesError {
         actualSize: @autoclosure () throws -> Int,
         _ message: @autoclosure () -> String = "",
         file: StaticString = #file,
-        line: UInt = #line) rethrows {
-        
+        line: UInt = #line
+    ) rethrows {
         let expressionResult = try expression()
         let messageResult = message()
         
@@ -27,8 +27,52 @@ extension BytesError {
             XCTAssertEqual(a1, try targetSize(), messageResult, file: (file), line: line)
             XCTAssertEqual(a2, try targetType(), messageResult, file: (file), line: line)
             XCTAssertEqual(a3, try actualSize(), messageResult, file: (file), line: line)
+        } else if let invalidMemorySizeError = expressionResult as? BytesError.InvalidMemorySize {
+            XCTAssertEqual(invalidMemorySizeError.targetSize, try targetSize(), messageResult, file: (file), line: line)
+            XCTAssertEqual(invalidMemorySizeError.targetType, try targetType(), messageResult, file: (file), line: line)
+            XCTAssertEqual(invalidMemorySizeError.actualSize, try actualSize(), messageResult, file: (file), line: line)
+        } else if case BytesError.IteratedInvalidMemorySize<any Error>.consumptionFailure(let invalidMemorySizeError) = expressionResult {
+            XCTAssertEqual(invalidMemorySizeError.targetSize, try targetSize(), messageResult, file: (file), line: line)
+            XCTAssertEqual(invalidMemorySizeError.targetType, try targetType(), messageResult, file: (file), line: line)
+            XCTAssertEqual(invalidMemorySizeError.actualSize, try actualSize(), messageResult, file: (file), line: line)
+        } else if case BytesError.IteratedInvalidMemorySize<Never>.consumptionFailure(let invalidMemorySizeError) = expressionResult {
+            XCTAssertEqual(invalidMemorySizeError.targetSize, try targetSize(), messageResult, file: (file), line: line)
+            XCTAssertEqual(invalidMemorySizeError.targetType, try targetType(), messageResult, file: (file), line: line)
+            XCTAssertEqual(invalidMemorySizeError.actualSize, try actualSize(), messageResult, file: (file), line: line)
+        } else if case BytesError.TransformedInvalidMemorySize<any Error>.consumptionFailure(let invalidMemorySizeError) = expressionResult {
+            XCTAssertEqual(invalidMemorySizeError.targetSize, try targetSize(), messageResult, file: (file), line: line)
+            XCTAssertEqual(invalidMemorySizeError.targetType, try targetType(), messageResult, file: (file), line: line)
+            XCTAssertEqual(invalidMemorySizeError.actualSize, try actualSize(), messageResult, file: (file), line: line)
+        } else if case BytesError.TransformedInvalidMemorySize<Never>.consumptionFailure(let invalidMemorySizeError) = expressionResult {
+            XCTAssertEqual(invalidMemorySizeError.targetSize, try targetSize(), messageResult, file: (file), line: line)
+            XCTAssertEqual(invalidMemorySizeError.targetType, try targetType(), messageResult, file: (file), line: line)
+            XCTAssertEqual(invalidMemorySizeError.actualSize, try actualSize(), messageResult, file: (file), line: line)
+        } else if case let BytesError.Casting.invalidMemorySize(a1, a2, a3) = expressionResult {
+            XCTAssertEqual(a1, try targetSize(), messageResult, file: (file), line: line)
+            XCTAssertEqual(a2, try targetType(), messageResult, file: (file), line: line)
+            XCTAssertEqual(a3, try actualSize(), messageResult, file: (file), line: line)
+        } else if case let BytesError.IteratedCasting<any Error>.consumptionFailure(.invalidMemorySize(a1, a2, a3)) = expressionResult {
+            XCTAssertEqual(a1, try targetSize(), messageResult, file: (file), line: line)
+            XCTAssertEqual(a2, try targetType(), messageResult, file: (file), line: line)
+            XCTAssertEqual(a3, try actualSize(), messageResult, file: (file), line: line)
+        } else if case let BytesError.IteratedCasting<Never>.consumptionFailure(.invalidMemorySize(a1, a2, a3)) = expressionResult {
+            XCTAssertEqual(a1, try targetSize(), messageResult, file: (file), line: line)
+            XCTAssertEqual(a2, try targetType(), messageResult, file: (file), line: line)
+            XCTAssertEqual(a3, try actualSize(), messageResult, file: (file), line: line)
+        } else if case let BytesError.TransformedCasting<any Error>.consumptionFailure(.invalidMemorySize(a1, a2, a3)) = expressionResult {
+            XCTAssertEqual(a1, try targetSize(), messageResult, file: (file), line: line)
+            XCTAssertEqual(a2, try targetType(), messageResult, file: (file), line: line)
+            XCTAssertEqual(a3, try actualSize(), messageResult, file: (file), line: line)
+        } else if case let BytesError.TransformedCasting<Never>.consumptionFailure(.invalidMemorySize(a1, a2, a3)) = expressionResult {
+            XCTAssertEqual(a1, try targetSize(), messageResult, file: (file), line: line)
+            XCTAssertEqual(a2, try targetType(), messageResult, file: (file), line: line)
+            XCTAssertEqual(a3, try actualSize(), messageResult, file: (file), line: line)
+        } else if case let BytesError.RawRepresentableCasting.castingFailure(.invalidMemorySize(a1, a2, a3)) = expressionResult {
+            XCTAssertEqual(a1, try targetSize(), messageResult, file: (file), line: line)
+            XCTAssertEqual(a2, try targetType(), messageResult, file: (file), line: line)
+            XCTAssertEqual(a3, try actualSize(), messageResult, file: (file), line: line)
         } else if messageResult.isEmpty {
-            XCTFail("\(expressionResult) is not BytesError.invalidMemorySize", file: (file), line: line)
+            XCTFail("\(type(of: expressionResult)).\(expressionResult) is not BytesError.invalidMemorySize", file: (file), line: line)
         } else {
             XCTFail(messageResult, file: (file), line: line)
         }
@@ -39,15 +83,24 @@ extension BytesError {
         collectionType: @autoclosure () throws -> String,
         _ message: @autoclosure () -> String = "",
         file: StaticString = #file,
-        line: UInt = #line) rethrows {
-        
+        line: UInt = #line
+    ) rethrows {
         let expressionResult = try expression()
         let messageResult = message()
         
         if case let Self.contiguousMemoryUnavailable(a1) = expressionResult {
             XCTAssertEqual(a1, try collectionType(), messageResult, file: (file), line: line)
+        } else if case let BytesError.Casting.contiguousMemoryUnavailable(a1) = expressionResult {
+            XCTAssertEqual(a1, try collectionType(), messageResult, file: (file), line: line)
+        } else if case let BytesError.IteratedCasting<any Error>.consumptionFailure(.contiguousMemoryUnavailable(a1)) = expressionResult {
+            XCTAssertEqual(a1, try collectionType(), messageResult, file: (file), line: line)
+        } else if case let BytesError.IteratedCasting<Never>.consumptionFailure(.contiguousMemoryUnavailable(a1)) = expressionResult {            XCTAssertEqual(a1, try collectionType(), messageResult, file: (file), line: line)
+        } else if case let BytesError.TransformedCasting<any Error>.consumptionFailure(.contiguousMemoryUnavailable(a1)) = expressionResult {
+            XCTAssertEqual(a1, try collectionType(), messageResult, file: (file), line: line)
+        } else if case let BytesError.TransformedCasting<Never>.consumptionFailure(.contiguousMemoryUnavailable(a1)) = expressionResult {            XCTAssertEqual(a1, try collectionType(), messageResult, file: (file), line: line)
+        } else if case let BytesError.RawRepresentableCasting.castingFailure(.contiguousMemoryUnavailable(a1)) = expressionResult {            XCTAssertEqual(a1, try collectionType(), messageResult, file: (file), line: line)
         } else if messageResult.isEmpty {
-            XCTFail("\(expressionResult) is not BytesError.contiguousMemoryUnavailable", file: (file), line: line)
+            XCTFail("\(type(of: expressionResult)).\(expressionResult) is not BytesError.contiguousMemoryUnavailable", file: (file), line: line)
         } else {
             XCTFail(messageResult, file: (file), line: line)
         }
@@ -57,14 +110,17 @@ extension BytesError {
         _ expression: @autoclosure () throws -> any Error,
         _ message: @autoclosure () -> String = "",
         file: StaticString = #file,
-        line: UInt = #line) rethrows {
-        
+        line: UInt = #line
+    ) rethrows {
         let expressionResult = try expression()
         let messageResult = message()
         
         if case Self.invalidCharacterByteSequence = expressionResult {
+        } else if expressionResult is BytesError.Character {
+        } else if case BytesError.TransformedInvalidMemorySize<any Error>.transformationFailure(Self.invalidCharacterByteSequence) = expressionResult {
+        } else if case BytesError.RawRepresentableCharacter.castingFailure(.invalidCharacterByteSequence) = expressionResult {
         } else if messageResult.isEmpty {
-            XCTFail("\(expressionResult) is not BytesError.invalidCharacterByteSequence", file: (file), line: line)
+            XCTFail("\(type(of: expressionResult)).\(expressionResult) is not BytesError.invalidCharacterByteSequence", file: (file), line: line)
         } else {
             XCTFail(messageResult, file: (file), line: line)
         }
@@ -74,14 +130,22 @@ extension BytesError {
         _ expression: @autoclosure () throws -> any Error,
         _ message: @autoclosure () -> String = "",
         file: StaticString = #file,
-        line: UInt = #line) rethrows {
-        
+        line: UInt = #line
+    ) rethrows {
         let expressionResult = try expression()
         let messageResult = message()
         
         if case Self.invalidRawRepresentableByteSequence = expressionResult {
+        } else if case BytesError.TransformedInvalidMemorySize<any Error>.transformationFailure(Self.invalidRawRepresentableByteSequence) = expressionResult {
+        } else if case BytesError.RawRepresentable<Never>.invalidRawRepresentableByteSequence = expressionResult {
+        } else if case BytesError.RawRepresentableCasting.invalidRawRepresentableByteSequence = expressionResult {
+        } else if case BytesError.RawRepresentableCharacter.invalidRawRepresentableByteSequence = expressionResult {
+        } else if case BytesError.IteratedRawRepresentableCasting<Never>.consumptionFailure(.invalidRawRepresentableByteSequence) = expressionResult {
+        } else if case BytesError.TransformedRawRepresentableCasting<Never>.consumptionFailure(.invalidRawRepresentableByteSequence) = expressionResult {
+        } else if case BytesError.IteratedRawRepresentableCasting<any Error>.consumptionFailure(.invalidRawRepresentableByteSequence) = expressionResult {
+        } else if case BytesError.TransformedRawRepresentableCasting<any Error>.consumptionFailure(.invalidRawRepresentableByteSequence) = expressionResult {
         } else if messageResult.isEmpty {
-            XCTFail("\(expressionResult) is not BytesError.invalidRawRepresentableByteSequence", file: (file), line: line)
+            XCTFail("\(type(of: expressionResult)).\(expressionResult) is not BytesError.invalidRawRepresentableByteSequence", file: (file), line: line)
         } else {
             XCTFail(messageResult, file: (file), line: line)
         }
@@ -91,14 +155,15 @@ extension BytesError {
         _ expression: @autoclosure () throws -> any Error,
         _ message: @autoclosure () -> String = "",
         file: StaticString = #file,
-        line: UInt = #line) rethrows {
-        
+        line: UInt = #line
+    ) rethrows {
         let expressionResult = try expression()
         let messageResult = message()
         
         if case Self.invalidUUIDByteSequence = expressionResult {
+        } else if case BytesError.TransformedInvalidMemorySize<any Error>.transformationFailure(Self.invalidUUIDByteSequence) = expressionResult {
         } else if messageResult.isEmpty {
-            XCTFail("\(expressionResult) is not BytesError.invalidUUIDByteSequence", file: (file), line: line)
+            XCTFail("\(type(of: expressionResult)).\(expressionResult) is not BytesError.invalidUUIDByteSequence", file: (file), line: line)
         } else {
             XCTFail(messageResult, file: (file), line: line)
         }

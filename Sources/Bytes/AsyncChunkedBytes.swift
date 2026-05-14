@@ -78,12 +78,20 @@ extension AsyncChunkedBytes: AsyncSequence {
         
         /// Produces the next element in the chunked sequence.
         ///
-        /// This iterator buffers bytes up to `capacity`, then returnes then as a single chunk.
+        /// This iterator buffers bytes up to `capacity`, then returnes them as a single chunk.
         #if swift(>=6.2)
         @concurrent
         #endif
         @inlinable
         public mutating func next() async rethrows -> Bytes? {
+            try await baseIterator.nextIfPresent(Bytes.self, max: capacity)
+        }
+        
+        /// Produces the next element in the chunked sequence.
+        ///
+        /// This iterator buffers bytes up to `capacity`, then returnes them as a single chunk.
+        @available(macOS 15.0, iOS 18.0, watchOS 11.0, tvOS 18.0, visionOS 2.0, *)
+        public mutating func next(isolation actor: isolated (any Actor)?) async throws(Base.Failure) -> Bytes? {
             try await baseIterator.nextIfPresent(Bytes.self, max: capacity)
         }
     }

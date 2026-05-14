@@ -140,6 +140,10 @@ extension BytesError {
         } else if case BytesError.RawRepresentable<Never>.invalidRawRepresentableByteSequence = expressionResult {
         } else if case BytesError.RawRepresentableCasting.invalidRawRepresentableByteSequence = expressionResult {
         } else if case BytesError.RawRepresentableCharacter.invalidRawRepresentableByteSequence = expressionResult {
+        } else if case BytesError.IteratedRawRepresentableCasting<Never>.consumptionFailure(.invalidRawRepresentableByteSequence) = expressionResult {
+        } else if case BytesError.TransformedRawRepresentableCasting<Never>.consumptionFailure(.invalidRawRepresentableByteSequence) = expressionResult {
+        } else if case BytesError.IteratedRawRepresentableCasting<any Error>.consumptionFailure(.invalidRawRepresentableByteSequence) = expressionResult {
+        } else if case BytesError.TransformedRawRepresentableCasting<any Error>.consumptionFailure(.invalidRawRepresentableByteSequence) = expressionResult {
         } else if messageResult.isEmpty {
             XCTFail("\(type(of: expressionResult)).\(expressionResult) is not BytesError.invalidRawRepresentableByteSequence", file: (file), line: line)
         } else {

@@ -41,8 +41,12 @@ extension BytesError {
     public typealias RawRepresentableCasting = RawRepresentable<Casting>
     /// An error thrown while casting values to a given target type, wrapped in a ``BytesError/Iteration`` error.
     public typealias IteratedCasting<Failure: Error> = Iteration<Casting, Failure>
+    /// An error thrown while casting values to a given target type, wrapped in a ``BytesError/RawRepresentable`` error, itself wrapped in a ``BytesError/Iteration`` error.
+    public typealias IteratedRawRepresentableCasting<Failure: Error> = IteratedRawRepresentable<Failure, Casting>
     /// An error thrown while casting values to a given target type, wrapped in a ``BytesError/Transformation`` error.
     public typealias TransformedCasting<Failure: Error> = Transformation<Casting, Failure>
+    /// An error thrown while casting values to a given target type, wrapped in a ``BytesError/RawRepresentable`` error, itself wrapped in a ``BytesError/Transformation`` error.
+    public typealias TransformedRawRepresentableCasting<Failure: Error> = TransformedRawRepresentable<Failure, Casting>
 }
 
 extension ByteCastingError where Self == BytesError.Casting {

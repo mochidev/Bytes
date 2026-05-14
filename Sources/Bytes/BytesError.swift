@@ -19,6 +19,7 @@ public enum BytesError: Error {
 }
 
 public protocol ByteCastingError: Error, Equatable, Hashable {}
+extension Never: ByteCastingError {}
 
 
 extension BytesError {
@@ -36,6 +37,8 @@ extension BytesError {
         }
     }
     
+    /// An error thrown while casting values to a given target type, wrapped in a ``BytesError/RawRepresentable`` error.
+    public typealias RawRepresentableCasting = RawRepresentable<Casting>
     /// An error thrown while casting values to a given target type, wrapped in a ``BytesError/Iteration`` error.
     public typealias IteratedCasting<Failure: Error> = Iteration<Casting, Failure>
     /// An error thrown while casting values to a given target type, wrapped in a ``BytesError/Transformation`` error.
@@ -90,6 +93,9 @@ extension BytesError {
         @inlinable
         public init() {}
     }
+    
+    /// An error thrown when the a character could not be constructed from the byte sequence, wrapped in a ``BytesError/RawRepresentable`` error.
+    public typealias RawRepresentableCharacter = RawRepresentable<Character>
 }
 
 extension ByteCastingError where Self == BytesError.Character {
@@ -142,6 +148,31 @@ extension ByteCastingError where Self == BytesError.InvalidMemorySize {
     @inlinable
     public static func invalidMemorySize(targetSize: Int, targetType: String, actualSize: Int) -> Self {
         Self(targetSize: targetSize, targetType: targetType, actualSize: actualSize)
+    }
+}
+
+
+extension BytesError {
+    /// An error thrown while initializing a `RawRepresentable` type with raw bytes.
+    public enum RawRepresentable<CastingFailure: ByteCastingError>: ByteCastingError {
+        /// Consuming the sequence failed because the raw value could not be casted from the specified byte sequence.
+        case castingFailure(CastingFailure)
+        /// Consuming the sequence failed because the raw value evaluated to a `nil` `RawRepresentable` value.
+        case invalidRawRepresentableByteSequence(rawType: String)
+    }
+    
+    /// An error thrown while initializing a `RawRepresentable` type with raw bytes, wrapped in a ``BytesError/Iteration`` error.
+    public typealias IteratedRawRepresentable<Failure: Error, CastingFailure: ByteCastingError> = Iteration<RawRepresentable<CastingFailure>, Failure>
+    /// An error thrown while initializing a `RawRepresentable` type with raw bytes, wrapped in a ``BytesError/Transformation`` error.
+    public typealias TransformedRawRepresentable<Failure: Error, CastingFailure: ByteCastingError> = Transformation<RawRepresentable<CastingFailure>, Failure>
+}
+
+extension ByteCastingError where Self == BytesError.RawRepresentable<Never> {
+    /// Consuming the sequence failed because the raw value evaluated to a `nil` `RawRepresentable` value.
+    @inlinable
+    @_disfavoredOverload
+    public static func invalidRawRepresentableByteSequence(rawType: String) -> Self {
+        .invalidRawRepresentableByteSequence(rawType: rawType)
     }
 }
 

@@ -18,19 +18,22 @@ extension BytesError {
         actualSize: @autoclosure () throws -> Int,
         _ message: @autoclosure () -> String = "",
         file: StaticString = #file,
-        line: UInt = #line) rethrows {
-        
+        line: UInt = #line
+    ) rethrows {
         let expressionResult = try expression()
         let messageResult = message()
         
-        if case let Self.invalidMemorySize(a1, a2, a3) = expressionResult {
+        switch expressionResult {
+        case let Self.invalidMemorySize(a1, a2, a3):
             XCTAssertEqual(a1, try targetSize(), messageResult, file: (file), line: line)
             XCTAssertEqual(a2, try targetType(), messageResult, file: (file), line: line)
             XCTAssertEqual(a3, try actualSize(), messageResult, file: (file), line: line)
-        } else if messageResult.isEmpty {
-            XCTFail("\(expressionResult) is not BytesError.invalidMemorySize", file: (file), line: line)
-        } else {
-            XCTFail(messageResult, file: (file), line: line)
+        default:
+            if messageResult.isEmpty {
+                XCTFail("\(type(of: expressionResult)).\(expressionResult) is not BytesError.invalidMemorySize", file: (file), line: line)
+            } else {
+                XCTFail(messageResult, file: (file), line: line)
+            }
         }
     }
     
@@ -39,17 +42,20 @@ extension BytesError {
         collectionType: @autoclosure () throws -> String,
         _ message: @autoclosure () -> String = "",
         file: StaticString = #file,
-        line: UInt = #line) rethrows {
-        
+        line: UInt = #line
+    ) rethrows {
         let expressionResult = try expression()
         let messageResult = message()
         
-        if case let Self.contiguousMemoryUnavailable(a1) = expressionResult {
+        switch expressionResult {
+        case let Self.contiguousMemoryUnavailable(a1):
             XCTAssertEqual(a1, try collectionType(), messageResult, file: (file), line: line)
-        } else if messageResult.isEmpty {
-            XCTFail("\(expressionResult) is not BytesError.contiguousMemoryUnavailable", file: (file), line: line)
-        } else {
-            XCTFail(messageResult, file: (file), line: line)
+        default:
+            if messageResult.isEmpty {
+                XCTFail("\(type(of: expressionResult)).\(expressionResult) is not BytesError.contiguousMemoryUnavailable", file: (file), line: line)
+            } else {
+                XCTFail(messageResult, file: (file), line: line)
+            }
         }
     }
     
@@ -57,16 +63,19 @@ extension BytesError {
         _ expression: @autoclosure () throws -> any Error,
         _ message: @autoclosure () -> String = "",
         file: StaticString = #file,
-        line: UInt = #line) rethrows {
-        
+        line: UInt = #line
+    ) rethrows {
         let expressionResult = try expression()
         let messageResult = message()
         
-        if case Self.invalidCharacterByteSequence = expressionResult {
-        } else if messageResult.isEmpty {
-            XCTFail("\(expressionResult) is not BytesError.invalidCharacterByteSequence", file: (file), line: line)
-        } else {
-            XCTFail(messageResult, file: (file), line: line)
+        switch expressionResult {
+        case Self.invalidCharacterByteSequence: break
+        default:
+            if messageResult.isEmpty {
+                XCTFail("\(type(of: expressionResult)).\(expressionResult) is not BytesError.invalidCharacterByteSequence", file: (file), line: line)
+            } else {
+                XCTFail(messageResult, file: (file), line: line)
+            }
         }
     }
     
@@ -74,16 +83,19 @@ extension BytesError {
         _ expression: @autoclosure () throws -> any Error,
         _ message: @autoclosure () -> String = "",
         file: StaticString = #file,
-        line: UInt = #line) rethrows {
-        
+        line: UInt = #line
+    ) rethrows {
         let expressionResult = try expression()
         let messageResult = message()
         
-        if case Self.invalidRawRepresentableByteSequence = expressionResult {
-        } else if messageResult.isEmpty {
-            XCTFail("\(expressionResult) is not BytesError.invalidRawRepresentableByteSequence", file: (file), line: line)
-        } else {
-            XCTFail(messageResult, file: (file), line: line)
+        switch expressionResult {
+        case Self.invalidRawRepresentableByteSequence: break
+        default:
+            if messageResult.isEmpty {
+                XCTFail("\(type(of: expressionResult)).\(expressionResult) is not BytesError.invalidRawRepresentableByteSequence", file: (file), line: line)
+            } else {
+                XCTFail(messageResult, file: (file), line: line)
+            }
         }
     }
     
@@ -91,16 +103,19 @@ extension BytesError {
         _ expression: @autoclosure () throws -> any Error,
         _ message: @autoclosure () -> String = "",
         file: StaticString = #file,
-        line: UInt = #line) rethrows {
-        
+        line: UInt = #line
+    ) rethrows {
         let expressionResult = try expression()
         let messageResult = message()
         
-        if case Self.invalidUUIDByteSequence = expressionResult {
-        } else if messageResult.isEmpty {
-            XCTFail("\(expressionResult) is not BytesError.invalidUUIDByteSequence", file: (file), line: line)
-        } else {
-            XCTFail(messageResult, file: (file), line: line)
+        switch expressionResult {
+        case Self.invalidUUIDByteSequence: break
+        default:
+            if messageResult.isEmpty {
+                XCTFail("\(type(of: expressionResult)).\(expressionResult) is not BytesError.invalidUUIDByteSequence", file: (file), line: line)
+            } else {
+                XCTFail(messageResult, file: (file), line: line)
+            }
         }
     }
 }

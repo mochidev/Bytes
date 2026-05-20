@@ -12,9 +12,6 @@
 
 public enum BytesError: Error {
     case invalidRawRepresentableByteSequence
-    case invalidUUIDByteSequence
-    
-    case checkedSequenceNotFound
 }
 
 
@@ -66,6 +63,18 @@ extension ByteCastingErrorWrapper where
 extension ByteCastingErrorWrapper where
     CastingFailure: ByteCastingErrorWrapper,
     CastingFailure.CastingFailure == BytesError.BufferSizeError
+{
+    /// An error thrown when an insufficient or invalid number of bytes were available before the ``Bytes`` sequence ended, wrapped in a parent error.
+    @inlinable
+    public static func invalidBufferSize(targetSize: Int, targetType: String, actualSize: Int) -> Self {
+        .castingFailure(.invalidBufferSize(targetSize: targetSize, targetType: targetType, actualSize: actualSize))
+    }
+}
+
+extension ByteCastingErrorWrapper where
+    CastingFailure: ByteCastingErrorWrapper,
+    CastingFailure.CastingFailure: ByteCastingErrorWrapper,
+    CastingFailure.CastingFailure.CastingFailure == BytesError.BufferSizeError
 {
     /// An error thrown when an insufficient or invalid number of bytes were available before the ``Bytes`` sequence ended, wrapped in a parent error.
     @inlinable
@@ -143,6 +152,19 @@ extension ByteCastingErrorWrapper {
     }
 }
 
+extension ByteCastingErrorWrapper where
+    CastingFailure: ByteCastingErrorWrapper
+{
+    /// An error was thrown because the underlying buffer is not contiguous and is over 4KB in size, wrapped in a parent error.
+    /// - Note: Copy the sequence first if you know the expected casting size is correct.
+    @inlinable
+    public static func contiguousBytesUnavailable<InnerCastingFailure: ByteCastingError>(
+        type: String
+    ) -> Self where CastingFailure.CastingFailure == BytesError.ContiguousBytesError<InnerCastingFailure> {
+        .castingFailure(.contiguousBytesUnavailable(type: type))
+    }
+}
+
 
 // MARK: - IterationError
 
@@ -162,6 +184,17 @@ extension BytesError {
 extension BytesError.IterationError: Equatable where IterationFailure: Equatable {}
 extension BytesError.IterationError: Hashable where IterationFailure: Hashable {}
 
+extension BytesError.IterationError {
+    @inlinable
+    public func mapCastingFailure<NewCastingFailure: ByteCastingError>(
+        _ transform: (CastingFailure) -> NewCastingFailure
+    ) -> BytesError.IterationError<NewCastingFailure, IterationFailure> {
+        switch self {
+        case .castingFailure(let error):    .castingFailure(transform(error))
+        case .iterationFailure(let error):  .iterationFailure(error)
+        }
+    }
+}
 
 // MARK: - SequenceCheckError
 
@@ -213,16 +246,61 @@ extension BytesError {
 extension BytesError.TransformationError: Equatable where TransformationFailure: Equatable {}
 extension BytesError.TransformationError: Hashable where TransformationFailure: Hashable {}
 
-extension BytesError.Transformation<BytesError.ContiguousBytes.BufferSizeError>.BufferSizeError {
-    /// Flatted a ``BytesError/TransformationError`` whose cases both contain a ``BytesError/BufferSizeError`` into a single ``BytesError/ContiguousBytes/BufferSizeError`` error.
+extension BytesError.TransformationError {
     @inlinable
-    public var flattened: BytesError.ContiguousBytes.BufferSizeError {
+    public func mapCastingFailure<NewCastingFailure: ByteCastingError>(
+        _ transform: (CastingFailure) -> NewCastingFailure
+    ) -> BytesError.TransformationError<NewCastingFailure, TransformationFailure> {
+        switch self {
+        case .castingFailure(let error):        .castingFailure(transform(error))
+        case .transformationFailure(let error): .transformationFailure(error)
+        }
+    }
+}
+
+extension BytesError.TransformationError where
+    TransformationFailure: ByteCastingErrorWrapper,
+    TransformationFailure.CastingFailure == CastingFailure
+{
+    /// Flatten a ``BytesError/TransformationError`` whose cases both contain an identical leaf error into a single non-branching error.
+    @inlinable
+    public var flattened: TransformationFailure {
         switch self {
         case .castingFailure(let error):
             .castingFailure(error)
         case .transformationFailure(let error):
             error
         }
+    }
+}
+
+
+// MARK: - UUIDDecodingError
+
+extension BytesError {
+    /// An error thrown when a UUID could not be constructed from the byte sequence.
+    public enum UUIDDecodingError<CastingFailure: ByteCastingError>: ByteCastingError, ByteCastingErrorWrapper {
+        /// An error thrown while casting the specified bytes.
+        case castingFailure(CastingFailure)
+        /// An error thrown when a UUID could not be constructed from the byte sequence.
+        case invalidUUIDByteSequence
+    }
+}
+
+extension ByteCastingError {
+    /// An error thrown when a UUID could not be constructed from the byte sequence.
+    @inlinable
+    @_disfavoredOverload
+    public static func invalidUUIDByteSequence<CastingFailure: ByteCastingError>() -> BytesError.UUIDDecodingError<CastingFailure> {
+        .invalidUUIDByteSequence
+    }
+}
+
+extension ByteCastingErrorWrapper {
+    /// An error thrown when a UUID could not be constructed from the byte sequence, wrapped in a parent error.
+    @inlinable
+    public static func invalidUUIDByteSequence<InnerCastingFailure: ByteCastingError>() -> Self where CastingFailure == BytesError.UUIDDecodingError<InnerCastingFailure> {
+        .castingFailure(.invalidUUIDByteSequence())
     }
 }
 
@@ -255,6 +333,24 @@ extension BytesError {
         
         /// A ``BytesError/SequenceCheckError`` error thrown when the checked byte was not found as the next consumable element, wrapped in a ``BytesError/IterationError``.
         public typealias SequenceCheckError = IterationError<BytesError.SequenceCheckError, IterationFailure>
+        
+        /// A ``BytesError/UUIDDecodingError`` error thrown when a UUID could not be constructed from the byte sequence, wrapped in a ``BytesError/IterationError``.
+        public typealias UUIDDecodingError<CastingFailure: ByteCastingError> = IterationError<BytesError.UUIDDecodingError<CastingFailure>, IterationFailure>
+        
+        /// A namespace for errors wrapped within ``BytesError/UUIDDecodingError`` and ``BytesError/IterationError`` respectively.
+        public enum UUIDDecoding {
+            /// A ``BytesError/BufferSizeError`` error thrown when an insufficient or invalid number of bytes were available before the sequence ended, wrapped within ``BytesError/UUIDDecodingError`` and ``BytesError/IterationError`` respectively.
+            public typealias BufferSizeError = UUIDDecodingError<BytesError.BufferSizeError>
+            
+            /// A ``BytesError/ContiguousBytesError`` error thrown when the receiving buffer cannot efficiently be made contiguous for casting, wrapped within ``BytesError/UUIDDecodingError`` and ``BytesError/IterationError``.
+            public typealias ContiguousBytesError<CastingFailure: ByteCastingError> = UUIDDecodingError<BytesError.ContiguousBytesError<CastingFailure>>
+            
+            /// A namespace for errors wrapped within ``BytesError/ContiguousBytesError``, ``BytesError/UUIDDecodingError``, and ``BytesError/IterationError`` respectively.
+            public enum ContiguousBytes {
+                /// A ``BytesError/BufferSizeError`` error thrown when an insufficient or invalid number of bytes were available before the sequence ended, wrapped within ``BytesError/ContiguousBytesError``, ``BytesError/UUIDDecodingError``, and ``BytesError/IterationError`` respectively.
+                public typealias BufferSizeError = ContiguousBytesError<BytesError.BufferSizeError>
+            }
+        }
     }
     
     /// A namespace for errors wrapped within a ``TransformationError``.
@@ -276,5 +372,38 @@ extension BytesError {
         
         /// A ``BytesError/SequenceCheckError`` error thrown when the checked byte was not found as the next consumable element, wrapped in a ``BytesError/TransformationError``.
         public typealias SequenceCheckError = TransformationError<BytesError.SequenceCheckError, TransformationFailure>
+        
+        /// A ``BytesError/UUIDDecodingError`` error thrown when a UUID could not be constructed from the byte sequence, wrapped in a ``BytesError/TransformationError``.
+        public typealias UUIDDecodingError<CastingFailure: ByteCastingError> = TransformationError<BytesError.UUIDDecodingError<CastingFailure>, TransformationFailure>
+        
+        /// A namespace for errors wrapped within ``BytesError/UUIDDecodingError`` and ``BytesError/TransformationError`` respectively.
+        public enum UUIDDecoding {
+            /// A ``BytesError/BufferSizeError`` error thrown when an insufficient or invalid number of bytes were available before the sequence ended, wrapped within ``BytesError/UUIDDecodingError`` and ``BytesError/TransformationError`` respectively.
+            public typealias BufferSizeError = UUIDDecodingError<BytesError.BufferSizeError>
+            
+            /// A ``BytesError/ContiguousBytesError`` error thrown when the receiving buffer cannot efficiently be made contiguous for casting, wrapped within ``BytesError/UUIDDecodingError`` and ``BytesError/TransformationError``.
+            public typealias ContiguousBytesError<CastingFailure: ByteCastingError> = UUIDDecodingError<BytesError.ContiguousBytesError<CastingFailure>>
+            
+            /// A namespace for errors wrapped within ``BytesError/ContiguousBytesError``, ``BytesError/UUIDDecodingError``, and ``BytesError/TransformationError`` respectively.
+            public enum ContiguousBytes {
+                /// A ``BytesError/BufferSizeError`` error thrown when an insufficient or invalid number of bytes were available before the sequence ended, wrapped within ``BytesError/ContiguousBytesError``, ``BytesError/UUIDDecodingError``, and ``BytesError/TransformationError`` respectively.
+                public typealias BufferSizeError = ContiguousBytesError<BytesError.BufferSizeError>
+            }
+        }
+    }
+    
+    /// A namespace for errors wrapped within a ``BytesError/UUIDDecodingError``.
+    public enum UUIDDecoding {
+        /// A ``BytesError/BufferSizeError`` error thrown when an insufficient or invalid number of bytes were available before the sequence ended, wrapped in a ``BytesError/UUIDDecodingError`` respectively.
+        public typealias BufferSizeError = UUIDDecodingError<BytesError.BufferSizeError>
+        
+        /// A ``BytesError/ContiguousBytesError`` error thrown when the receiving buffer cannot efficiently be made contiguous for casting, wrapped in a ``BytesError/UUIDDecodingError``.
+        public typealias ContiguousBytesError<CastingFailure: ByteCastingError> = UUIDDecodingError<BytesError.ContiguousBytesError<CastingFailure>>
+        
+        /// A namespace for errors wrapped within ``BytesError/ContiguousBytesError`` and ``BytesError/UUIDDecodingError`` respectively.
+        public enum ContiguousBytes {
+            /// A ``BytesError/BufferSizeError`` error thrown when an insufficient or invalid number of bytes were available before the sequence ended, wrapped within ``BytesError/ContiguousBytesError`` and ``BytesError/UUIDDecodingError`` respectively.
+            public typealias BufferSizeError = ContiguousBytesError<BytesError.BufferSizeError>
+        }
     }
 }

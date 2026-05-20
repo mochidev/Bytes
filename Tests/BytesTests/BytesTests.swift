@@ -27,6 +27,7 @@ extension BytesError {
         case
             let BytesError.BufferSizeError.invalidBufferSize(a1, a2, a3),
             let BytesError.ContiguousBytes.BufferSizeError.castingFailure(.invalidBufferSize(a1, a2, a3)),
+            let BytesError.UUIDDecoding.BufferSizeError.castingFailure(.invalidBufferSize(a1, a2, a3)),
             let BytesError.Transformation<any Error>.BufferSizeError.castingFailure(.invalidBufferSize(a1, a2, a3)):
             XCTAssertEqual(a1, try targetSize(), messageResult, file: (file), line: line)
             XCTAssertEqual(a2, try targetType(), messageResult, file: (file), line: line)
@@ -117,8 +118,8 @@ extension BytesError {
         
         switch expressionResult {
         case
-            Self.invalidUUIDByteSequence,
-            BytesError.Transformation<any Error>.BufferSizeError.transformationFailure(Self.invalidUUIDByteSequence):
+            BytesError.UUIDDecodingError<Never>.invalidUUIDByteSequence,
+            BytesError.UUIDDecodingError<BufferSizeError>.invalidUUIDByteSequence:
             break
         default:
             if messageResult.isEmpty {

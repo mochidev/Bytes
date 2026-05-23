@@ -28,7 +28,7 @@ Please check the [releases](https://github.com/mochidev/Bytes/releases) for reco
 dependencies: [
     .package(
         url: "https://github.com/mochidev/Bytes.git",
-        .upToNextMinor(from: "0.4.0")
+        .upToNextMinor(from: "0.5.0")
     ),
 ],
 ...
@@ -185,7 +185,7 @@ extension AsyncIteratorProtocol where Element == Byte {
 
 ## Version Compatibility
 
-The last version to support Swift 5.7 through Swift 5.10 is 0.4.0. All newer versions require a Swift 6 compiler.
+The last version to support Swift 5.7 through Swift 5.10 is `0.4.0`. All newer versions require a Swift 6 compiler.
 
 ## Contributing
 

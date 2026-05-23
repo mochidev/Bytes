@@ -28,6 +28,7 @@ extension BytesError {
             let BytesError.BufferSizeError.invalidBufferSize(a1, a2, a3),
             let BytesError.ContiguousBytes.BufferSizeError.castingFailure(.invalidBufferSize(a1, a2, a3)),
             let BytesError.UUIDDecoding.BufferSizeError.castingFailure(.invalidBufferSize(a1, a2, a3)),
+            let BytesError.RawRepresentable.BufferSizeError.castingFailure(.invalidBufferSize(a1, a2, a3)),
             let BytesError.RawRepresentable.ContiguousBytes.BufferSizeError.castingFailure(.castingFailure(.invalidBufferSize(a1, a2, a3))),
             let BytesError.Transformation<any Error>.BufferSizeError.castingFailure(.invalidBufferSize(a1, a2, a3)):
             XCTAssertEqual(a1, try targetSize(), messageResult, file: (file), line: line)
@@ -99,6 +100,7 @@ extension BytesError {
         switch expressionResult {
         case
             BytesError.RawRepresentableError<Never>.invalidRawRepresentableByteSequence,
+            BytesError.RawRepresentable.BufferSizeError.invalidRawRepresentableByteSequence,
             BytesError.RawRepresentable.CharacterDecodingError.invalidRawRepresentableByteSequence,
             BytesError.RawRepresentable.ContiguousBytes.BufferSizeError.invalidRawRepresentableByteSequence:
             break

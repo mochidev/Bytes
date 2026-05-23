@@ -26,6 +26,17 @@ extension FixedWidthInteger {
         self.init(bigEndian: try bigEndianBytes.casting())
     }
     
+    /// Initialize a fixed width integer from a contiguous sequence of ``Bytes`` representing a big endian type.
+    /// - Parameter bigEndianBytes: The ``Bytes`` to interpret as a big endian integer.
+    /// - Throws:
+    ///     - ``BytesError/BufferSizeError/invalidBufferSize(targetSize:targetType:actualSize:)`` if the byte sequence does not match the size of the integer type.
+    @inlinable
+    public init<Bytes: ContiguousBytesCollection>(
+        bigEndianBytes: Bytes
+    ) throws(BytesError.BufferSizeError) {
+        self.init(bigEndian: try bigEndianBytes.casting())
+    }
+    
     /// The little endian representation of the integer.
     @inlinable
     public var littleEndianBytes: Bytes {
@@ -41,6 +52,17 @@ extension FixedWidthInteger {
     public init<Bytes: BytesCollection>(
         littleEndianBytes: Bytes
     ) throws(BytesError.ContiguousBytes.BufferSizeError) {
+        self.init(littleEndian: try littleEndianBytes.casting())
+    }
+    
+    /// Initialize a fixed width integer from a contiguous sequence of ``Bytes`` representing a little endian type.
+    /// - Parameter littleEndianBytes: The ``Bytes`` to interpret as a little endian integer.
+    /// - Throws:
+    ///     - ``BytesError/BufferSizeError/invalidBufferSize(targetSize:targetType:actualSize:)`` if the byte sequence does not match the size of the integer type.
+    @inlinable
+    public init<Bytes: ContiguousBytesCollection>(
+        littleEndianBytes: Bytes
+    ) throws(BytesError.BufferSizeError) {
         self.init(littleEndian: try littleEndianBytes.casting())
     }
 }
@@ -61,6 +83,21 @@ extension Collection where Element: FixedWidthInteger {
     public init<Bytes: BytesCollection>(
         bigEndianBytes: Bytes
     ) throws(BytesError.ContiguousBytes.BufferSizeError) where Self: RangeReplaceableCollection {
+        do {
+            try self.init(bytes: bigEndianBytes, mapping: Element.init(bigEndianBytes:))
+        } catch {
+            throw error.flattened
+        }
+    }
+    
+    /// Initialize a collection of integers with a sequence of ``Bytes`` representing a sequence of big endian types.
+    /// - Parameter bigEndianBytes: The ``Bytes`` to interpret as a sequence of big endian integers.
+    /// - Throws:
+    ///     - ``BytesError/BufferSizeError/invalidBufferSize(targetSize:targetType:actualSize:)`` if the byte sequence is not a multiple of the size of the integer type.
+    @inlinable
+    public init<Bytes: BytesCollection>(
+        bigEndianBytes: Bytes
+    ) throws(BytesError.BufferSizeError) where Self: RangeReplaceableCollection, Bytes.SubSequence: ContiguousBytesCollection {
         do {
             try self.init(bytes: bigEndianBytes, mapping: Element.init(bigEndianBytes:))
         } catch {
@@ -89,6 +126,21 @@ extension Collection where Element: FixedWidthInteger {
             throw error.flattened
         }
     }
+    
+    /// Initialize a collection of integers with a sequence of ``Bytes`` representing a sequence of little endian types.
+    /// - Parameter littleEndianBytes: The ``Bytes`` to interpret as a sequence of little endian integers.
+    /// - Throws:
+    ///     - ``BytesError/BufferSizeError/invalidBufferSize(targetSize:targetType:actualSize:)`` if the byte sequence is not a multiple of the size of the integer type.
+    @inlinable
+    public init<Bytes: BytesCollection>(
+        littleEndianBytes: Bytes
+    ) throws(BytesError.BufferSizeError) where Self: RangeReplaceableCollection, Bytes.SubSequence: ContiguousBytesCollection {
+        do {
+            try self.init(bytes: littleEndianBytes, mapping: Element.init(littleEndianBytes:))
+        } catch {
+            throw error.flattened
+        }
+    }
 }
 
 extension Set where Element: FixedWidthInteger {
@@ -108,6 +160,21 @@ extension Set where Element: FixedWidthInteger {
         }
     }
     
+    /// Initialize a Set of integers with a sequence of ``Bytes`` representing a sequence of big endian types.
+    /// - Parameter bigEndianBytes: The ``Bytes`` to interpret as a sequence of big endian integers.
+    /// - Throws:
+    ///     - ``BytesError/BufferSizeError/invalidBufferSize(targetSize:targetType:actualSize:)`` if the byte sequence is not a multiple of the size of the integer type.
+    @inlinable
+    public init<Bytes: BytesCollection>(
+        bigEndianBytes: Bytes
+    ) throws(BytesError.BufferSizeError) where Bytes.SubSequence: ContiguousBytesCollection {
+        do {
+            try self.init(bytes: bigEndianBytes, mapping: Element.init(bigEndianBytes:))
+        } catch {
+            throw error.flattened
+        }
+    }
+    
     /// Initialize a Set of integers with a sequence of ``Bytes`` representing a sequence of little endian types.
     /// - Parameter littleEndianBytes: The ``Bytes`` to interpret as a sequence of little endian integers.
     /// - Throws:
@@ -117,6 +184,21 @@ extension Set where Element: FixedWidthInteger {
     public init<Bytes: BytesCollection>(
         littleEndianBytes: Bytes
     ) throws(BytesError.ContiguousBytes.BufferSizeError) {
+        do {
+            try self.init(bytes: littleEndianBytes, mapping: Element.init(littleEndianBytes:))
+        } catch {
+            throw error.flattened
+        }
+    }
+    
+    /// Initialize a Set of integers with a sequence of ``Bytes`` representing a sequence of little endian types.
+    /// - Parameter littleEndianBytes: The ``Bytes`` to interpret as a sequence of little endian integers.
+    /// - Throws:
+    ///     - ``BytesError/BufferSizeError/invalidBufferSize(targetSize:targetType:actualSize:)`` if the byte sequence is not a multiple of the size of the integer type.
+    @inlinable
+    public init<Bytes: BytesCollection>(
+        littleEndianBytes: Bytes
+    ) throws(BytesError.BufferSizeError) where Bytes.SubSequence: ContiguousBytesCollection {
         do {
             try self.init(bytes: littleEndianBytes, mapping: Element.init(littleEndianBytes:))
         } catch {
@@ -141,8 +223,7 @@ extension IteratorProtocol where Element == Byte {
     public mutating func next<T: FixedWidthInteger>(
         littleEndian type: T.Type
     ) throws(BytesError.BufferSizeError) -> T {
-        /// We know the inner `try` validates the size already, so the outer one can never fail, and we can simplify the reported error types.
-        try! T(littleEndianBytes: try next(Bytes.self, count: MemoryLayout<T>.size))
+        try T(littleEndianBytes: try next(Bytes.self, count: MemoryLayout<T>.size))
     }
     
     /// Advances to the next big endian integer in the squence and returns it, or throws if it could not.
@@ -157,8 +238,7 @@ extension IteratorProtocol where Element == Byte {
     public mutating func next<T: FixedWidthInteger>(
         bigEndian type: T.Type
     ) throws(BytesError.BufferSizeError) -> T {
-        /// We know the inner `try` validates the size already, so the outer one can never fail, and we can simplify the reported error types.
-        try! T(bigEndianBytes: try next(Bytes.self, count: MemoryLayout<T>.size))
+        try T(bigEndianBytes: try next(Bytes.self, count: MemoryLayout<T>.size))
     }
     
     /// Advances to the next little endian integer in the squence and returns it, or ends the sequence if there is no next element.
@@ -173,9 +253,9 @@ extension IteratorProtocol where Element == Byte {
     public mutating func nextIfPresent<T: FixedWidthInteger>(
         littleEndian type: T.Type
     ) throws(BytesError.BufferSizeError) -> T? {
-        /// We know the first `try` validates the size already, so the mapped one can never fail, and we can simplify the reported error types.
-        try nextIfPresent(Bytes.self, count: MemoryLayout<T>.size)
-            .map { try! T(littleEndianBytes: $0) }
+        guard let bytes = try nextIfPresent(Bytes.self, count: MemoryLayout<T>.size)
+        else { return nil }
+        return try T(littleEndianBytes: bytes)
     }
     
     /// Advances to the next big endian integer in the squence and returns it, or ends the sequence if there is no next element.
@@ -190,9 +270,9 @@ extension IteratorProtocol where Element == Byte {
     public mutating func nextIfPresent<T: FixedWidthInteger>(
         bigEndian type: T.Type
     ) throws(BytesError.BufferSizeError) -> T? {
-        /// We know the first `try` validates the size already, so the mapped one can never fail, and we can simplify the reported error types.
-        try nextIfPresent(Bytes.self, count: MemoryLayout<T>.size)
-            .map { try! T(bigEndianBytes: $0) }
+        guard let bytes = try nextIfPresent(Bytes.self, count: MemoryLayout<T>.size)
+        else { return nil }
+        return try T(bigEndianBytes: bytes)
     }
     
     /// Advances by the next little endien integer if found, or throws if the next bytes in the iterator do not match.

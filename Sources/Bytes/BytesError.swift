@@ -319,6 +319,21 @@ extension BytesError.TransformationError {
 }
 
 extension BytesError.TransformationError where
+    TransformationFailure == CastingFailure
+{
+    /// Flatten a ``BytesError/TransformationError`` whose cases both contain an identical leaf error into a single non-branching error.
+    @inlinable
+    public var flattened: TransformationFailure {
+        switch self {
+        case .castingFailure(let error):
+            error
+        case .transformationFailure(let error):
+            error
+        }
+    }
+}
+
+extension BytesError.TransformationError where
     TransformationFailure: ByteCastingErrorWrapper,
     TransformationFailure.CastingFailure == CastingFailure
 {

@@ -46,6 +46,39 @@ extension Collection where Element == Byte {
         return Bytes(self).withUnsafeBytes { $0.loadUnaligned(as: R.self) }
     }
     
+    /// Cast an _entire_ ``Bytes`` sequence to the lhs's type, copying buffers if needed no matter the size.
+    /// - Warning: Only use this variant if you are absolutely certain the number of bytes to be copied won't have performance repercussions.
+    /// - Throws:
+    ///     - ``BytesError/BufferSizeError/invalidBufferSize(targetSize:targetType:actualSize:)`` if the memory layout of the bytes sequence does not match the desired type.
+    /// - Returns: An instance represented by the ``Bytes`` sequence.
+    @inlinable
+    public func contiguousCasting<R>(
+        to target: R.Type = R.self
+    ) throws(BytesError.BufferSizeError) -> R {
+        try canBeCasted(to: R.self)
+        
+        if let result = self.withContiguousStorageIfAvailable({
+            UnsafeRawBufferPointer($0).loadUnaligned(as: R.self)
+        }) {
+            return result
+        }
+        
+        /// Fallback to a copy if the range cannot be made contiguous.
+        return Bytes(self).withUnsafeBytes { $0.loadUnaligned(as: R.self) }
+    }
+    
+    /// Cast an _entire_ ``Bytes`` sequence to the lhs's type.
+    /// - Throws:
+    ///     - ``BytesError/BufferSizeError/invalidBufferSize(targetSize:targetType:actualSize:)`` if the memory layout of the bytes sequence does not match the desired type.
+    /// - Returns: An instance represented by the ``Bytes`` sequence.
+    @inlinable
+    public func casting<R>(
+        to target: R.Type = R.self
+    ) throws(BytesError.BufferSizeError) -> R where Self: ContiguousBytesCollection {
+        try canBeCasted(to: R.self)
+        return self.withUnsafeBytes { $0.loadUnaligned(as: R.self) }
+    }
+    
     /// Create a new ``Bytes`` sequence from the memory occupied by the passed in value.
     /// - Parameter value: The value to cast to a sequence of bytes.
     @inlinable

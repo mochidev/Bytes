@@ -12,11 +12,18 @@ public typealias Byte = UInt8
 /// A type that has the same API as ``Bytes``, ``BytesSlice``, and ``ContiguousBytes``.
 public protocol BytesCollection: CustomDebugStringConvertible, CustomReflectable, CustomStringConvertible, ExpressibleByArrayLiteral, MutableCollection, RandomAccessCollection, RangeReplaceableCollection, Sendable where Element == Byte, Index == Int, SubSequence: BytesCollection {}
 
+/// A collection that supports contiguous reads of its underlying storage
+public protocol ContiguousBytesCollection: BytesCollection where Element == Byte {
+    /// Calls the given closure with a pointer to the underlying bytes of the collection's contiguous storage.
+    @inlinable
+    func withUnsafeBytes<R>(_ body: (UnsafeRawBufferPointer) throws -> R) rethrows -> R
+}
+
 public typealias Bytes = Array<Byte>
-extension Bytes: BytesCollection {}
+extension Bytes: BytesCollection, ContiguousBytesCollection {}
 
 public typealias BytesSlice = ArraySlice<Byte>
-extension BytesSlice: BytesCollection {}
+extension BytesSlice: BytesCollection, ContiguousBytesCollection {}
 
 public typealias ContiguousBytes = ContiguousArray<Byte>
-extension ContiguousBytes: BytesCollection {}
+extension ContiguousBytes: BytesCollection, ContiguousBytesCollection {}

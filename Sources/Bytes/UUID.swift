@@ -34,11 +34,21 @@ extension UUID {
     /// - Parameter bytes: The Bytes to interpret as a binary UUID.
     /// - Throws:
     ///     - ``BytesError/BufferSizeError/invalidBufferSize(targetSize:targetType:actualSize:)`` if the byte sequence is not 16-bytes.
-    ///     - ``BytesError/ContiguousBytesError/contiguousBytesUnavailable(type:)-enum.case`` if the byte sequence cannot be made to be contiguous.
     @inlinable
     public init<Bytes: BytesCollection>(
         bytes: Bytes
-    ) throws(BytesError.ContiguousBytes.BufferSizeError) {
+    ) throws(BytesError.BufferSizeError) {
+        self.init(uuid: try bytes.contiguousCasting())
+    }
+    
+    /// Initialize a UUID from a contiguous sequence of Bytes representing the 16-byte compact format.
+    /// - Parameter bytes: The Bytes to interpret as a binary UUID.
+    /// - Throws:
+    ///     - ``BytesError/BufferSizeError/invalidBufferSize(targetSize:targetType:actualSize:)`` if the byte sequence is not 16-bytes.
+    @inlinable
+    public init<Bytes: ContiguousBytesCollection>(
+        bytes: Bytes
+    ) throws(BytesError.BufferSizeError) {
         self.init(uuid: try bytes.casting())
     }
     
@@ -82,11 +92,25 @@ extension Collection where Element == UUID {
     /// - Parameter bytes: The Bytes to interpret as a sequence of binary UUIDs.
     /// - Throws:
     ///     - ``BytesError/BufferSizeError/invalidBufferSize(targetSize:targetType:actualSize:)`` if the byte sequence is not a multiple of 16-bytes.
-    ///     - ``BytesError/ContiguousBytesError/contiguousBytesUnavailable(type:)-enum.case`` if the byte sequence cannot be made to be contiguous.
     @inlinable
     public init<Bytes: BytesCollection>(
         bytes: Bytes
-    ) throws(BytesError.ContiguousBytes.BufferSizeError) where Self: RangeReplaceableCollection {
+    ) throws(BytesError.BufferSizeError) where Self: RangeReplaceableCollection {
+        do {
+            try self.init(bytes: bytes, element: uuid_t.self, mapping: Element.init(bytes:))
+        } catch {
+            throw error.flattened
+        }
+    }
+    
+    /// Initialize a collection of UUIDs with a sequence of Bytes representing the individual 16-byte UUIDs.
+    /// - Parameter bytes: The Bytes to interpret as a sequence of binary UUIDs.
+    /// - Throws:
+    ///     - ``BytesError/BufferSizeError/invalidBufferSize(targetSize:targetType:actualSize:)`` if the byte sequence is not a multiple of 16-bytes.
+    @inlinable
+    public init<Bytes: BytesCollection>(
+        bytes: Bytes
+    ) throws(BytesError.BufferSizeError) where Self: RangeReplaceableCollection, Bytes.SubSequence: ContiguousBytesCollection {
         do {
             try self.init(bytes: bytes, element: uuid_t.self, mapping: Element.init(bytes:))
         } catch {
@@ -124,11 +148,25 @@ extension Set where Element == UUID {
     /// - Parameter bytes: The Bytes to interpret as a sequence of binary UUIDs.
     /// - Throws:
     ///     - ``BytesError/BufferSizeError/invalidBufferSize(targetSize:targetType:actualSize:)`` if the byte sequence is not a multiple of 16-bytes.
-    ///     - ``BytesError/ContiguousBytesError/contiguousBytesUnavailable(type:)-enum.case`` if the byte sequence cannot be made to be contiguous.
     @inlinable
     public init<Bytes: BytesCollection>(
         bytes: Bytes
-    ) throws(BytesError.ContiguousBytes.BufferSizeError) {
+    ) throws(BytesError.BufferSizeError) {
+        do {
+            try self.init(bytes: bytes, element: uuid_t.self, mapping: Element.init(bytes:))
+        } catch {
+            throw error.flattened
+        }
+    }
+    
+    /// Initialize a Set of UUIDs with a sequence of Bytes representing the individual 16-byte UUIDs.
+    /// - Parameter bytes: The Bytes to interpret as a sequence of binary UUIDs.
+    /// - Throws:
+    ///     - ``BytesError/BufferSizeError/invalidBufferSize(targetSize:targetType:actualSize:)`` if the byte sequence is not a multiple of 16-bytes.
+    @inlinable
+    public init<Bytes: BytesCollection>(
+        bytes: Bytes
+    ) throws(BytesError.BufferSizeError) where Bytes.SubSequence: ContiguousBytesCollection {
         do {
             try self.init(bytes: bytes, element: uuid_t.self, mapping: Element.init(bytes:))
         } catch {
@@ -167,8 +205,7 @@ extension IteratorProtocol where Element == Byte {
     public mutating func next(
         _ type: UUID.Type
     ) throws(BytesError.BufferSizeError) -> UUID {
-        /// We know the inner `try` validates the size already, so the outer one can never fail, and we can simplify the reported error types.
-        try! UUID(bytes: try next(Bytes.self, count: MemoryLayout<uuid_t>.size))
+        try UUID(bytes: try next(Bytes.self, count: MemoryLayout<uuid_t>.size))
     }
     
     /// Asynchronously advances to the next UUID String, or throws if it could not.
@@ -202,9 +239,9 @@ extension IteratorProtocol where Element == Byte {
     public mutating func nextIfPresent(
         _ type: UUID.Type
     ) throws(BytesError.BufferSizeError) -> UUID? {
-        /// We know the first `try` validates the size already, so the mapped one can never fail, and we can simplify the reported error types.
-        try nextIfPresent(Bytes.self, count: MemoryLayout<uuid_t>.size)
-            .map { try! UUID(bytes: $0) }
+        guard let bytes = try nextIfPresent(Bytes.self, count: MemoryLayout<uuid_t>.size)
+        else { return nil }
+        return try UUID(bytes: bytes)
     }
     
     /// Asynchronously advances to the next UUID String, or ends the sequence if there is no next element.

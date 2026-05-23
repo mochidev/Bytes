@@ -34,6 +34,26 @@ extension RawRepresentable {
         else { throw .invalidRawRepresentableByteSequence(rawType: "\(RawValue.self)") }
         self = value
     }
+    
+    /// Initialize a raw representable type from a contiguous sequence of ``Bytes`` representing the `rawValue`.
+    /// - Parameter rawBytes: The ``Bytes`` to interpret as the raw value for the type.
+    /// - Throws:
+    ///     - ``BytesError/BufferSizeError/invalidBufferSize(targetSize:targetType:actualSize:)`` if the byte sequence does not match the size of the `rawValue`'s type.
+    ///     - ``BytesError/RawRepresentableError/invalidRawRepresentableByteSequence(rawType:)-enum.case`` if the byte sequence does not correspond with a valid raw value.
+    @inlinable
+    public init<Bytes: ContiguousBytesCollection>(
+        rawBytes: Bytes
+    ) throws(BytesError.RawRepresentable.BufferSizeError) {
+        let rawValue: RawValue
+        do {
+            rawValue = try rawBytes.casting()
+        } catch {
+            throw .castingFailure(error)
+        }
+        guard let value = Self(rawValue: rawValue)
+        else { throw .invalidRawRepresentableByteSequence(rawType: "\(RawValue.self)") }
+        self = value
+    }
 }
 
 extension RawRepresentable where RawValue: FixedWidthInteger {
@@ -64,6 +84,26 @@ extension RawRepresentable where RawValue: FixedWidthInteger {
         self = value
     }
     
+    /// Initialize a raw representable type as a fixed width integer from a contiguous sequence of ``Bytes`` representing a big endian type.
+    /// - Parameter bigEndianBytes: The ``Bytes`` to interpret as a big endian integer.
+    /// - Throws:
+    ///     - ``BytesError/BufferSizeError/invalidBufferSize(targetSize:targetType:actualSize:)`` if the byte sequence does not match the size of the integer type.
+    ///     - ``BytesError/RawRepresentableError/invalidRawRepresentableByteSequence(rawType:)-enum.case`` if the integer does not correspond with a valid raw value.
+    @inlinable
+    public init<Bytes: ContiguousBytesCollection>(
+        bigEndianBytes: Bytes
+    ) throws(BytesError.RawRepresentable.BufferSizeError) {
+        let rawValue: RawValue
+        do {
+            rawValue = try RawValue(bigEndianBytes: bigEndianBytes)
+        } catch {
+            throw .castingFailure(error)
+        }
+        guard let value = Self(rawValue: rawValue)
+        else { throw .invalidRawRepresentableByteSequence(rawType: "\(RawValue.self)") }
+        self = value
+    }
+    
     /// The little endian representation of the `rawValue`'s integer.
     @inlinable
     public var littleEndianBytes: Bytes {
@@ -80,6 +120,26 @@ extension RawRepresentable where RawValue: FixedWidthInteger {
     public init<Bytes: BytesCollection>(
         littleEndianBytes: Bytes
     ) throws(BytesError.RawRepresentable.ContiguousBytes.BufferSizeError) {
+        let rawValue: RawValue
+        do {
+            rawValue = try RawValue(littleEndianBytes: littleEndianBytes)
+        } catch {
+            throw .castingFailure(error)
+        }
+        guard let value = Self(rawValue: rawValue)
+        else { throw .invalidRawRepresentableByteSequence(rawType: "\(RawValue.self)") }
+        self = value
+    }
+    
+    /// Initialize a raw representable type as a fixed width integer from a contiguous sequence of ``Bytes`` representing a little endian type.
+    /// - Parameter littleEndianBytes: The ``Bytes`` to interpret as a little endian integer.
+    /// - Throws:
+    ///     - ``BytesError/BufferSizeError/invalidBufferSize(targetSize:targetType:actualSize:)`` if the byte sequence does not match the size of the integer type.
+    ///     - ``BytesError/RawRepresentableError/invalidRawRepresentableByteSequence(rawType:)-enum.case`` if the integer does not correspond with a valid raw value.
+    @inlinable
+    public init<Bytes: ContiguousBytesCollection>(
+        littleEndianBytes: Bytes
+    ) throws(BytesError.RawRepresentable.BufferSizeError) {
         let rawValue: RawValue
         do {
             rawValue = try RawValue(littleEndianBytes: littleEndianBytes)

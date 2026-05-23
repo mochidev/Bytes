@@ -98,7 +98,7 @@ extension Collection where Element == UUID {
     /// - Throws:
     ///     - ``BytesError/BufferSizeError/invalidBufferSize(targetSize:targetType:actualSize:)`` if the byte sequence is not a multiple of 16-bytes.
     @inlinable
-    public init<Bytes: BytesCollection>(
+    public init<Bytes: BytesCollection & Sendable>(
         bytes: Bytes
     ) throws(BytesError.BufferSizeError) where Self: RangeReplaceableCollection {
         do {
@@ -113,7 +113,7 @@ extension Collection where Element == UUID {
     /// - Throws:
     ///     - ``BytesError/BufferSizeError/invalidBufferSize(targetSize:targetType:actualSize:)`` if the byte sequence is not a multiple of 16-bytes.
     @inlinable
-    public init<Bytes: BytesCollection>(
+    public init<Bytes: BytesCollection & Sendable>(
         bytes: Bytes
     ) throws(BytesError.BufferSizeError) where Self: RangeReplaceableCollection, Bytes.SubSequence: ContiguousBytesCollection {
         do {
@@ -135,7 +135,7 @@ extension Collection where Element == UUID {
     ///     - ``BytesError/BufferSizeError/invalidBufferSize(targetSize:targetType:actualSize:)`` if the byte sequence is not a multiple of 36-bytes.
     ///     - ``BytesError/UUIDDecodingError/invalidUUIDByteSequence`` if the byte sequence does not represent valid UUIDs.
     @inlinable
-    public init<Bytes: BytesCollection>(
+    public init<Bytes: BytesCollection & Sendable>(
         stringBytes: Bytes
     ) throws(BytesError.UUIDDecoding.BufferSizeError) where Self: RangeReplaceableCollection {
         do {
@@ -154,7 +154,7 @@ extension Set where Element == UUID {
     /// - Throws:
     ///     - ``BytesError/BufferSizeError/invalidBufferSize(targetSize:targetType:actualSize:)`` if the byte sequence is not a multiple of 16-bytes.
     @inlinable
-    public init<Bytes: BytesCollection>(
+    public init<Bytes: BytesCollection & Sendable>(
         bytes: Bytes
     ) throws(BytesError.BufferSizeError) {
         do {
@@ -169,7 +169,7 @@ extension Set where Element == UUID {
     /// - Throws:
     ///     - ``BytesError/BufferSizeError/invalidBufferSize(targetSize:targetType:actualSize:)`` if the byte sequence is not a multiple of 16-bytes.
     @inlinable
-    public init<Bytes: BytesCollection>(
+    public init<Bytes: BytesCollection & Sendable>(
         bytes: Bytes
     ) throws(BytesError.BufferSizeError) where Bytes.SubSequence: ContiguousBytesCollection {
         do {
@@ -185,7 +185,7 @@ extension Set where Element == UUID {
     ///     - ``BytesError/BufferSizeError/invalidBufferSize(targetSize:targetType:actualSize:)`` if the byte sequence is not a multiple of 36-bytes.
     ///     - ``BytesError/UUIDDecodingError/invalidUUIDByteSequence`` if the byte sequence does not represent valid UUIDs.
     @inlinable
-    public init<Bytes: BytesCollection>(
+    public init<Bytes: BytesCollection & Sendable>(
         stringBytes: Bytes
     ) throws(BytesError.UUIDDecoding.BufferSizeError) {
         do {

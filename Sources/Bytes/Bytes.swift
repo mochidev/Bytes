@@ -27,3 +27,20 @@ extension BytesSlice: BytesCollection, ContiguousBytesCollection {}
 
 public typealias ContiguousBytes = ContiguousArray<Byte>
 extension ContiguousBytes: BytesCollection, ContiguousBytesCollection {}
+
+extension Slice: BytesCollection where Base: BytesCollection {}
+extension Slice: ContiguousBytesCollection where Base: ContiguousBytesCollection, Index == Int {
+    @inlinable
+    public func withUnsafeBytes<R>(_ body: (UnsafeRawBufferPointer) throws -> R) rethrows -> R {
+        try base.withUnsafeBytes { rawBufferPointer in
+            try body(UnsafeRawBufferPointer(rebasing: rawBufferPointer[self.startIndex..<self.endIndex]))
+        }
+    }
+}
+
+extension EmptyCollection<Byte>: BytesCollection, ContiguousBytesCollection {}
+extension CollectionOfOne<Byte>: BytesCollection, ContiguousBytesCollection {}
+extension UnsafeBufferPointer<Byte>: BytesCollection, ContiguousBytesCollection {}
+extension UnsafeMutableBufferPointer<Byte>: BytesCollection, ContiguousBytesCollection {}
+extension UnsafeRawBufferPointer: BytesCollection, ContiguousBytesCollection {}
+extension UnsafeMutableRawBufferPointer: BytesCollection, ContiguousBytesCollection {}

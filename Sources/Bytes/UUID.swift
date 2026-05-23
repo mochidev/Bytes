@@ -7,7 +7,12 @@
 //  mochidev-swift-bytes: F44D5591194F47C0834EC1EBD0102932
 //
 
+#if canImport(Foundation) || canImport(FoundationEssentials)
+#if canImport(Foundation)
 public import Foundation
+#else
+public import FoundationEssentials
+#endif
 
 /// Internal structure to use when measuring UUID bytes in collections
 @usableFromInline
@@ -729,3 +734,4 @@ extension AsyncIteratorProtocol where Element == Byte {
         }
     }
 }
+#endif

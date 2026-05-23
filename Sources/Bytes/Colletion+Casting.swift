@@ -18,24 +18,15 @@ extension Collection where Element == Byte {
         }
     }
     
-    /// Cast an _entire_ ``Bytes`` sequence to the target's type.
-    /// - Parameter target: The type of the target.
-    /// - Throws:
-    ///     - ``BytesError/BufferSizeError/invalidBufferSize(targetSize:targetType:actualSize:)`` if the memory layout of the bytes sequence does not match the desired type.
-    ///     - ``BytesError/ContiguousBytesError/contiguousBytesUnavailable(type:)-enum.case`` if contiguous memory could not be made available.
-    /// - Returns: An instance of the target represented by the ``Bytes`` sequence.
-    @inlinable
-    public func casting<R>(to target: R.Type) throws(BytesError.ContiguousBytes.BufferSizeError) -> R {
-        try casting()
-    }
-    
     /// Cast an _entire_ ``Bytes`` sequence to the lhs's type.
     /// - Throws:
     ///     - ``BytesError/BufferSizeError/invalidBufferSize(targetSize:targetType:actualSize:)`` if the memory layout of the bytes sequence does not match the desired type.
     ///     - ``BytesError/ContiguousBytesError/contiguousBytesUnavailable(type:)-enum.case`` if contiguous memory could not be made available.
     /// - Returns: An instance represented by the ``Bytes`` sequence.
     @inlinable
-    public func casting<R>() throws(BytesError.ContiguousBytes.BufferSizeError) -> R {
+    public func casting<R>(
+        to target: R.Type = R.self
+    ) throws(BytesError.ContiguousBytes.BufferSizeError) -> R {
         do {
             try canBeCasted(to: R.self)
         } catch {

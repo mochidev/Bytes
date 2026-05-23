@@ -54,3 +54,10 @@ import FoundationEssentials
 
 extension Data: BytesCollection, ContiguousBytesCollection {}
 #endif
+
+#if canImport(Dispatch)
+import Dispatch
+
+extension DispatchData: BytesCollection {}
+extension DispatchData.Region: BytesCollection, ContiguousBytesCollection {}
+#endif

@@ -44,3 +44,13 @@ extension UnsafeBufferPointer<Byte>: BytesCollection, ContiguousBytesCollection 
 extension UnsafeMutableBufferPointer<Byte>: BytesCollection, ContiguousBytesCollection {}
 extension UnsafeRawBufferPointer: BytesCollection, ContiguousBytesCollection {}
 extension UnsafeMutableRawBufferPointer: BytesCollection, ContiguousBytesCollection {}
+
+#if canImport(Foundation) || canImport(FoundationEssentials)
+#if canImport(Foundation)
+import Foundation
+#else
+import FoundationEssentials
+#endif
+
+extension Data: BytesCollection, ContiguousBytesCollection {}
+#endif

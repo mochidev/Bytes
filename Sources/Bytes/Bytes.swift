@@ -25,9 +25,6 @@ extension Bytes: BytesCollection, ContiguousBytesCollection {}
 public typealias BytesSlice = ArraySlice<Byte>
 extension BytesSlice: BytesCollection, ContiguousBytesCollection {}
 
-public typealias ContiguousBytes = ContiguousArray<Byte>
-extension ContiguousBytes: BytesCollection, ContiguousBytesCollection {}
-
 extension Slice: BytesCollection where Base: BytesCollection {}
 extension Slice: ContiguousBytesCollection where Base: ContiguousBytesCollection, Index == Int {
     @inlinable
@@ -38,6 +35,7 @@ extension Slice: ContiguousBytesCollection where Base: ContiguousBytesCollection
     }
 }
 
+extension ContiguousArray<Byte>: BytesCollection, ContiguousBytesCollection {}
 extension EmptyCollection<Byte>: BytesCollection, ContiguousBytesCollection {}
 extension CollectionOfOne<Byte>: BytesCollection, ContiguousBytesCollection {}
 extension UnsafeBufferPointer<Byte>: BytesCollection, ContiguousBytesCollection {}

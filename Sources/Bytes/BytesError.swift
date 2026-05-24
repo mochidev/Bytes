@@ -303,7 +303,34 @@ extension BytesError {
     }
 }
 
-extension BytesError.TransformationError: Equatable where TransformationFailure: Equatable {}
+extension BytesError.TransformationError: Equatable {
+    public static func == (lhs: Self, rhs: Self) -> Bool {
+        switch (lhs, rhs) {
+        case (.castingFailure, .transformationFailure), (.transformationFailure, .castingFailure):
+            false
+        case (.castingFailure(let lhsFailure), .castingFailure(let rhsFailure)):
+            lhsFailure == rhsFailure
+        case (.transformationFailure(let lhsFailure), .transformationFailure(let rhsFailure)):
+            if let lhsFailure = lhsFailure as Any as? (any Equatable), let rhsFailure = rhsFailure as Any as? (any Equatable) {
+                lhsFailure.equals(rhsFailure)
+            } else {
+                false
+            }
+        }
+    }
+    
+    public static func == (lhs: Self, rhs: Self) -> Bool where TransformationFailure: Equatable {
+        switch (lhs, rhs) {
+        case (.castingFailure, .transformationFailure), (.transformationFailure, .castingFailure):
+            false
+        case (.castingFailure(let lhsFailure), .castingFailure(let rhsFailure)):
+            lhsFailure == rhsFailure
+        case (.transformationFailure(let lhsFailure), .transformationFailure(let rhsFailure)):
+            lhsFailure == rhsFailure
+        }
+    }
+}
+
 extension BytesError.TransformationError: Hashable where TransformationFailure: Hashable {}
 
 extension BytesError.TransformationError {
@@ -620,5 +647,15 @@ extension BytesError {
             /// A ``BytesError/BufferSizeError`` error thrown when an insufficient or invalid number of bytes were available before the sequence ended, wrapped within ``BytesError/ContiguousBytesError`` and ``BytesError/UUIDDecodingError`` respectively.
             public typealias BufferSizeError = ContiguousBytesError<BytesError.BufferSizeError>
         }
+    }
+}
+
+// MARK: Helpers
+
+extension Equatable {
+    fileprivate func equals(_ rhs: any Equatable) -> Bool {
+        guard let rhs = rhs as? Self
+        else { return false }
+        return self == rhs
     }
 }

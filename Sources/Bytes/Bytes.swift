@@ -7,9 +7,10 @@
 //  mochidev-swift-bytes: F44D5591194F47C0834EC1EBD0102932
 //
 
+/// A single byte.
 public typealias Byte = UInt8
 
-/// A type that has the same API as ``Bytes``, ``BytesSlice``, and ``ContiguousBytes``.
+/// A type that has the same API as ``Bytes``, and ``BytesSlice``.
 public protocol BytesCollection: Collection where Element == Byte, Index == Int, SubSequence: BytesCollection {}
 
 /// A collection that supports contiguous reads of its underlying storage
@@ -19,9 +20,11 @@ public protocol ContiguousBytesCollection: BytesCollection where Element == Byte
     func withUnsafeBytes<R>(_ body: (UnsafeRawBufferPointer) throws -> R) rethrows -> R
 }
 
+/// An array of bytes.
 public typealias Bytes = Array<Byte>
 extension Bytes: BytesCollection, ContiguousBytesCollection {}
 
+/// A slice of an array of bytes.
 public typealias BytesSlice = ArraySlice<Byte>
 extension BytesSlice: BytesCollection, ContiguousBytesCollection {}
 

@@ -123,4 +123,13 @@ extension BytesError {
         #expect(Byte.self != Int8.self)
         #expect(Bytes.self != Array<Int8>.self)
     }
+    
+    @Test func byteBufferSlicesAreContiguous() async throws {
+        let buffer: Bytes = [0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07]
+        
+        let result: UInt16 = try buffer.withUnsafeBufferPointer { bufferPointer in
+            try bufferPointer[2..<4].casting(to: UInt16.self).bigEndian
+        }
+        #expect(result == 0x0203)
+    }
 }

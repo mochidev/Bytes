@@ -104,6 +104,25 @@ extension Collection where Element == Byte {
         
         return (elementSize, numberOfBytes, elementCount)
     }
+    
+    /// Check if a sequence of ``Bytes`` can be safely mapped to a collection of elements of a given size.
+    /// - Parameter targetSize: The size of element to map to.
+    /// - Throws: ``BytesError/BufferSizeError/invalidBufferSize(targetSize:targetType:actualSize:)`` if the total size of the bytes sequence is not a multiple of the element's size.
+    /// - Returns: `(elementSize: Int, numberOfBytes: Int, elementCount: Int)`, to aid in building the new collection.
+    @inlinable
+    func canBeMapped(
+        to targetSize: Int
+    ) throws(BytesError.BufferSizeError) -> (numberOfBytes: Int, elementCount: Int) {
+        let elementSize = targetSize
+        let numberOfBytes = self.count
+        let (elementCount, remainingElementSize) = numberOfBytes.quotientAndRemainder(dividingBy: elementSize)
+        
+        guard remainingElementSize == 0 else {
+            throw .invalidBufferSize(targetSize: (elementCount+1)*elementSize, targetType: "Bytes<\(elementSize)>", actualSize: numberOfBytes)
+        }
+        
+        return (numberOfBytes, elementCount)
+    }
 }
 
 extension Collection {
@@ -139,6 +158,8 @@ extension RangeReplaceableCollection {
     /// - Throws:
     ///     - ``BytesError/BufferSizeError/invalidBufferSize(targetSize:targetType:actualSize:)`` if the total size of the bytes sequence is not a multiple of the element's size.
     ///     - ``BytesError/TransformationError/transformationFailure(_:)`` if the `transform` closure threw an error.
+    /// - SeeAlso: ``init(bytes:element:mapping:)`` for when an element's memory layout can be used to infer the size.
+    /// - SeeAlso: ``init(bytes:elementSize:mapping:)`` for when its not suitable to infer the size of an element from its memory layout.  
     @inlinable
     public init<
         Bytes: BytesCollection,
@@ -151,6 +172,8 @@ extension RangeReplaceableCollection {
     }
     
     /// Creates a new collection from a sequence of bytes, transforming batches of bytes into the specified element type.
+    ///
+    /// Pass an element with the memory layout size you intend to de-serialize and transform into elements that'll be saved within the collection.
     /// - Parameters:
     ///   - bytes: The bytes to transform.
     ///   - element: The element that was used to encode the byte sequence.
@@ -158,6 +181,8 @@ extension RangeReplaceableCollection {
     /// - Throws:
     ///     - ``BytesError/BufferSizeError/invalidBufferSize(targetSize:targetType:actualSize:)`` if the total size of the bytes sequence is not a multiple of the element's size.
     ///     - ``BytesError/TransformationError/transformationFailure(_:)`` if the `transform` closure threw an error.
+    /// - SeeAlso: ``init(bytes:mapping:)`` for when the collection element matches the encoded element.
+    /// - SeeAlso: ``init(bytes:elementSize:mapping:)`` for when its not suitable to infer the size of an element from its memory layout.
     @inlinable
     public init<
         Bytes: BytesCollection,
@@ -191,6 +216,50 @@ extension RangeReplaceableCollection {
         
         self = result
     }
+    
+    /// Creates a new collection from a sequence of bytes, transforming batches of bytes into the specified element type.
+    ///
+    /// Pass the element size you wish to de-serialize and transform into elements that'll be saved within the collection.
+    /// - Parameters:
+    ///   - bytes: The bytes to transform.
+    ///   - elementSize: The size of the element that was used to encode the byte sequence.
+    ///   - transform: The transformation to perform on each element.
+    /// - Throws:
+    ///     - ``BytesError/BufferSizeError/invalidBufferSize(targetSize:targetType:actualSize:)`` if the total size of the bytes sequence is not a multiple of the element's size.
+    ///     - ``BytesError/TransformationError/transformationFailure(_:)`` if the `transform` closure threw an error.
+    /// - SeeAlso: ``init(bytes:mapping:)`` for when the collection element matches the encoded element.
+    /// - SeeAlso: ``init(bytes:element:mapping:)`` for when an element's memory layout can be used to infer the size.
+    @inlinable
+    public init<
+        Bytes: BytesCollection,
+        TransformationFailure: Error
+    >(
+        bytes: Bytes,
+        elementSize: Int,
+        mapping transform: (Bytes.SubSequence) throws(TransformationFailure) -> Self.Element
+    ) throws(BytesError.Transformation<TransformationFailure>.BufferSizeError) {
+        let numberOfBytes: Int
+        let elementCount: Int
+        do {
+            (numberOfBytes, elementCount) = try bytes.canBeMapped(to: elementSize)
+        } catch {
+            throw .castingFailure(error)
+        }
+        
+        var result = Self()
+        result.reserveCapacity(elementCount)
+        
+        for sliceStart in stride(from: 0, to: numberOfBytes, by: elementSize) {
+            let slice = bytes[sliceStart..<(sliceStart+elementSize)]
+            do {
+                result.append(try transform(slice))
+            } catch {
+                throw .transformationFailure(error)
+            }
+        }
+        
+        self = result
+    }
 }
 
 extension Set {
@@ -201,6 +270,8 @@ extension Set {
     /// - Throws:
     ///     - ``BytesError/BufferSizeError/invalidBufferSize(targetSize:targetType:actualSize:)`` if the total size of the bytes sequence is not a multiple of the element's size.
     ///     - ``BytesError/TransformationError/transformationFailure(_:)`` if the `transform` closure threw an error.
+    /// - SeeAlso: ``init(bytes:element:mapping:)`` for when an element's memory layout can be used to infer the size.
+    /// - SeeAlso: ``init(bytes:elementSize:mapping:)`` for when its not suitable to infer the size of an element from its memory layout.
     @inlinable
     public init<
         Bytes: BytesCollection,
@@ -213,6 +284,8 @@ extension Set {
     }
     
     /// Creates a new Set from a sequence of bytes, transforming batches of bytes into the specified element type.
+    ///
+    /// Pass an element with the memory layout size you intend to de-serialize and transform into elements that'll be saved within the collection.
     /// - Parameters:
     ///   - bytes: The bytes to transform.
     ///   - element: The element that was used to encode the byte sequence.
@@ -220,6 +293,8 @@ extension Set {
     /// - Throws:
     ///     - ``BytesError/BufferSizeError/invalidBufferSize(targetSize:targetType:actualSize:)`` if the total size of the bytes sequence is not a multiple of the element's size.
     ///     - ``BytesError/TransformationError/transformationFailure(_:)`` if the `transform` closure threw an error.
+    /// - SeeAlso: ``init(bytes:mapping:)`` for when the collection element matches the encoded element.
+    /// - SeeAlso: ``init(bytes:element:mapping:)`` for when an element's memory layout can be used to infer the size.
     @inlinable
     public init<
         Bytes: BytesCollection,
@@ -235,6 +310,50 @@ extension Set {
         let elementCount: Int
         do {
             (elementSize, numberOfBytes, elementCount) = try bytes.canBeMapped(to: EncodedElement.self)
+        } catch {
+            throw .castingFailure(error)
+        }
+        
+        var result = Self()
+        result.reserveCapacity(elementCount)
+        
+        for sliceStart in stride(from: 0, to: numberOfBytes, by: elementSize) {
+            let slice = bytes[sliceStart..<(sliceStart+elementSize)]
+            do {
+                result.insert(try transform(slice))
+            } catch {
+                throw .transformationFailure(error)
+            }
+        }
+        
+        self = result
+    }
+    
+    /// Creates a new Set from a sequence of bytes, transforming batches of bytes into the specified element type.
+    ///
+    /// Pass the element size you wish to de-serialize and transform into elements that'll be saved within the collection.
+    /// - Parameters:
+    ///   - bytes: The bytes to transform.
+    ///   - elementSize: The size of the element that was used to encode the byte sequence.
+    ///   - transform: The transformation to perform on each element.
+    /// - Throws:
+    ///     - ``BytesError/BufferSizeError/invalidBufferSize(targetSize:targetType:actualSize:)`` if the total size of the bytes sequence is not a multiple of the element's size.
+    ///     - ``BytesError/TransformationError/transformationFailure(_:)`` if the `transform` closure threw an error.
+    /// - SeeAlso: ``init(bytes:mapping:)`` for when the collection element matches the encoded element.
+    /// - SeeAlso: ``init(bytes:element:mapping:)`` for when an element's memory layout can be used to infer the size.
+    @inlinable
+    public init<
+        Bytes: BytesCollection,
+        TransformationFailure: Error
+    >(
+        bytes: Bytes,
+        elementSize: Int,
+        mapping transform: (Bytes.SubSequence) throws(TransformationFailure) -> Self.Element
+    ) throws(BytesError.Transformation<TransformationFailure>.BufferSizeError) {
+        let numberOfBytes: Int
+        let elementCount: Int
+        do {
+            (numberOfBytes, elementCount) = try bytes.canBeMapped(to: elementSize)
         } catch {
             throw .castingFailure(error)
         }

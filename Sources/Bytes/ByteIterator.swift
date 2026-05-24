@@ -8,9 +8,10 @@
 //
 
 extension IteratorProtocol where Element == Byte {
-    /// Advances a byte array of size `count`, or throws if it could not.
+    /// Advances a byte array by the specified `count` bytes and returns them, or throws if it could not.
     ///
-    /// **Learn More:** [Integration with AsyncSequenceReader](https://github.com/mochidev/AsyncSequenceReader#integration-with-bytes)
+    /// - Important: An empty array will always be returned when `count` is 0 even if the iterator has been consumed.
+    /// - SeeAlso: **Learn More:** [Integration with AsyncSequenceReader](https://github.com/mochidev/AsyncSequenceReader#integration-with-bytes)
     /// - Parameter bytes: This should be set to `Bytes.self`.
     /// - Parameter count: The number of bytes to form into a byte array.
     /// - Parameter targetType: The target type that is being decoded. Defaults to `"Bytes"` if not specified.
@@ -26,9 +27,10 @@ extension IteratorProtocol where Element == Byte {
         return try next(bytes, min: count, max: count, targetType: targetType)
     }
     
-    /// Advances a byte array with the specified minimum size, continuing until the specified maximum size, or throws if it could not.
+    /// Advances a byte array by the specified minimum number of bytes, continuing until the specified maximum number of bytes have been collected and returned, or throws if it could not.
     ///
-    /// **Learn More:** [Integration with AsyncSequenceReader](https://github.com/mochidev/AsyncSequenceReader#integration-with-bytes)
+    /// - Important: An empty array will always be returned when `maxCount` is 0 even if the iterator has been consumed.
+    /// - SeeAlso: **Learn More:** [Integration with AsyncSequenceReader](https://github.com/mochidev/AsyncSequenceReader#integration-with-bytes)
     /// - Parameter bytes: This should be set to `Bytes.self`.
     /// - Parameter minCount: The minimum number of bytes to form into a byte array.
     /// - Parameter maxCount: The maximum number of bytes to form into a byte array.
@@ -58,15 +60,16 @@ extension IteratorProtocol where Element == Byte {
         }
         
         guard result.count >= minCount else {
-            throw .invalidBufferSize(targetSize: minCount, targetType: targetType, actualSize: result.count)
+            throw .invalidBufferSize(targetSize: minCount, targetType: "Bytes", actualSize: result.count)
         }
         
         return result
     }
     
-    /// Advances a byte array with the specified maximum size.
+    /// Advances a byte array until the specified maximum number of bytes have been returned.
     ///
-    /// **Learn More:** [Integration with AsyncSequenceReader](https://github.com/mochidev/AsyncSequenceReader#integration-with-bytes)
+    /// - Important: An empty array will always be returned when `maxCount` is 0 even if the iterator has been consumed.
+    /// - SeeAlso: **Learn More:** [Integration with AsyncSequenceReader](https://github.com/mochidev/AsyncSequenceReader#integration-with-bytes)
     /// - Parameter bytes: This should be set to `Bytes.self`.
     /// - Parameter maxCount: The maximum number of bytes to form into a byte array.
     /// - Returns: A byte array of size at least `minCount` and at most `maxCount`.
@@ -94,7 +97,8 @@ extension IteratorProtocol where Element == Byte {
     
     /// Advances a byte array of size `count`, or ends the sequence if there is no next element.
     ///
-    /// **Learn More:** [Integration with AsyncSequenceReader](https://github.com/mochidev/AsyncSequenceReader#integration-with-bytes)
+    /// - Important: An empty array will always be returned when `count` is 0 even if the iterator has been consumed.
+    /// - SeeAlso: **Learn More:** [Integration with AsyncSequenceReader](https://github.com/mochidev/AsyncSequenceReader#integration-with-bytes)
     /// - Parameter bytes: This should be set to `Bytes.self`.
     /// - Parameter count: The number of bytes to form into a byte array.
     /// - Parameter targetType: The target type that is being decoded. Defaults to `"Bytes"` if not specified.
@@ -112,7 +116,8 @@ extension IteratorProtocol where Element == Byte {
     
     /// Advances a byte array with the specified minimum size, continuing until the specified maximum size, or ends the sequence if there is no next element.
     ///
-    /// **Learn More:** [Integration with AsyncSequenceReader](https://github.com/mochidev/AsyncSequenceReader#integration-with-bytes)
+    /// - Important: An empty array will always be returned when `maxCount` is 0 even if the iterator has been consumed.
+    /// - SeeAlso: **Learn More:** [Integration with AsyncSequenceReader](https://github.com/mochidev/AsyncSequenceReader#integration-with-bytes)
     /// - Parameter bytes: This should be set to `Bytes.self`.
     /// - Parameter minCount: The minimum number of bytes to form into a byte array.
     /// - Parameter maxCount: The maximum number of bytes to form into a byte array.
@@ -152,7 +157,8 @@ extension IteratorProtocol where Element == Byte {
     
     /// Advances a byte array with the specified maximum size, or ends the sequence if there is no next element.
     ///
-    /// **Learn More:** [Integration with AsyncSequenceReader](https://github.com/mochidev/AsyncSequenceReader#integration-with-bytes)
+    /// - Important: An empty array will always be returned when `maxCount` is 0 even if the iterator has been consumed.
+    /// - SeeAlso: **Learn More:** [Integration with AsyncSequenceReader](https://github.com/mochidev/AsyncSequenceReader#integration-with-bytes)
     /// - Parameter bytes: This should be set to `Bytes.self`.
     /// - Parameter maxCount: The maximum number of bytes to form into a byte array.
     /// - Returns: A byte array of size at most `maxCount`, or `nil` if the sequence is finished.
@@ -184,12 +190,12 @@ extension IteratorProtocol where Element == Byte {
     ///
     /// Use this method when you expect a byte to be next in the sequence, and it would be an error if something else were encountered.
     ///
-    /// **Learn More:** [Integration with AsyncSequenceReader](https://github.com/mochidev/AsyncSequenceReader#integration-with-bytes)
+    /// - SeeAlso: **Learn More:** [Integration with AsyncSequenceReader](https://github.com/mochidev/AsyncSequenceReader#integration-with-bytes)
     /// - Parameter byte: The byte to check for.
     /// - Throws: ``BytesError/SequenceCheckError/checkedSequenceNotFound`` if the bytes could not be identified.
     @inlinable
     public mutating func check(
-        _ byte: UInt8
+        _ byte: Byte
     ) throws(BytesError.SequenceCheckError) {
         let value = next()
         
@@ -203,7 +209,7 @@ extension IteratorProtocol where Element == Byte {
     ///
     /// If the bytes collection is an empty array, this method won't do anything.
     ///
-    /// **Learn More:** [Integration with AsyncSequenceReader](https://github.com/mochidev/AsyncSequenceReader#integration-with-bytes)
+    /// - SeeAlso: **Learn More:** [Integration with AsyncSequenceReader](https://github.com/mochidev/AsyncSequenceReader#integration-with-bytes)
     /// - Parameter bytes: The bytes to check for.
     /// - Throws: ``BytesError/SequenceCheckError/checkedSequenceNotFound`` if the bytes could not be identified.
     @inlinable
@@ -219,7 +225,7 @@ extension IteratorProtocol where Element == Byte {
     ///
     /// Use this method when you expect a byte to be next in the sequence, and it would be an error if something else were encountered.
     ///
-    /// **Learn More:** [Integration with AsyncSequenceReader](https://github.com/mochidev/AsyncSequenceReader#integration-with-bytes)
+    /// - SeeAlso: **Learn More:** [Integration with AsyncSequenceReader](https://github.com/mochidev/AsyncSequenceReader#integration-with-bytes)
     /// - Parameter byte: The byte to check for.
     /// - Returns: `true` if the byte was found, or `false` if the sequence finished.
     /// - Throws: ``BytesError/SequenceCheckError/checkedSequenceNotFound`` if the bytes could not be identified.
@@ -240,9 +246,9 @@ extension IteratorProtocol where Element == Byte {
     ///
     /// Use this method when you expect a collection of bytes to be next in the sequence, and it would be an error if something else were encountered.
     ///
-    /// If the bytes collection is an empty array, this method won't do anything.
+    /// If the bytes collection is an empty array, this method won't do anything and will always return `true`.
     ///
-    /// **Learn More:** [Integration with AsyncSequenceReader](https://github.com/mochidev/AsyncSequenceReader#integration-with-bytes)
+    /// - SeeAlso: **Learn More:** [Integration with AsyncSequenceReader](https://github.com/mochidev/AsyncSequenceReader#integration-with-bytes)
     /// - Parameter bytes: The bytes to check for.
     /// - Returns: `true` if the bytes were found, or `false` if the sequence finished.
     /// - Throws: ``BytesError/SequenceCheckError/checkedSequenceNotFound`` if the bytes could not be identified.

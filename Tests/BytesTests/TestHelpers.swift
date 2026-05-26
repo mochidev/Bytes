@@ -9,7 +9,30 @@
 
 import Bytes
 
+// MARK: - Test Errors
+
 struct LocalError: Error, Equatable {}
+
+struct ThrowingIterator: AsyncIteratorProtocol {
+    typealias Element = Byte
+    typealias Failure = LocalError
+    
+    let bytes: Bytes = [0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07]
+    var index = 0
+    
+    mutating func next() async throws(Failure) -> Byte? {
+        defer { index += 1 }
+        if bytes.indices ~= index {
+            return self.bytes[index]
+        } else if index == bytes.count {
+            throw LocalError()
+        } else {
+            return nil
+        }
+    }
+}
+
+// MARK: - Test Structs
 
 struct Byte1: Equatable {
     let a: Byte

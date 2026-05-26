@@ -190,7 +190,34 @@ extension BytesError {
     }
 }
 
-extension BytesError.IterationError: Equatable where IterationFailure: Equatable {}
+extension BytesError.IterationError: Equatable {
+    public static func == (lhs: Self, rhs: Self) -> Bool {
+        switch (lhs, rhs) {
+        case (.castingFailure, .iterationFailure), (.iterationFailure, .castingFailure):
+            false
+        case (.castingFailure(let lhsFailure), .castingFailure(let rhsFailure)):
+            lhsFailure == rhsFailure
+        case (.iterationFailure(let lhsFailure), .iterationFailure(let rhsFailure)):
+            if let lhsFailure = lhsFailure as Any as? (any Equatable), let rhsFailure = rhsFailure as Any as? (any Equatable) {
+                lhsFailure.equals(rhsFailure)
+            } else {
+                false
+            }
+        }
+    }
+    
+    public static func == (lhs: Self, rhs: Self) -> Bool where IterationFailure: Equatable {
+        switch (lhs, rhs) {
+        case (.castingFailure, .iterationFailure), (.iterationFailure, .castingFailure):
+            false
+        case (.castingFailure(let lhsFailure), .castingFailure(let rhsFailure)):
+            lhsFailure == rhsFailure
+        case (.iterationFailure(let lhsFailure), .iterationFailure(let rhsFailure)):
+            lhsFailure == rhsFailure
+        }
+    }
+}
+
 extension BytesError.IterationError: Hashable where IterationFailure: Hashable {}
 
 extension BytesError.IterationError {

@@ -87,6 +87,14 @@ import Testing
         #expect(try bigContiguousArray.contiguousCasting(to: BigType.self) == BigType(a: .zero, b: .zero))
     }
     
+    @Test func unalignedMemoryAccess() throws {
+        let bytes: Bytes = [0x0, 0x0, 0x0, 0x01, 0x23, 0x45, 0x67, 0x0]
+        
+        #expect(try bytes.dropFirst(3).dropLast().casting(to: UInt32.self).bigEndian == UInt32(0x0123_4567))
+        #expect(try bytes.dropFirst(3).dropLast().contiguousCasting(to: UInt32.self).bigEndian == UInt32(0x0123_4567))
+        #expect(try (bytes.dropFirst(3).dropLast() as any BytesCollection).casting(to: UInt32.self).bigEndian == UInt32(0x0123_4567))
+    }
+    
     @Test func instanceFromImplicitContiguousCasting() async throws {
         let zeroWord: Bytes = [0,0,0,0]
         

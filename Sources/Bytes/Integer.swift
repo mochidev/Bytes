@@ -360,8 +360,9 @@ extension AsyncIteratorProtocol where Element == Byte {
     public mutating func next<T: FixedWidthInteger>(
         littleEndian type: T.Type
     ) async throws(BytesError.Iteration<any Error>.BufferSizeError) -> T {
-        /// We know the inner `try` validates the size already, so the outer one can never fail, and we can simplify the reported error types.
-        try! T(littleEndianBytes: try await next(Bytes.self, count: MemoryLayout<T>.size))
+        let bytes = try await next(Bytes.self, count: MemoryLayout<T>.size)
+        /// We know the first `try` validates the size already, so the second one can never fail, allowing us to simplify the reported error types.
+        return try! T(littleEndianBytes: bytes)
     }
     
     /// Asynchronously advances to the next big endian integer in the squence and returns it, or throws if it could not.
@@ -382,8 +383,9 @@ extension AsyncIteratorProtocol where Element == Byte {
     public mutating func next<T: FixedWidthInteger>(
         bigEndian type: T.Type
     ) async throws(BytesError.Iteration<any Error>.BufferSizeError) -> T {
-        /// We know the inner `try` validates the size already, so the outer one can never fail, and we can simplify the reported error types.
-        try! T(bigEndianBytes: try await next(Bytes.self, count: MemoryLayout<T>.size))
+        let bytes = try await next(Bytes.self, count: MemoryLayout<T>.size)
+        /// We know the first `try` validates the size already, so the second one can never fail, allowing us to simplify the reported error types.
+        return try! T(bigEndianBytes: bytes)
     }
     
     /// Asynchronously advances to the next little endian integer in the squence and returns it, or ends the sequence if there is no next element.
@@ -536,8 +538,9 @@ extension AsyncIteratorProtocol where Element == Byte {
         littleEndian type: T.Type,
         isolation actor: isolated (any Actor)? = #isolation
     ) async throws(BytesError.Iteration<Failure>.BufferSizeError) -> T {
-        /// We know the inner `try` validates the size already, so the outer one can never fail, and we can simplify the reported error types.
-        try! T(littleEndianBytes: try await next(Bytes.self, count: MemoryLayout<T>.size))
+        let bytes = try await next(Bytes.self, count: MemoryLayout<T>.size)
+        /// We know the first `try` validates the size already, so the second one can never fail, allowing us to simplify the reported error types.
+        return try! T(littleEndianBytes: bytes)
     }
     
     /// Asynchronously advances to the next big endian integer in the squence and returns it, or throws if it could not.
@@ -556,8 +559,9 @@ extension AsyncIteratorProtocol where Element == Byte {
         bigEndian type: T.Type,
         isolation actor: isolated (any Actor)? = #isolation
     ) async throws(BytesError.Iteration<Failure>.BufferSizeError) -> T {
-        /// We know the inner `try` validates the size already, so the outer one can never fail, and we can simplify the reported error types.
-        try! T(bigEndianBytes: try await next(Bytes.self, count: MemoryLayout<T>.size))
+        let bytes = try await next(Bytes.self, count: MemoryLayout<T>.size)
+        /// We know the first `try` validates the size already, so the second one can never fail, allowing us to simplify the reported error types.
+        return try! T(bigEndianBytes: bytes)
     }
     
     /// Asynchronously advances to the next little endian integer in the squence and returns it, or ends the sequence if there is no next element.

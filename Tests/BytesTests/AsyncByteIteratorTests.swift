@@ -1,0 +1,1080 @@
+//
+//  AsyncByteIteratorTests.swift
+//  https://github.com/mochidev/Bytes
+//
+//  Created by Dimitri Bouniol on 2026-05-24.
+//  Copyright © 2020-26 Mochi Development, Inc. All rights reserved.
+//  mochidev-swift-bytes: F44D5591194F47C0834EC1EBD0102932
+//
+
+import Bytes
+import Testing
+
+#if canImport(Darwin)
+@Suite struct LegacyAsyncByteIteratorTests {
+    static func makeAsyncByteIterator() -> AsyncStream<Byte>.Iterator {
+        AsyncStream { continuation in
+            let bytes: Bytes = [0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07]
+            for byte in bytes {
+                continuation.yield(byte)
+            }
+            continuation.finish()
+        }.makeAsyncIterator()
+    }
+    
+    fileprivate static func makeThrowingAsyncByteIterator() -> ThrowingIterator {
+        ThrowingIterator()
+    }
+    
+    @Test func nextCountInvalidInput() async throws {
+        await #expect(processExitsWith: .failure) {
+            var iterator = Self.makeAsyncByteIterator()
+            _ = try await iterator.next(Bytes.self, count: -1)
+        }
+        await #expect(processExitsWith: .failure) {
+            var iterator = Self.makeThrowingAsyncByteIterator()
+            _ = try await iterator.next(Bytes.self, count: -1)
+        }
+    }
+    
+    @Test func nextCount() async throws {
+        var iterator = Self.makeAsyncByteIterator()
+        #expect(try await iterator.next(Bytes.self, count: 0) == [])
+        #expect(try await iterator.next(Bytes.self, count: 1) == [0x00])
+        #expect(try await iterator.next(Bytes.self, count: 2) == [0x01, 0x02])
+        #expect(try await iterator.next(Bytes.self, count: 3) == [0x03, 0x04, 0x05])
+        #expect(try await iterator.next(Bytes.self, count: 2) == [0x06, 0x07])
+        
+        do {
+            _ = try await iterator.next(Bytes.self, count: 1)
+            Issue.record("Error was expected here")
+        } catch {
+            guard error == .castingFailure(.invalidBufferSize(targetSize: 1, targetType: "Bytes", actualSize: 0))
+            else { throw error }
+        }
+        
+        #expect(try await iterator.next(Bytes.self, count: 0) == [])
+    }
+    
+    @Test func nextCountThrows() async throws {
+        var iterator = Self.makeThrowingAsyncByteIterator()
+        #expect(try await iterator.next(Bytes.self, count: 0) == [])
+        #expect(try await iterator.next(Bytes.self, count: 1) == [0x00])
+        #expect(try await iterator.next(Bytes.self, count: 2) == [0x01, 0x02])
+        #expect(try await iterator.next(Bytes.self, count: 3) == [0x03, 0x04, 0x05])
+        #expect(try await iterator.next(Bytes.self, count: 2) == [0x06, 0x07])
+        
+        do {
+            _ = try await iterator.next(Bytes.self, count: 1)
+            Issue.record("Error was expected here")
+        } catch {
+            guard error == .iterationFailure(LocalError())
+            else { throw error }
+        }
+        
+        #expect(try await iterator.next(Bytes.self, count: 0) == [])
+    }
+    
+    @Test func nextMinMaxInvalidInput() async throws {
+        await #expect(processExitsWith: .failure) {
+            var iterator = Self.makeAsyncByteIterator()
+            _ = try await iterator.next(Bytes.self, min: -1, max: 1)
+        }
+        await #expect(processExitsWith: .failure) {
+            var iterator = Self.makeAsyncByteIterator()
+            _ = try await iterator.next(Bytes.self, min: -1, max: -1)
+        }
+        await #expect(processExitsWith: .failure) {
+            var iterator = Self.makeAsyncByteIterator()
+            _ = try await iterator.next(Bytes.self, min: 1, max: 0)
+        }
+        await #expect(processExitsWith: .failure) {
+            var iterator = Self.makeThrowingAsyncByteIterator()
+            _ = try await iterator.next(Bytes.self, min: -1, max: 1)
+        }
+        await #expect(processExitsWith: .failure) {
+            var iterator = Self.makeThrowingAsyncByteIterator()
+            _ = try await iterator.next(Bytes.self, min: -1, max: -1)
+        }
+        await #expect(processExitsWith: .failure) {
+            var iterator = Self.makeThrowingAsyncByteIterator()
+            _ = try await iterator.next(Bytes.self, min: 1, max: 0)
+        }
+    }
+    
+    @Test func nextMinMax() async throws {
+        var iterator = Self.makeAsyncByteIterator()
+        #expect(try await  iterator.next(Bytes.self, min: 0, max: 0) == [])
+        #expect(try await  iterator.next(Bytes.self, min: 0, max: 1) == [0x00])
+        #expect(try await  iterator.next(Bytes.self, min: 0, max: 2) == [0x01, 0x02])
+        #expect(try await  iterator.next(Bytes.self, min: 0, max: 3) == [0x03, 0x04, 0x05])
+        #expect(try await iterator.next(Bytes.self, min: 0, max: 3) == [0x06, 0x07])
+        #expect(try await iterator.next(Bytes.self, min: 0, max: 3) == [])
+        
+        await #expect(throws: BytesError.Iteration<any Error>.BufferSizeError.invalidBufferSize(targetSize: 1, targetType: "Bytes", actualSize: 0)) {
+            try await iterator.next(Bytes.self, min: 1, max: 3)
+        }
+    }
+    
+    @Test func nextMinMaxThrows() async throws {
+        var iterator = Self.makeThrowingAsyncByteIterator()
+        #expect(try await  iterator.next(Bytes.self, min: 0, max: 0) == [])
+        #expect(try await  iterator.next(Bytes.self, min: 0, max: 1) == [0x00])
+        #expect(try await  iterator.next(Bytes.self, min: 0, max: 2) == [0x01, 0x02])
+        #expect(try await  iterator.next(Bytes.self, min: 0, max: 3) == [0x03, 0x04, 0x05])
+        
+        await #expect(throws: BytesError.Iteration<any Error>.BufferSizeError.iterationFailure(LocalError())) {
+            try await iterator.next(Bytes.self, min: 0, max: 3)
+        }
+    }
+    
+    @Test func nextMaxInvalidInput() async throws {
+        await #expect(processExitsWith: .failure) {
+            var iterator = Self.makeAsyncByteIterator()
+            _ = await iterator.next(Bytes.self, max: -1)
+        }
+        await #expect(processExitsWith: .failure) {
+            var iterator = Self.makeThrowingAsyncByteIterator()
+            _ = try await iterator.next(Bytes.self, max: -1)
+        }
+    }
+    
+    @Test func nextMax() async throws {
+        var iterator = Self.makeAsyncByteIterator()
+        #expect(await iterator.next(Bytes.self, max: 0) == [])
+        #expect(await iterator.next(Bytes.self, max: 1) == [0x00])
+        #expect(await iterator.next(Bytes.self, max: 2) == [0x01, 0x02])
+        #expect(await iterator.next(Bytes.self, max: 3) == [0x03, 0x04, 0x05])
+        #expect(await iterator.next(Bytes.self, max: 3) == [0x06, 0x07])
+        #expect(await iterator.next(Bytes.self, max: 3) == [])
+    }
+    
+    @Test func nextMaxThrows() async throws {
+        var iterator = Self.makeThrowingAsyncByteIterator()
+        #expect(try await iterator.next(Bytes.self, max: 0) == [])
+        #expect(try await iterator.next(Bytes.self, max: 1) == [0x00])
+        #expect(try await iterator.next(Bytes.self, max: 2) == [0x01, 0x02])
+        #expect(try await iterator.next(Bytes.self, max: 3) == [0x03, 0x04, 0x05])
+        
+        await #expect(throws: LocalError()) {
+            try await iterator.next(Bytes.self, max: 3)
+        }
+    }
+    
+    @Test func nextIfPresentCountInvalidInput() async throws {
+        await #expect(processExitsWith: .failure) {
+            var iterator = Self.makeAsyncByteIterator()
+            _ = try await iterator.nextIfPresent(Bytes.self, count: -1)
+        }
+        await #expect(processExitsWith: .failure) {
+            var iterator = Self.makeThrowingAsyncByteIterator()
+            _ = try await iterator.nextIfPresent(Bytes.self, count: -1)
+        }
+    }
+    
+    @Test func nextIfPresentCount() async throws {
+        var iterator = Self.makeAsyncByteIterator()
+        #expect(try await iterator.nextIfPresent(Bytes.self, count: 0) == [])
+        #expect(try await iterator.nextIfPresent(Bytes.self, count: 1) == [0x00])
+        #expect(try await iterator.nextIfPresent(Bytes.self, count: 2) == [0x01, 0x02])
+        #expect(try await iterator.nextIfPresent(Bytes.self, count: 3) == [0x03, 0x04, 0x05])
+        #expect(try await iterator.nextIfPresent(Bytes.self, count: 2) == [0x06, 0x07])
+        #expect(try await iterator.nextIfPresent(Bytes.self, count: 1) == nil)
+        #expect(try await iterator.nextIfPresent(Bytes.self, count: 2) == nil)
+        #expect(try await iterator.nextIfPresent(Bytes.self, count: 0) == [])
+    }
+    
+    @Test func nextIfPresentCountCastingThrows() async throws {
+        var iterator = Self.makeAsyncByteIterator()
+        #expect(try await iterator.nextIfPresent(Bytes.self, count: 0) == [])
+        #expect(try await iterator.nextIfPresent(Bytes.self, count: 1) == [0x00])
+        #expect(try await iterator.nextIfPresent(Bytes.self, count: 2) == [0x01, 0x02])
+        #expect(try await iterator.nextIfPresent(Bytes.self, count: 3) == [0x03, 0x04, 0x05])
+        
+        do {
+            _ = try await iterator.nextIfPresent(Bytes.self, count: 3)
+            Issue.record("Error was expected here")
+        } catch {
+            guard error == .castingFailure(.invalidBufferSize(targetSize: 3, targetType: "Bytes", actualSize: 2))
+            else { throw error }
+        }
+        
+        #expect(try await iterator.nextIfPresent(Bytes.self, count: 1) == nil)
+        #expect(try await iterator.nextIfPresent(Bytes.self, count: 2) == nil)
+        #expect(try await iterator.nextIfPresent(Bytes.self, count: 0) == [])
+    }
+    
+    @Test func nextIfPresentCountIteratorThrows() async throws {
+        var iterator = Self.makeThrowingAsyncByteIterator()
+        #expect(try await iterator.nextIfPresent(Bytes.self, count: 0) == [])
+        #expect(try await iterator.nextIfPresent(Bytes.self, count: 1) == [0x00])
+        #expect(try await iterator.nextIfPresent(Bytes.self, count: 2) == [0x01, 0x02])
+        #expect(try await iterator.nextIfPresent(Bytes.self, count: 3) == [0x03, 0x04, 0x05])
+        
+        do {
+            _ = try await iterator.nextIfPresent(Bytes.self, count: 3)
+            Issue.record("Error was expected here")
+        } catch {
+            guard error == .iterationFailure(LocalError())
+            else { throw error }
+        }
+        
+        #expect(try await iterator.nextIfPresent(Bytes.self, count: 1) == nil)
+        #expect(try await iterator.nextIfPresent(Bytes.self, count: 2) == nil)
+        #expect(try await iterator.nextIfPresent(Bytes.self, count: 0) == [])
+    }
+    
+    @Test func nextIfPresentMinMaxInvalidInput() async throws {
+        await #expect(processExitsWith: .failure) {
+            var iterator = Self.makeAsyncByteIterator()
+            _ = try await iterator.nextIfPresent(Bytes.self, min: -1, max: 1)
+        }
+        await #expect(processExitsWith: .failure) {
+            var iterator = Self.makeAsyncByteIterator()
+            _ = try await iterator.nextIfPresent(Bytes.self, min: -1, max: -1)
+        }
+        await #expect(processExitsWith: .failure) {
+            var iterator = Self.makeAsyncByteIterator()
+            _ = try await iterator.nextIfPresent(Bytes.self, min: 1, max: 0)
+        }
+        await #expect(processExitsWith: .failure) {
+            var iterator = Self.makeThrowingAsyncByteIterator()
+            _ = try await iterator.nextIfPresent(Bytes.self, min: -1, max: 1)
+        }
+        await #expect(processExitsWith: .failure) {
+            var iterator = Self.makeThrowingAsyncByteIterator()
+            _ = try await iterator.nextIfPresent(Bytes.self, min: -1, max: -1)
+        }
+        await #expect(processExitsWith: .failure) {
+            var iterator = Self.makeThrowingAsyncByteIterator()
+            _ = try await iterator.nextIfPresent(Bytes.self, min: 1, max: 0)
+        }
+    }
+    
+    @Test func nextIfPresentMinMax() async throws {
+        var iterator = Self.makeAsyncByteIterator()
+        #expect(try await iterator.nextIfPresent(Bytes.self, min: 0, max: 0) == [])
+        #expect(try await iterator.nextIfPresent(Bytes.self, min: 0, max: 1) == [0x00])
+        #expect(try await iterator.nextIfPresent(Bytes.self, min: 0, max: 2) == [0x01, 0x02])
+        #expect(try await iterator.nextIfPresent(Bytes.self, min: 0, max: 3) == [0x03, 0x04, 0x05])
+        #expect(try await iterator.nextIfPresent(Bytes.self, min: 0, max: 3) == [0x06, 0x07])
+        #expect(try await iterator.nextIfPresent(Bytes.self, min: 0, max: 3) == nil)
+        #expect(try await iterator.nextIfPresent(Bytes.self, min: 0, max: 0) == [])
+    }
+    
+    @Test func nextIfPresentMinMaxCastingThrows() async throws {
+        var iterator = Self.makeAsyncByteIterator()
+        #expect(try await iterator.nextIfPresent(Bytes.self, min: 0, max: 0) == [])
+        #expect(try await iterator.nextIfPresent(Bytes.self, min: 0, max: 1) == [0x00])
+        #expect(try await iterator.nextIfPresent(Bytes.self, min: 0, max: 2) == [0x01, 0x02])
+        #expect(try await iterator.nextIfPresent(Bytes.self, min: 0, max: 3) == [0x03, 0x04, 0x05])
+        
+        do {
+            _ = try await iterator.nextIfPresent(Bytes.self, min: 3, max: 6)
+            Issue.record("Error was expected here")
+        } catch {
+            guard error == .castingFailure(.invalidBufferSize(targetSize: 3, targetType: "Bytes", actualSize: 2))
+            else { throw error }
+        }
+        
+        #expect(try await iterator.nextIfPresent(Bytes.self, min: 0, max: 3) == nil)
+    }
+    
+    @Test func nextIfPresentMinMaxIteratorThrows() async throws {
+        var iterator = Self.makeThrowingAsyncByteIterator()
+        #expect(try await iterator.nextIfPresent(Bytes.self, min: 0, max: 0) == [])
+        #expect(try await iterator.nextIfPresent(Bytes.self, min: 0, max: 1) == [0x00])
+        #expect(try await iterator.nextIfPresent(Bytes.self, min: 0, max: 2) == [0x01, 0x02])
+        #expect(try await iterator.nextIfPresent(Bytes.self, min: 0, max: 3) == [0x03, 0x04, 0x05])
+        
+        do {
+            _ = try await iterator.nextIfPresent(Bytes.self, min: 3, max: 6)
+            Issue.record("Error was expected here")
+        } catch {
+            guard error == .iterationFailure(LocalError())
+            else { throw error }
+        }
+        
+        #expect(try await iterator.nextIfPresent(Bytes.self, min: 0, max: 3) == nil)
+    }
+    
+    @Test func nextIfPresentMaxInvalidInput() async throws {
+        await #expect(processExitsWith: .failure) {
+            var iterator = Self.makeAsyncByteIterator()
+            _ = await iterator.nextIfPresent(Bytes.self, max: -1)
+        }
+        await #expect(processExitsWith: .failure) {
+            var iterator = Self.makeThrowingAsyncByteIterator()
+            _ = try await iterator.nextIfPresent(Bytes.self, max: -1)
+        }
+    }
+    
+    @Test func nextIfPresentMax() async throws {
+        var iterator = Self.makeAsyncByteIterator()
+        #expect(await iterator.nextIfPresent(Bytes.self, max: 0) == [])
+        #expect(await iterator.nextIfPresent(Bytes.self, max: 1) == [0x00])
+        #expect(await iterator.nextIfPresent(Bytes.self, max: 2) == [0x01, 0x02])
+        #expect(await iterator.nextIfPresent(Bytes.self, max: 3) == [0x03, 0x04, 0x05])
+        #expect(await iterator.nextIfPresent(Bytes.self, max: 3) == [0x06, 0x07])
+        #expect(await iterator.nextIfPresent(Bytes.self, max: 0) == [])
+        #expect(await iterator.nextIfPresent(Bytes.self, max: 3) == nil)
+    }
+    
+    @Test func nextIfPresentMaxThrows() async throws {
+        var iterator = Self.makeThrowingAsyncByteIterator()
+        #expect(try await iterator.nextIfPresent(Bytes.self, max: 0) == [])
+        #expect(try await iterator.nextIfPresent(Bytes.self, max: 1) == [0x00])
+        #expect(try await iterator.nextIfPresent(Bytes.self, max: 2) == [0x01, 0x02])
+        #expect(try await iterator.nextIfPresent(Bytes.self, max: 3) == [0x03, 0x04, 0x05])
+        
+        await #expect(throws: LocalError()) {
+            try await iterator.nextIfPresent(Bytes.self, max: 3)
+        }
+    }
+    
+    @Test func checkByte() async throws {
+        var iterator = Self.makeAsyncByteIterator()
+        try await iterator.check(0x00)
+        try await iterator.check(0x01)
+        try await iterator.check(0x02)
+        
+        do {
+            try await iterator.check(0x04)
+            Issue.record("Error was expected here")
+        } catch {
+            guard error == .castingFailure(.checkedSequenceNotFound)
+            else { throw error }
+        }
+        
+        try await iterator.check(0x04)
+        try await iterator.check(0x05)
+        try await iterator.check(0x06)
+        try await iterator.check(0x07)
+        
+        do {
+            try await iterator.check(0x08)
+            Issue.record("Error was expected here")
+        } catch {
+            guard error == .castingFailure(.checkedSequenceNotFound)
+            else { throw error }
+        }
+    }
+    
+    @Test func checkByteThrows() async throws {
+        var iterator = Self.makeThrowingAsyncByteIterator()
+        try await iterator.check(0x00)
+        try await iterator.check(0x01)
+        try await iterator.check(0x02)
+        
+        do {
+            try await iterator.check(0x04)
+            Issue.record("Error was expected here")
+        } catch {
+            guard error == .castingFailure(.checkedSequenceNotFound)
+            else { throw error }
+        }
+        
+        try await iterator.check(0x04)
+        try await iterator.check(0x05)
+        try await iterator.check(0x06)
+        try await iterator.check(0x07)
+        
+        do {
+            try await iterator.check(0x08)
+            Issue.record("Error was expected here")
+        } catch {
+            guard error == .iterationFailure(LocalError())
+            else { throw error }
+        }
+    }
+    
+    @Test func checkBytes() async throws {
+        var iterator = Self.makeAsyncByteIterator()
+        try await iterator.check([])
+        try await iterator.check([0x00])
+        try await iterator.check([0x01, 0x02])
+        
+        do {
+            try await iterator.check([0x03, 0x05])
+            Issue.record("Error was expected here")
+        } catch {
+            guard error == .castingFailure(.checkedSequenceNotFound)
+            else { throw error }
+        }
+        
+        try await iterator.check([0x05, 0x06])
+        
+        do {
+            try await iterator.check([0x07, 0x08])
+            Issue.record("Error was expected here")
+        } catch {
+            guard error == .castingFailure(.checkedSequenceNotFound)
+            else { throw error }
+        }
+        
+        do {
+            try await iterator.check([0x09])
+            Issue.record("Error was expected here")
+        } catch {
+            guard error == .castingFailure(.checkedSequenceNotFound)
+            else { throw error }
+        }
+        
+        try await iterator.check([])
+    }
+    
+    @Test func checkByteIfPresent() async throws {
+        var iterator = Self.makeAsyncByteIterator()
+        #expect(try await iterator.checkIfPresent(0x00) == true)
+        #expect(try await iterator.checkIfPresent(0x01) == true)
+        #expect(try await iterator.checkIfPresent(0x02) == true)
+        
+        do {
+            try await iterator.checkIfPresent(0x04)
+            Issue.record("Error was expected here")
+        } catch {
+            guard error == .castingFailure(.checkedSequenceNotFound)
+            else { throw error }
+        }
+        
+        #expect(try await iterator.checkIfPresent(0x04) == true)
+        #expect(try await iterator.checkIfPresent(0x05) == true)
+        #expect(try await iterator.checkIfPresent(0x06) == true)
+        #expect(try await iterator.checkIfPresent(0x07) == true)
+        #expect(try await iterator.checkIfPresent(0x08) == false)
+    }
+    
+    @Test func checkByteIfPresentThrows() async throws {
+        var iterator = Self.makeThrowingAsyncByteIterator()
+        #expect(try await iterator.checkIfPresent(0x00) == true)
+        #expect(try await iterator.checkIfPresent(0x01) == true)
+        #expect(try await iterator.checkIfPresent(0x02) == true)
+        
+        do {
+            try await iterator.checkIfPresent(0x04)
+            Issue.record("Error was expected here")
+        } catch {
+            guard error == .castingFailure(.checkedSequenceNotFound)
+            else { throw error }
+        }
+        
+        #expect(try await iterator.checkIfPresent(0x04) == true)
+        #expect(try await iterator.checkIfPresent(0x05) == true)
+        #expect(try await iterator.checkIfPresent(0x06) == true)
+        #expect(try await iterator.checkIfPresent(0x07) == true)
+        
+        do {
+            try await iterator.checkIfPresent(0x08)
+            Issue.record("Error was expected here")
+        } catch {
+            guard error == .iterationFailure(LocalError())
+            else { throw error }
+        }
+        
+        #expect(try await iterator.checkIfPresent(0x08) == false)
+    }
+    
+    @Test func checkBytesIfPresent() async throws {
+        var iterator = Self.makeAsyncByteIterator()
+        #expect(try await iterator.checkIfPresent([]) == true)
+        #expect(try await iterator.checkIfPresent([0x00]) == true)
+        #expect(try await iterator.checkIfPresent([0x01, 0x02]) == true)
+        
+        do {
+            try await iterator.checkIfPresent([0x03, 0x05])
+            Issue.record("Error was expected here")
+        } catch {
+            guard error == .castingFailure(.checkedSequenceNotFound)
+            else { throw error }
+        }
+        
+        #expect(try await iterator.checkIfPresent([0x05, 0x06]) == true)
+        
+        do {
+            try await iterator.checkIfPresent([0x07, 0x08])
+            Issue.record("Error was expected here")
+        } catch {
+            guard error == .castingFailure(.checkedSequenceNotFound)
+            else { throw error }
+        }
+        
+        #expect(try await iterator.checkIfPresent([0x09]) == false)
+        #expect(try await iterator.checkIfPresent([]) == true)
+    }
+    
+    @Test func checkBytesIfPresentThrows() async throws {
+        var iterator = Self.makeThrowingAsyncByteIterator()
+        #expect(try await iterator.checkIfPresent([]) == true)
+        #expect(try await iterator.checkIfPresent([0x00]) == true)
+        #expect(try await iterator.checkIfPresent([0x01, 0x02]) == true)
+        
+        do {
+            try await iterator.checkIfPresent([0x03, 0x05])
+            Issue.record("Error was expected here")
+        } catch {
+            guard error == .castingFailure(.checkedSequenceNotFound)
+            else { throw error }
+        }
+        
+        #expect(try await iterator.checkIfPresent([0x05, 0x06]) == true)
+        
+        do {
+            try await iterator.checkIfPresent([0x07, 0x08])
+            Issue.record("Error was expected here")
+        } catch {
+            guard error == .iterationFailure(LocalError())
+            else { throw error }
+        }
+        
+        #expect(try await iterator.checkIfPresent([0x09]) == false)
+        #expect(try await iterator.checkIfPresent([]) == true)
+    }
+}
+#endif
+
+@Suite struct AsyncByteIteratorTests {
+    static func makeAsyncByteIterator() -> AsyncStream<Byte>.Iterator {
+        AsyncStream { continuation in
+            let bytes: Bytes = [0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07]
+            for byte in bytes {
+                continuation.yield(byte)
+            }
+            continuation.finish()
+        }.makeAsyncIterator()
+    }
+    
+    fileprivate static func makeThrowingAsyncByteIterator() -> ThrowingIterator {
+        ThrowingIterator()
+    }
+    
+    @available(macOS 15.0, iOS 18.0, watchOS 11.0, tvOS 18.0, visionOS 2.0, *)
+    @Test func nextCountInvalidInput() async throws {
+        await #expect(processExitsWith: .failure) {
+            var iterator = Self.makeAsyncByteIterator()
+            _ = try await iterator.next(Bytes.self, count: -1)
+        }
+        await #expect(processExitsWith: .failure) {
+            var iterator = Self.makeThrowingAsyncByteIterator()
+            _ = try await iterator.next(Bytes.self, count: -1)
+        }
+    }
+    
+    @available(macOS 15.0, iOS 18.0, watchOS 11.0, tvOS 18.0, visionOS 2.0, *)
+    @Test func nextCount() async throws {
+        var iterator = Self.makeAsyncByteIterator()
+        #expect(try await iterator.next(Bytes.self, count: 0) == [])
+        #expect(try await iterator.next(Bytes.self, count: 1) == [0x00])
+        #expect(try await iterator.next(Bytes.self, count: 2) == [0x01, 0x02])
+        #expect(try await iterator.next(Bytes.self, count: 3) == [0x03, 0x04, 0x05])
+        #expect(try await iterator.next(Bytes.self, count: 2) == [0x06, 0x07])
+        
+        do {
+            _ = try await iterator.next(Bytes.self, count: 1)
+            Issue.record("Error was expected here")
+        } catch {
+            guard error == .castingFailure(.invalidBufferSize(targetSize: 1, targetType: "Bytes", actualSize: 0))
+            else { throw error }
+        }
+        
+        #expect(try await iterator.next(Bytes.self, count: 0) == [])
+    }
+    
+    @available(macOS 15.0, iOS 18.0, watchOS 11.0, tvOS 18.0, visionOS 2.0, *)
+    @Test func nextCountThrows() async throws {
+        var iterator = Self.makeThrowingAsyncByteIterator()
+        #expect(try await iterator.next(Bytes.self, count: 0) == [])
+        #expect(try await iterator.next(Bytes.self, count: 1) == [0x00])
+        #expect(try await iterator.next(Bytes.self, count: 2) == [0x01, 0x02])
+        #expect(try await iterator.next(Bytes.self, count: 3) == [0x03, 0x04, 0x05])
+        #expect(try await iterator.next(Bytes.self, count: 2) == [0x06, 0x07])
+        
+        do {
+            _ = try await iterator.next(Bytes.self, count: 1)
+            Issue.record("Error was expected here")
+        } catch {
+            guard error == .iterationFailure(LocalError())
+            else { throw error }
+        }
+        
+        #expect(try await iterator.next(Bytes.self, count: 0) == [])
+    }
+    
+    @available(macOS 15.0, iOS 18.0, watchOS 11.0, tvOS 18.0, visionOS 2.0, *)
+    @Test func nextMinMaxInvalidInput() async throws {
+        await #expect(processExitsWith: .failure) {
+            var iterator = Self.makeAsyncByteIterator()
+            _ = try await iterator.next(Bytes.self, min: -1, max: 1)
+        }
+        await #expect(processExitsWith: .failure) {
+            var iterator = Self.makeAsyncByteIterator()
+            _ = try await iterator.next(Bytes.self, min: -1, max: -1)
+        }
+        await #expect(processExitsWith: .failure) {
+            var iterator = Self.makeAsyncByteIterator()
+            _ = try await iterator.next(Bytes.self, min: 1, max: 0)
+        }
+        await #expect(processExitsWith: .failure) {
+            var iterator = Self.makeThrowingAsyncByteIterator()
+            _ = try await iterator.next(Bytes.self, min: -1, max: 1)
+        }
+        await #expect(processExitsWith: .failure) {
+            var iterator = Self.makeThrowingAsyncByteIterator()
+            _ = try await iterator.next(Bytes.self, min: -1, max: -1)
+        }
+        await #expect(processExitsWith: .failure) {
+            var iterator = Self.makeThrowingAsyncByteIterator()
+            _ = try await iterator.next(Bytes.self, min: 1, max: 0)
+        }
+    }
+    
+    @available(macOS 15.0, iOS 18.0, watchOS 11.0, tvOS 18.0, visionOS 2.0, *)
+    @Test func nextMinMax() async throws {
+        var iterator = Self.makeAsyncByteIterator()
+        #expect(try await  iterator.next(Bytes.self, min: 0, max: 0) == [])
+        #expect(try await  iterator.next(Bytes.self, min: 0, max: 1) == [0x00])
+        #expect(try await  iterator.next(Bytes.self, min: 0, max: 2) == [0x01, 0x02])
+        #expect(try await  iterator.next(Bytes.self, min: 0, max: 3) == [0x03, 0x04, 0x05])
+        #expect(try await iterator.next(Bytes.self, min: 0, max: 3) == [0x06, 0x07])
+        #expect(try await iterator.next(Bytes.self, min: 0, max: 3) == [])
+        
+        await #expect(throws: BytesError.Iteration<Never>.BufferSizeError.invalidBufferSize(targetSize: 1, targetType: "Bytes", actualSize: 0)) {
+            try await iterator.next(Bytes.self, min: 1, max: 3)
+        }
+    }
+    
+    @available(macOS 15.0, iOS 18.0, watchOS 11.0, tvOS 18.0, visionOS 2.0, *)
+    @Test func nextMinMaxThrows() async throws {
+        var iterator = Self.makeThrowingAsyncByteIterator()
+        #expect(try await  iterator.next(Bytes.self, min: 0, max: 0) == [])
+        #expect(try await  iterator.next(Bytes.self, min: 0, max: 1) == [0x00])
+        #expect(try await  iterator.next(Bytes.self, min: 0, max: 2) == [0x01, 0x02])
+        #expect(try await  iterator.next(Bytes.self, min: 0, max: 3) == [0x03, 0x04, 0x05])
+        
+        await #expect(throws: BytesError.Iteration<LocalError>.BufferSizeError.iterationFailure(LocalError())) {
+            try await iterator.next(Bytes.self, min: 0, max: 3)
+        }
+    }
+    
+    @available(macOS 15.0, iOS 18.0, watchOS 11.0, tvOS 18.0, visionOS 2.0, *)
+    @Test func nextMaxInvalidInput() async throws {
+        await #expect(processExitsWith: .failure) {
+            var iterator = Self.makeAsyncByteIterator()
+            _ = await iterator.next(Bytes.self, max: -1)
+        }
+        await #expect(processExitsWith: .failure) {
+            var iterator = Self.makeThrowingAsyncByteIterator()
+            _ = try await iterator.next(Bytes.self, max: -1)
+        }
+    }
+    
+    @available(macOS 15.0, iOS 18.0, watchOS 11.0, tvOS 18.0, visionOS 2.0, *)
+    @Test func nextMax() async throws {
+        var iterator = Self.makeAsyncByteIterator()
+        #expect(await iterator.next(Bytes.self, max: 0) == [])
+        #expect(await iterator.next(Bytes.self, max: 1) == [0x00])
+        #expect(await iterator.next(Bytes.self, max: 2) == [0x01, 0x02])
+        #expect(await iterator.next(Bytes.self, max: 3) == [0x03, 0x04, 0x05])
+        #expect(await iterator.next(Bytes.self, max: 3) == [0x06, 0x07])
+        #expect(await iterator.next(Bytes.self, max: 3) == [])
+    }
+    
+    @available(macOS 15.0, iOS 18.0, watchOS 11.0, tvOS 18.0, visionOS 2.0, *)
+    @Test func nextMaxThrows() async throws {
+        var iterator = Self.makeThrowingAsyncByteIterator()
+        #expect(try await iterator.next(Bytes.self, max: 0) == [])
+        #expect(try await iterator.next(Bytes.self, max: 1) == [0x00])
+        #expect(try await iterator.next(Bytes.self, max: 2) == [0x01, 0x02])
+        #expect(try await iterator.next(Bytes.self, max: 3) == [0x03, 0x04, 0x05])
+        
+        await #expect(throws: LocalError()) {
+            try await iterator.next(Bytes.self, max: 3)
+        }
+    }
+    
+    @available(macOS 15.0, iOS 18.0, watchOS 11.0, tvOS 18.0, visionOS 2.0, *)
+    @Test func nextIfPresentCountInvalidInput() async throws {
+        await #expect(processExitsWith: .failure) {
+            var iterator = Self.makeAsyncByteIterator()
+            _ = try await iterator.nextIfPresent(Bytes.self, count: -1)
+        }
+        await #expect(processExitsWith: .failure) {
+            var iterator = Self.makeThrowingAsyncByteIterator()
+            _ = try await iterator.nextIfPresent(Bytes.self, count: -1)
+        }
+    }
+    
+    @available(macOS 15.0, iOS 18.0, watchOS 11.0, tvOS 18.0, visionOS 2.0, *)
+    @Test func nextIfPresentCount() async throws {
+        var iterator = Self.makeAsyncByteIterator()
+        #expect(try await iterator.nextIfPresent(Bytes.self, count: 0) == [])
+        #expect(try await iterator.nextIfPresent(Bytes.self, count: 1) == [0x00])
+        #expect(try await iterator.nextIfPresent(Bytes.self, count: 2) == [0x01, 0x02])
+        #expect(try await iterator.nextIfPresent(Bytes.self, count: 3) == [0x03, 0x04, 0x05])
+        #expect(try await iterator.nextIfPresent(Bytes.self, count: 2) == [0x06, 0x07])
+        #expect(try await iterator.nextIfPresent(Bytes.self, count: 1) == nil)
+        #expect(try await iterator.nextIfPresent(Bytes.self, count: 2) == nil)
+        #expect(try await iterator.nextIfPresent(Bytes.self, count: 0) == [])
+    }
+    
+    @available(macOS 15.0, iOS 18.0, watchOS 11.0, tvOS 18.0, visionOS 2.0, *)
+    @Test func nextIfPresentCountCastingThrows() async throws {
+        var iterator = Self.makeAsyncByteIterator()
+        #expect(try await iterator.nextIfPresent(Bytes.self, count: 0) == [])
+        #expect(try await iterator.nextIfPresent(Bytes.self, count: 1) == [0x00])
+        #expect(try await iterator.nextIfPresent(Bytes.self, count: 2) == [0x01, 0x02])
+        #expect(try await iterator.nextIfPresent(Bytes.self, count: 3) == [0x03, 0x04, 0x05])
+        
+        do {
+            _ = try await iterator.nextIfPresent(Bytes.self, count: 3)
+            Issue.record("Error was expected here")
+        } catch {
+            guard error == .castingFailure(.invalidBufferSize(targetSize: 3, targetType: "Bytes", actualSize: 2))
+            else { throw error }
+        }
+        
+        #expect(try await iterator.nextIfPresent(Bytes.self, count: 1) == nil)
+        #expect(try await iterator.nextIfPresent(Bytes.self, count: 2) == nil)
+        #expect(try await iterator.nextIfPresent(Bytes.self, count: 0) == [])
+    }
+    
+    @available(macOS 15.0, iOS 18.0, watchOS 11.0, tvOS 18.0, visionOS 2.0, *)
+    @Test func nextIfPresentCountIteratorThrows() async throws {
+        var iterator = Self.makeThrowingAsyncByteIterator()
+        #expect(try await iterator.nextIfPresent(Bytes.self, count: 0) == [])
+        #expect(try await iterator.nextIfPresent(Bytes.self, count: 1) == [0x00])
+        #expect(try await iterator.nextIfPresent(Bytes.self, count: 2) == [0x01, 0x02])
+        #expect(try await iterator.nextIfPresent(Bytes.self, count: 3) == [0x03, 0x04, 0x05])
+        
+        do {
+            _ = try await iterator.nextIfPresent(Bytes.self, count: 3)
+            Issue.record("Error was expected here")
+        } catch {
+            guard error == .iterationFailure(LocalError())
+            else { throw error }
+        }
+        
+        #expect(try await iterator.nextIfPresent(Bytes.self, count: 1) == nil)
+        #expect(try await iterator.nextIfPresent(Bytes.self, count: 2) == nil)
+        #expect(try await iterator.nextIfPresent(Bytes.self, count: 0) == [])
+    }
+    
+    @available(macOS 15.0, iOS 18.0, watchOS 11.0, tvOS 18.0, visionOS 2.0, *)
+    @Test func nextIfPresentMinMaxInvalidInput() async throws {
+        await #expect(processExitsWith: .failure) {
+            var iterator = Self.makeAsyncByteIterator()
+            _ = try await iterator.nextIfPresent(Bytes.self, min: -1, max: 1)
+        }
+        await #expect(processExitsWith: .failure) {
+            var iterator = Self.makeAsyncByteIterator()
+            _ = try await iterator.nextIfPresent(Bytes.self, min: -1, max: -1)
+        }
+        await #expect(processExitsWith: .failure) {
+            var iterator = Self.makeAsyncByteIterator()
+            _ = try await iterator.nextIfPresent(Bytes.self, min: 1, max: 0)
+        }
+        await #expect(processExitsWith: .failure) {
+            var iterator = Self.makeThrowingAsyncByteIterator()
+            _ = try await iterator.nextIfPresent(Bytes.self, min: -1, max: 1)
+        }
+        await #expect(processExitsWith: .failure) {
+            var iterator = Self.makeThrowingAsyncByteIterator()
+            _ = try await iterator.nextIfPresent(Bytes.self, min: -1, max: -1)
+        }
+        await #expect(processExitsWith: .failure) {
+            var iterator = Self.makeThrowingAsyncByteIterator()
+            _ = try await iterator.nextIfPresent(Bytes.self, min: 1, max: 0)
+        }
+    }
+    
+    @available(macOS 15.0, iOS 18.0, watchOS 11.0, tvOS 18.0, visionOS 2.0, *)
+    @Test func nextIfPresentMinMax() async throws {
+        var iterator = Self.makeAsyncByteIterator()
+        #expect(try await iterator.nextIfPresent(Bytes.self, min: 0, max: 0) == [])
+        #expect(try await iterator.nextIfPresent(Bytes.self, min: 0, max: 1) == [0x00])
+        #expect(try await iterator.nextIfPresent(Bytes.self, min: 0, max: 2) == [0x01, 0x02])
+        #expect(try await iterator.nextIfPresent(Bytes.self, min: 0, max: 3) == [0x03, 0x04, 0x05])
+        #expect(try await iterator.nextIfPresent(Bytes.self, min: 0, max: 3) == [0x06, 0x07])
+        #expect(try await iterator.nextIfPresent(Bytes.self, min: 0, max: 3) == nil)
+        #expect(try await iterator.nextIfPresent(Bytes.self, min: 0, max: 0) == [])
+    }
+    
+    @available(macOS 15.0, iOS 18.0, watchOS 11.0, tvOS 18.0, visionOS 2.0, *)
+    @Test func nextIfPresentMinMaxCastingThrows() async throws {
+        var iterator = Self.makeAsyncByteIterator()
+        #expect(try await iterator.nextIfPresent(Bytes.self, min: 0, max: 0) == [])
+        #expect(try await iterator.nextIfPresent(Bytes.self, min: 0, max: 1) == [0x00])
+        #expect(try await iterator.nextIfPresent(Bytes.self, min: 0, max: 2) == [0x01, 0x02])
+        #expect(try await iterator.nextIfPresent(Bytes.self, min: 0, max: 3) == [0x03, 0x04, 0x05])
+        
+        do {
+            _ = try await iterator.nextIfPresent(Bytes.self, min: 3, max: 6)
+            Issue.record("Error was expected here")
+        } catch {
+            guard error == .castingFailure(.invalidBufferSize(targetSize: 3, targetType: "Bytes", actualSize: 2))
+            else { throw error }
+        }
+        
+        #expect(try await iterator.nextIfPresent(Bytes.self, min: 0, max: 3) == nil)
+    }
+    
+    @available(macOS 15.0, iOS 18.0, watchOS 11.0, tvOS 18.0, visionOS 2.0, *)
+    @Test func nextIfPresentMinMaxIteratorThrows() async throws {
+        var iterator = Self.makeThrowingAsyncByteIterator()
+        #expect(try await iterator.nextIfPresent(Bytes.self, min: 0, max: 0) == [])
+        #expect(try await iterator.nextIfPresent(Bytes.self, min: 0, max: 1) == [0x00])
+        #expect(try await iterator.nextIfPresent(Bytes.self, min: 0, max: 2) == [0x01, 0x02])
+        #expect(try await iterator.nextIfPresent(Bytes.self, min: 0, max: 3) == [0x03, 0x04, 0x05])
+        
+        do {
+            _ = try await iterator.nextIfPresent(Bytes.self, min: 3, max: 6)
+            Issue.record("Error was expected here")
+        } catch {
+            guard error == .iterationFailure(LocalError())
+            else { throw error }
+        }
+        
+        #expect(try await iterator.nextIfPresent(Bytes.self, min: 0, max: 3) == nil)
+    }
+    
+    @available(macOS 15.0, iOS 18.0, watchOS 11.0, tvOS 18.0, visionOS 2.0, *)
+    @Test func nextIfPresentMaxInvalidInput() async throws {
+        await #expect(processExitsWith: .failure) {
+            var iterator = Self.makeAsyncByteIterator()
+            _ = await iterator.nextIfPresent(Bytes.self, max: -1)
+        }
+        await #expect(processExitsWith: .failure) {
+            var iterator = Self.makeThrowingAsyncByteIterator()
+            _ = try await iterator.nextIfPresent(Bytes.self, max: -1)
+        }
+    }
+    
+    @available(macOS 15.0, iOS 18.0, watchOS 11.0, tvOS 18.0, visionOS 2.0, *)
+    @Test func nextIfPresentMax() async throws {
+        var iterator = Self.makeAsyncByteIterator()
+        #expect(await iterator.nextIfPresent(Bytes.self, max: 0) == [])
+        #expect(await iterator.nextIfPresent(Bytes.self, max: 1) == [0x00])
+        #expect(await iterator.nextIfPresent(Bytes.self, max: 2) == [0x01, 0x02])
+        #expect(await iterator.nextIfPresent(Bytes.self, max: 3) == [0x03, 0x04, 0x05])
+        #expect(await iterator.nextIfPresent(Bytes.self, max: 3) == [0x06, 0x07])
+        #expect(await iterator.nextIfPresent(Bytes.self, max: 0) == [])
+        #expect(await iterator.nextIfPresent(Bytes.self, max: 3) == nil)
+    }
+    
+    @available(macOS 15.0, iOS 18.0, watchOS 11.0, tvOS 18.0, visionOS 2.0, *)
+    @Test func nextIfPresentMaxThrows() async throws {
+        var iterator = Self.makeThrowingAsyncByteIterator()
+        #expect(try await iterator.nextIfPresent(Bytes.self, max: 0) == [])
+        #expect(try await iterator.nextIfPresent(Bytes.self, max: 1) == [0x00])
+        #expect(try await iterator.nextIfPresent(Bytes.self, max: 2) == [0x01, 0x02])
+        #expect(try await iterator.nextIfPresent(Bytes.self, max: 3) == [0x03, 0x04, 0x05])
+        
+        await #expect(throws: LocalError()) {
+            try await iterator.nextIfPresent(Bytes.self, max: 3)
+        }
+    }
+    
+    @available(macOS 15.0, iOS 18.0, watchOS 11.0, tvOS 18.0, visionOS 2.0, *)
+    @Test func checkByte() async throws {
+        var iterator = Self.makeAsyncByteIterator()
+        try await iterator.check(0x00)
+        try await iterator.check(0x01)
+        try await iterator.check(0x02)
+        
+        do {
+            try await iterator.check(0x04)
+            Issue.record("Error was expected here")
+        } catch {
+            guard error == .castingFailure(.checkedSequenceNotFound)
+            else { throw error }
+        }
+        
+        try await iterator.check(0x04)
+        try await iterator.check(0x05)
+        try await iterator.check(0x06)
+        try await iterator.check(0x07)
+        
+        do {
+            try await iterator.check(0x08)
+            Issue.record("Error was expected here")
+        } catch {
+            guard error == .castingFailure(.checkedSequenceNotFound)
+            else { throw error }
+        }
+    }
+    
+    @available(macOS 15.0, iOS 18.0, watchOS 11.0, tvOS 18.0, visionOS 2.0, *)
+    @Test func checkByteThrows() async throws {
+        var iterator = Self.makeThrowingAsyncByteIterator()
+        try await iterator.check(0x00)
+        try await iterator.check(0x01)
+        try await iterator.check(0x02)
+        
+        do {
+            try await iterator.check(0x04)
+            Issue.record("Error was expected here")
+        } catch {
+            guard error == .castingFailure(.checkedSequenceNotFound)
+            else { throw error }
+        }
+        
+        try await iterator.check(0x04)
+        try await iterator.check(0x05)
+        try await iterator.check(0x06)
+        try await iterator.check(0x07)
+        
+        do {
+            try await iterator.check(0x08)
+            Issue.record("Error was expected here")
+        } catch {
+            guard error == .iterationFailure(LocalError())
+            else { throw error }
+        }
+    }
+    
+    @available(macOS 15.0, iOS 18.0, watchOS 11.0, tvOS 18.0, visionOS 2.0, *)
+    @Test func checkBytes() async throws {
+        var iterator = Self.makeAsyncByteIterator()
+        try await iterator.check([])
+        try await iterator.check([0x00])
+        try await iterator.check([0x01, 0x02])
+        
+        do {
+            try await iterator.check([0x03, 0x05])
+            Issue.record("Error was expected here")
+        } catch {
+            guard error == .castingFailure(.checkedSequenceNotFound)
+            else { throw error }
+        }
+        
+        try await iterator.check([0x05, 0x06])
+        
+        do {
+            try await iterator.check([0x07, 0x08])
+            Issue.record("Error was expected here")
+        } catch {
+            guard error == .castingFailure(.checkedSequenceNotFound)
+            else { throw error }
+        }
+        
+        do {
+            try await iterator.check([0x09])
+            Issue.record("Error was expected here")
+        } catch {
+            guard error == .castingFailure(.checkedSequenceNotFound)
+            else { throw error }
+        }
+        
+        try await iterator.check([])
+    }
+    
+    @available(macOS 15.0, iOS 18.0, watchOS 11.0, tvOS 18.0, visionOS 2.0, *)
+    @Test func checkByteIfPresent() async throws {
+        var iterator = Self.makeAsyncByteIterator()
+        #expect(try await iterator.checkIfPresent(0x00) == true)
+        #expect(try await iterator.checkIfPresent(0x01) == true)
+        #expect(try await iterator.checkIfPresent(0x02) == true)
+        
+        do {
+            try await iterator.checkIfPresent(0x04)
+            Issue.record("Error was expected here")
+        } catch {
+            guard error == .castingFailure(.checkedSequenceNotFound)
+            else { throw error }
+        }
+        
+        #expect(try await iterator.checkIfPresent(0x04) == true)
+        #expect(try await iterator.checkIfPresent(0x05) == true)
+        #expect(try await iterator.checkIfPresent(0x06) == true)
+        #expect(try await iterator.checkIfPresent(0x07) == true)
+        #expect(try await iterator.checkIfPresent(0x08) == false)
+    }
+    
+    @available(macOS 15.0, iOS 18.0, watchOS 11.0, tvOS 18.0, visionOS 2.0, *)
+    @Test func checkByteIfPresentThrows() async throws {
+        var iterator = Self.makeThrowingAsyncByteIterator()
+        #expect(try await iterator.checkIfPresent(0x00) == true)
+        #expect(try await iterator.checkIfPresent(0x01) == true)
+        #expect(try await iterator.checkIfPresent(0x02) == true)
+        
+        do {
+            try await iterator.checkIfPresent(0x04)
+            Issue.record("Error was expected here")
+        } catch {
+            guard error == .castingFailure(.checkedSequenceNotFound)
+            else { throw error }
+        }
+        
+        #expect(try await iterator.checkIfPresent(0x04) == true)
+        #expect(try await iterator.checkIfPresent(0x05) == true)
+        #expect(try await iterator.checkIfPresent(0x06) == true)
+        #expect(try await iterator.checkIfPresent(0x07) == true)
+        
+        do {
+            try await iterator.checkIfPresent(0x08)
+            Issue.record("Error was expected here")
+        } catch {
+            guard error == .iterationFailure(LocalError())
+            else { throw error }
+        }
+        
+        #expect(try await iterator.checkIfPresent(0x08) == false)
+    }
+    
+    @available(macOS 15.0, iOS 18.0, watchOS 11.0, tvOS 18.0, visionOS 2.0, *)
+    @Test func checkBytesIfPresent() async throws {
+        var iterator = Self.makeAsyncByteIterator()
+        #expect(try await iterator.checkIfPresent([]) == true)
+        #expect(try await iterator.checkIfPresent([0x00]) == true)
+        #expect(try await iterator.checkIfPresent([0x01, 0x02]) == true)
+        
+        do {
+            try await iterator.checkIfPresent([0x03, 0x05])
+            Issue.record("Error was expected here")
+        } catch {
+            guard error == .castingFailure(.checkedSequenceNotFound)
+            else { throw error }
+        }
+        
+        #expect(try await iterator.checkIfPresent([0x05, 0x06]) == true)
+        
+        do {
+            try await iterator.checkIfPresent([0x07, 0x08])
+            Issue.record("Error was expected here")
+        } catch {
+            guard error == .castingFailure(.checkedSequenceNotFound)
+            else { throw error }
+        }
+        
+        #expect(try await iterator.checkIfPresent([0x09]) == false)
+        #expect(try await iterator.checkIfPresent([]) == true)
+    }
+    
+    @available(macOS 15.0, iOS 18.0, watchOS 11.0, tvOS 18.0, visionOS 2.0, *)
+    @Test func checkBytesIfPresentThrows() async throws {
+        var iterator = Self.makeThrowingAsyncByteIterator()
+        #expect(try await iterator.checkIfPresent([]) == true)
+        #expect(try await iterator.checkIfPresent([0x00]) == true)
+        #expect(try await iterator.checkIfPresent([0x01, 0x02]) == true)
+        
+        do {
+            try await iterator.checkIfPresent([0x03, 0x05])
+            Issue.record("Error was expected here")
+        } catch {
+            guard error == .castingFailure(.checkedSequenceNotFound)
+            else { throw error }
+        }
+        
+        #expect(try await iterator.checkIfPresent([0x05, 0x06]) == true)
+        
+        do {
+            try await iterator.checkIfPresent([0x07, 0x08])
+            Issue.record("Error was expected here")
+        } catch {
+            guard error == .iterationFailure(LocalError())
+            else { throw error }
+        }
+        
+        #expect(try await iterator.checkIfPresent([0x09]) == false)
+        #expect(try await iterator.checkIfPresent([]) == true)
+    }
+}

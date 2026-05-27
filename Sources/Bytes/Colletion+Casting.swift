@@ -108,17 +108,16 @@ extension Collection where Element == Byte {
     /// Check if a sequence of ``Bytes`` can be safely mapped to a collection of elements of a given size.
     /// - Parameter targetSize: The size of element to map to.
     /// - Throws: ``BytesError/BufferSizeError/invalidBufferSize(targetSize:targetType:actualSize:)`` if the total size of the bytes sequence is not a multiple of the element's size.
-    /// - Returns: `(elementSize: Int, numberOfBytes: Int, elementCount: Int)`, to aid in building the new collection.
+    /// - Returns: `(numberOfBytes: Int, elementCount: Int)`, to aid in building the new collection.
     @inlinable
     func canBeMapped(
         to targetSize: Int
     ) throws(BytesError.BufferSizeError) -> (numberOfBytes: Int, elementCount: Int) {
-        let elementSize = targetSize
         let numberOfBytes = self.count
-        let (elementCount, remainingElementSize) = numberOfBytes.quotientAndRemainder(dividingBy: elementSize)
+        let (elementCount, remainingElementSize) = numberOfBytes.quotientAndRemainder(dividingBy: targetSize)
         
         guard remainingElementSize == 0 else {
-            throw .invalidBufferSize(targetSize: (elementCount+1)*elementSize, targetType: "Bytes<\(elementSize)>", actualSize: numberOfBytes)
+            throw .invalidBufferSize(targetSize: (elementCount+1)*targetSize, targetType: "Bytes<\(targetSize)>", actualSize: numberOfBytes)
         }
         
         return (numberOfBytes, elementCount)

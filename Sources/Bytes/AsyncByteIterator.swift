@@ -15,6 +15,7 @@ extension AsyncIteratorProtocol where Element == Byte {
     /// **Learn More:** [Integration with AsyncSequenceReader](https://github.com/mochidev/AsyncSequenceReader#integration-with-bytes)
     /// - Parameter bytes: This should be set to `Bytes.self`.
     /// - Parameter count: The number of bytes to form into a byte array.
+    /// - Parameter targetType: The target type that is being decoded. Defaults to `"Bytes"` if not specified.
     /// - Returns: A byte array of size `count`.
     /// - Throws:
     ///     - ``BytesError/BufferSizeError/invalidBufferSize(targetSize:targetType:actualSize:)`` if a complete byte array could not be returned by the time the sequence ended.
@@ -26,10 +27,11 @@ extension AsyncIteratorProtocol where Element == Byte {
     @_disfavoredOverload
     public mutating func next(
         _ bytes: Bytes.Type,
-        count: Int
+        count: Int,
+        targetType: String = "Bytes"
     ) async throws(BytesError.Iteration<any Error>.BufferSizeError) -> Bytes {
         assert(count >= 0, "count must be larger than 0")
-        return try await next(bytes, min: count, max: count)
+        return try await next(bytes, min: count, max: count, targetType: targetType)
     }
     
     /// Asynchronously advances a byte array with the specified minimum size, continuing until the specified maximum size, or throws if it could not.
@@ -38,6 +40,7 @@ extension AsyncIteratorProtocol where Element == Byte {
     /// - Parameter bytes: This should be set to `Bytes.self`.
     /// - Parameter minCount: The minimum number of bytes to form into a byte array.
     /// - Parameter maxCount: The maximum number of bytes to form into a byte array.
+    /// - Parameter targetType: The target type that is being decoded. Defaults to `"Bytes"` if not specified.
     /// - Returns: A byte array of size at least `minCount` and at most `maxCount`.
     /// - Throws:
     ///     - ``BytesError/BufferSizeError/invalidBufferSize(targetSize:targetType:actualSize:)`` if a complete byte array could not be returned by the time the sequence ended.
@@ -50,7 +53,8 @@ extension AsyncIteratorProtocol where Element == Byte {
     public mutating func next(
         _ bytes: Bytes.Type,
         min minCount: Int,
-        max maxCount: Int
+        max maxCount: Int,
+        targetType: String = "Bytes"
     ) async throws(BytesError.Iteration<any Error>.BufferSizeError) -> Bytes {
         precondition(minCount <= maxCount, "maxCount must be larger than or equal to minCount")
         precondition(minCount >= 0, "minCount must be larger than 0")
@@ -72,7 +76,7 @@ extension AsyncIteratorProtocol where Element == Byte {
         }
         
         guard result.count >= minCount else {
-            throw .invalidBufferSize(targetSize: minCount, targetType: "\(Bytes.self)", actualSize: result.count)
+            throw .invalidBufferSize(targetSize: minCount, targetType: targetType, actualSize: result.count)
         }
         
         return result
@@ -115,6 +119,7 @@ extension AsyncIteratorProtocol where Element == Byte {
     /// **Learn More:** [Integration with AsyncSequenceReader](https://github.com/mochidev/AsyncSequenceReader#integration-with-bytes)
     /// - Parameter bytes: This should be set to `Bytes.self`.
     /// - Parameter count: The number of bytes to form into a byte array.
+    /// - Parameter targetType: The target type that is being decoded. Defaults to `"Bytes"` if not specified.
     /// - Returns: A byte array of size `count`, or `nil` if the sequence is finished.
     /// - Throws:
     ///     - ``BytesError/BufferSizeError/invalidBufferSize(targetSize:targetType:actualSize:)`` if a complete byte array could not be returned by the time the sequence ended.
@@ -126,10 +131,11 @@ extension AsyncIteratorProtocol where Element == Byte {
     @_disfavoredOverload
     public mutating func nextIfPresent(
         _ bytes: Bytes.Type,
-        count: Int
+        count: Int,
+        targetType: String = "Bytes"
     ) async throws(BytesError.Iteration<any Error>.BufferSizeError) -> Bytes? {
         assert(count >= 0, "count must be larger than 0")
-        return try await nextIfPresent(bytes, min: count, max: count)
+        return try await nextIfPresent(bytes, min: count, max: count, targetType: targetType)
     }
     
     /// Asynchronously advances a byte array with the specified minimum size, continuing until the specified maximum size, or ends the sequence if there is no next element.
@@ -138,6 +144,7 @@ extension AsyncIteratorProtocol where Element == Byte {
     /// - Parameter bytes: This should be set to `Bytes.self`.
     /// - Parameter minCount: The minimum number of bytes to form into a byte array.
     /// - Parameter maxCount: The maximum number of bytes to form into a byte array.
+    /// - Parameter targetType: The target type that is being decoded. Defaults to `"Bytes"` if not specified.
     /// - Returns: A byte array of size at least `minCount` and at most `maxCount`, or `nil` if the sequence is finished.
     /// - Throws:
     ///     - ``BytesError/BufferSizeError/invalidBufferSize(targetSize:targetType:actualSize:)`` if a complete byte array could not be returned by the time the sequence ended.
@@ -150,7 +157,8 @@ extension AsyncIteratorProtocol where Element == Byte {
     public mutating func nextIfPresent(
         _ bytes: Bytes.Type,
         min minCount: Int,
-        max maxCount: Int
+        max maxCount: Int,
+        targetType: String = "Bytes"
     ) async throws(BytesError.Iteration<any Error>.BufferSizeError) -> Bytes? {
         precondition(minCount <= maxCount, "maxCount must be larger than or equal to minCount")
         precondition(minCount >= 0, "minCount must be larger than 0")
@@ -174,7 +182,7 @@ extension AsyncIteratorProtocol where Element == Byte {
         guard !result.isEmpty else { return nil }
         
         guard result.count >= minCount else {
-            throw .invalidBufferSize(targetSize: minCount, targetType: "\(Bytes.self)", actualSize: result.count)
+            throw .invalidBufferSize(targetSize: minCount, targetType: targetType, actualSize: result.count)
         }
         
         return result
@@ -342,6 +350,7 @@ extension AsyncIteratorProtocol where Element == Byte {
     /// **Learn More:** [Integration with AsyncSequenceReader](https://github.com/mochidev/AsyncSequenceReader#integration-with-bytes)
     /// - Parameter bytes: This should be set to `Bytes.self`.
     /// - Parameter count: The number of bytes to form into a byte array.
+    /// - Parameter targetType: The target type that is being decoded. Defaults to `"Bytes"` if not specified.
     /// - Parameter actor: The isolation context to run the reciever on.
     /// - Returns: A byte array of size `count`.
     /// - Throws:
@@ -351,10 +360,11 @@ extension AsyncIteratorProtocol where Element == Byte {
     public mutating func next(
         _ bytes: Bytes.Type,
         count: Int,
+        targetType: String = "Bytes",
         isolation actor: isolated (any Actor)? = #isolation
     ) async throws(BytesError.Iteration<Failure>.BufferSizeError) -> Bytes {
         assert(count >= 0, "count must be larger than 0")
-        return try await next(bytes, min: count, max: count)
+        return try await next(bytes, min: count, max: count, targetType: targetType)
     }
     
     /// Asynchronously advances a byte array with the specified minimum size, continuing until the specified maximum size, or throws if it could not.
@@ -363,6 +373,7 @@ extension AsyncIteratorProtocol where Element == Byte {
     /// - Parameter bytes: This should be set to `Bytes.self`.
     /// - Parameter minCount: The minimum number of bytes to form into a byte array.
     /// - Parameter maxCount: The maximum number of bytes to form into a byte array.
+    /// - Parameter targetType: The target type that is being decoded. Defaults to `"Bytes"` if not specified.
     /// - Parameter actor: The isolation context to run the reciever on.
     /// - Returns: A byte array of size at least `minCount` and at most `maxCount`.
     /// - Throws:
@@ -373,6 +384,7 @@ extension AsyncIteratorProtocol where Element == Byte {
         _ bytes: Bytes.Type,
         min minCount: Int,
         max maxCount: Int,
+        targetType: String = "Bytes",
         isolation actor: isolated (any Actor)? = #isolation
     ) async throws(BytesError.Iteration<Failure>.BufferSizeError) -> Bytes {
         precondition(minCount <= maxCount, "maxCount must be larger than or equal to minCount")
@@ -395,7 +407,7 @@ extension AsyncIteratorProtocol where Element == Byte {
         }
         
         guard result.count >= minCount else {
-            throw .invalidBufferSize(targetSize: minCount, targetType: "\(Bytes.self)", actualSize: result.count)
+            throw .invalidBufferSize(targetSize: minCount, targetType: targetType, actualSize: result.count)
         }
         
         return result
@@ -436,6 +448,7 @@ extension AsyncIteratorProtocol where Element == Byte {
     /// **Learn More:** [Integration with AsyncSequenceReader](https://github.com/mochidev/AsyncSequenceReader#integration-with-bytes)
     /// - Parameter bytes: This should be set to `Bytes.self`.
     /// - Parameter count: The number of bytes to form into a byte array.
+    /// - Parameter targetType: The target type that is being decoded. Defaults to `"Bytes"` if not specified.
     /// - Parameter actor: The isolation context to run the reciever on.
     /// - Returns: A byte array of size `count`, or `nil` if the sequence is finished.
     /// - Throws:
@@ -445,10 +458,11 @@ extension AsyncIteratorProtocol where Element == Byte {
     public mutating func nextIfPresent(
         _ bytes: Bytes.Type,
         count: Int,
+        targetType: String = "Bytes",
         isolation actor: isolated (any Actor)? = #isolation
     ) async throws(BytesError.Iteration<Failure>.BufferSizeError) -> Bytes? {
         assert(count >= 0, "count must be larger than 0")
-        return try await nextIfPresent(bytes, min: count, max: count)
+        return try await nextIfPresent(bytes, min: count, max: count, targetType: targetType)
     }
     
     /// Asynchronously advances a byte array with the specified minimum size, continuing until the specified maximum size, or ends the sequence if there is no next element.
@@ -457,6 +471,7 @@ extension AsyncIteratorProtocol where Element == Byte {
     /// - Parameter bytes: This should be set to `Bytes.self`.
     /// - Parameter minCount: The minimum number of bytes to form into a byte array.
     /// - Parameter maxCount: The maximum number of bytes to form into a byte array.
+    /// - Parameter targetType: The target type that is being decoded. Defaults to `"Bytes"` if not specified.
     /// - Parameter actor: The isolation context to run the reciever on.
     /// - Returns: A byte array of size at least `minCount` and at most `maxCount`, or `nil` if the sequence is finished.
     /// - Throws:
@@ -467,6 +482,7 @@ extension AsyncIteratorProtocol where Element == Byte {
         _ bytes: Bytes.Type,
         min minCount: Int,
         max maxCount: Int,
+        targetType: String = "Bytes",
         isolation actor: isolated (any Actor)? = #isolation
     ) async throws(BytesError.Iteration<Failure>.BufferSizeError) -> Bytes? {
         precondition(minCount <= maxCount, "maxCount must be larger than or equal to minCount")
@@ -491,7 +507,7 @@ extension AsyncIteratorProtocol where Element == Byte {
         guard !result.isEmpty else { return nil }
         
         guard result.count >= minCount else {
-            throw .invalidBufferSize(targetSize: minCount, targetType: "\(Bytes.self)", actualSize: result.count)
+            throw .invalidBufferSize(targetSize: minCount, targetType: targetType, actualSize: result.count)
         }
         
         return result

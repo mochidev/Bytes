@@ -223,7 +223,7 @@ extension IteratorProtocol where Element == Byte {
     public mutating func next<T: FixedWidthInteger>(
         littleEndian type: T.Type
     ) throws(BytesError.BufferSizeError) -> T {
-        try T(littleEndianBytes: try next(Bytes.self, count: MemoryLayout<T>.size))
+        try T(littleEndianBytes: try next(Bytes.self, count: MemoryLayout<T>.size, targetType: "\(T.self)"))
     }
     
     /// Advances to the next big endian integer in the squence and returns it, or throws if it could not.
@@ -238,7 +238,7 @@ extension IteratorProtocol where Element == Byte {
     public mutating func next<T: FixedWidthInteger>(
         bigEndian type: T.Type
     ) throws(BytesError.BufferSizeError) -> T {
-        try T(bigEndianBytes: try next(Bytes.self, count: MemoryLayout<T>.size))
+        try T(bigEndianBytes: try next(Bytes.self, count: MemoryLayout<T>.size, targetType: "\(T.self)"))
     }
     
     /// Advances to the next little endian integer in the squence and returns it, or ends the sequence if there is no next element.
@@ -360,7 +360,7 @@ extension AsyncIteratorProtocol where Element == Byte {
     public mutating func next<T: FixedWidthInteger>(
         littleEndian type: T.Type
     ) async throws(BytesError.Iteration<any Error>.BufferSizeError) -> T {
-        let bytes = try await next(Bytes.self, count: MemoryLayout<T>.size)
+        let bytes = try await next(Bytes.self, count: MemoryLayout<T>.size, targetType: "\(T.self)")
         /// We know the first `try` validates the size already, so the second one can never fail, allowing us to simplify the reported error types.
         return try! T(littleEndianBytes: bytes)
     }
@@ -383,7 +383,7 @@ extension AsyncIteratorProtocol where Element == Byte {
     public mutating func next<T: FixedWidthInteger>(
         bigEndian type: T.Type
     ) async throws(BytesError.Iteration<any Error>.BufferSizeError) -> T {
-        let bytes = try await next(Bytes.self, count: MemoryLayout<T>.size)
+        let bytes = try await next(Bytes.self, count: MemoryLayout<T>.size, targetType: "\(T.self)")
         /// We know the first `try` validates the size already, so the second one can never fail, allowing us to simplify the reported error types.
         return try! T(bigEndianBytes: bytes)
     }
@@ -538,7 +538,7 @@ extension AsyncIteratorProtocol where Element == Byte {
         littleEndian type: T.Type,
         isolation actor: isolated (any Actor)? = #isolation
     ) async throws(BytesError.Iteration<Failure>.BufferSizeError) -> T {
-        let bytes = try await next(Bytes.self, count: MemoryLayout<T>.size)
+        let bytes = try await next(Bytes.self, count: MemoryLayout<T>.size, targetType: "\(T.self)")
         /// We know the first `try` validates the size already, so the second one can never fail, allowing us to simplify the reported error types.
         return try! T(littleEndianBytes: bytes)
     }
@@ -559,7 +559,7 @@ extension AsyncIteratorProtocol where Element == Byte {
         bigEndian type: T.Type,
         isolation actor: isolated (any Actor)? = #isolation
     ) async throws(BytesError.Iteration<Failure>.BufferSizeError) -> T {
-        let bytes = try await next(Bytes.self, count: MemoryLayout<T>.size)
+        let bytes = try await next(Bytes.self, count: MemoryLayout<T>.size, targetType: "\(T.self)")
         /// We know the first `try` validates the size already, so the second one can never fail, allowing us to simplify the reported error types.
         return try! T(bigEndianBytes: bytes)
     }

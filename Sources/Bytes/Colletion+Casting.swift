@@ -99,7 +99,7 @@ extension Collection where Element == Byte {
         let (elementCount, remainingElementSize) = numberOfBytes.quotientAndRemainder(dividingBy: elementSize)
         
         guard remainingElementSize == 0 else {
-            throw .invalidBufferSize(targetSize: (elementCount+1)*elementSize, targetType: "\(Element.self)", actualSize: numberOfBytes)
+            throw .invalidBufferSize(targetSize: (elementCount + 1)*elementSize, targetType: "\(Element.self)<\(elementCount + 1)>", actualSize: numberOfBytes)
         }
         
         return (elementSize, numberOfBytes, elementCount)

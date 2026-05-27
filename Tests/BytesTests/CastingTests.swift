@@ -172,15 +172,15 @@ import Testing
         
         let incompleteBytes: Bytes = [0x00,0x01,0x00,0x10,0x01,0x00,0x10]
         /// Explicit thyped throw.
-        #expect(throws: BytesError.Transformation<BytesError.BufferSizeError>.BufferSizeError.castingFailure(.invalidBufferSize(targetSize: 8, targetType: "UInt16", actualSize: 7))) {
+        #expect(throws: BytesError.Transformation<BytesError.BufferSizeError>.BufferSizeError.castingFailure(.invalidBufferSize(targetSize: 8, targetType: "UInt16<4>", actualSize: 7))) {
             try [UInt16](bytes: incompleteBytes) { (bytes) throws(BytesError.BufferSizeError) -> UInt16 in try bytes.casting(to: UInt16.self).bigEndian }
         }
         
         /// Implicit any Error checks.
-        #expect(throws: BytesError.Transformation<any Error>.BufferSizeError.castingFailure(.invalidBufferSize(targetSize: 8, targetType: "UInt16", actualSize: 7))) {
+        #expect(throws: BytesError.Transformation<any Error>.BufferSizeError.castingFailure(.invalidBufferSize(targetSize: 8, targetType: "UInt16<4>", actualSize: 7))) {
             try [UInt16](bytes: incompleteBytes) { try $0.casting(to: UInt16.self).bigEndian }
         }
-        #expect(throws: BytesError.Transformation<any Error>.BufferSizeError.castingFailure(.invalidBufferSize(targetSize: 8, targetType: "UInt32", actualSize: 7))) {
+        #expect(throws: BytesError.Transformation<any Error>.BufferSizeError.castingFailure(.invalidBufferSize(targetSize: 8, targetType: "UInt32<2>", actualSize: 7))) {
             try [UInt16](bytes: incompleteBytes, element: UInt32.self) { try $0.casting(to: UInt16.self).bigEndian }
         }
         #expect(throws: BytesError.Transformation<any Error>.BufferSizeError.castingFailure(.invalidBufferSize(targetSize: 8, targetType: "Bytes<2>", actualSize: 7))) {
@@ -188,7 +188,7 @@ import Testing
         }
         
         /// Make sure transformation is never called.
-        #expect(throws: BytesError.Transformation<Never>.BufferSizeError.castingFailure(.invalidBufferSize(targetSize: 8, targetType: "UInt16", actualSize: 7))) {
+        #expect(throws: BytesError.Transformation<Never>.BufferSizeError.castingFailure(.invalidBufferSize(targetSize: 8, targetType: "UInt16<4>", actualSize: 7))) {
             try [UInt16](bytes: incompleteBytes) { _ in
                 Issue.record("Should never be called.")
                 fatalError()
@@ -225,15 +225,15 @@ import Testing
         
         let incompleteBytes: Bytes = [0x00,0x01,0x00,0x10,0x01,0x00,0x10]
         /// Explicit thyped throw.
-        #expect(throws: BytesError.Transformation<BytesError.BufferSizeError>.BufferSizeError.castingFailure(.invalidBufferSize(targetSize: 8, targetType: "UInt16", actualSize: 7))) {
+        #expect(throws: BytesError.Transformation<BytesError.BufferSizeError>.BufferSizeError.castingFailure(.invalidBufferSize(targetSize: 8, targetType: "UInt16<4>", actualSize: 7))) {
             try Set<UInt16>(bytes: incompleteBytes) { (bytes) throws(BytesError.BufferSizeError) -> UInt16 in try bytes.casting(to: UInt16.self).bigEndian }
         }
         
         /// Implicit any Error checks.
-        #expect(throws: BytesError.Transformation<any Error>.BufferSizeError.castingFailure(.invalidBufferSize(targetSize: 8, targetType: "UInt16", actualSize: 7))) {
+        #expect(throws: BytesError.Transformation<any Error>.BufferSizeError.castingFailure(.invalidBufferSize(targetSize: 8, targetType: "UInt16<4>", actualSize: 7))) {
             try Set<UInt16>(bytes: incompleteBytes) { try $0.casting(to: UInt16.self).bigEndian }
         }
-        #expect(throws: BytesError.Transformation<any Error>.BufferSizeError.castingFailure(.invalidBufferSize(targetSize: 8, targetType: "UInt32", actualSize: 7))) {
+        #expect(throws: BytesError.Transformation<any Error>.BufferSizeError.castingFailure(.invalidBufferSize(targetSize: 8, targetType: "UInt32<2>", actualSize: 7))) {
             try Set<UInt16>(bytes: incompleteBytes, element: UInt32.self) { try $0.casting(to: UInt16.self).bigEndian }
         }
         #expect(throws: BytesError.Transformation<any Error>.BufferSizeError.castingFailure(.invalidBufferSize(targetSize: 8, targetType: "Bytes<2>", actualSize: 7))) {
@@ -241,7 +241,7 @@ import Testing
         }
         
         /// Make sure transformation is never called.
-        #expect(throws: BytesError.Transformation<Never>.BufferSizeError.castingFailure(.invalidBufferSize(targetSize: 8, targetType: "UInt16", actualSize: 7))) {
+        #expect(throws: BytesError.Transformation<Never>.BufferSizeError.castingFailure(.invalidBufferSize(targetSize: 8, targetType: "UInt16<4>", actualSize: 7))) {
             try Set<UInt16>(bytes: incompleteBytes) { _ in
                 Issue.record("Should never be called.")
                 fatalError()

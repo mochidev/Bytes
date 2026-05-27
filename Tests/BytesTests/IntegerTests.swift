@@ -845,7 +845,7 @@ import Testing
             #expect(try await iterator.next(littleEndian: UInt16.self) == 0x0201)
             #expect(try await iterator.next(littleEndian: UInt32.self) == 0x0605_0403)
             
-            await #expect(throws: BytesError.Iteration<any Error>.BufferSizeError.castingFailure(.invalidBufferSize(targetSize: 8, targetType: "Bytes", actualSize: 1))) {
+            await #expect(throws: BytesError.Iteration<any Error>.BufferSizeError.castingFailure(.invalidBufferSize(targetSize: 8, targetType: "UInt64", actualSize: 1))) {
                 try await iterator.next(littleEndian: UInt64.self)
             }
         }
@@ -867,7 +867,7 @@ import Testing
             #expect(try await iterator.next(bigEndian: UInt16.self) == 0x0102)
             #expect(try await iterator.next(bigEndian: UInt32.self) == 0x0304_0506)
             
-            await #expect(throws: BytesError.Iteration<any Error>.BufferSizeError.castingFailure(.invalidBufferSize(targetSize: 8, targetType: "Bytes", actualSize: 1))) {
+            await #expect(throws: BytesError.Iteration<any Error>.BufferSizeError.castingFailure(.invalidBufferSize(targetSize: 8, targetType: "UInt64", actualSize: 1))) {
                 try await iterator.next(bigEndian: UInt64.self)
             }
         }
@@ -1141,7 +1141,7 @@ import Testing
             #expect(try await iterator.next(littleEndian: UInt16.self) == 0x0201)
             #expect(try await iterator.next(littleEndian: UInt32.self) == 0x0605_0403)
             
-            await #expect(throws: BytesError.Iteration<Never>.BufferSizeError.castingFailure(.invalidBufferSize(targetSize: 8, targetType: "Bytes", actualSize: 1))) {
+            await #expect(throws: BytesError.Iteration<Never>.BufferSizeError.castingFailure(.invalidBufferSize(targetSize: 8, targetType: "UInt64", actualSize: 1))) {
                 try await iterator.next(littleEndian: UInt64.self)
             }
         }
@@ -1165,7 +1165,7 @@ import Testing
             #expect(try await iterator.next(bigEndian: UInt16.self) == 0x0102)
             #expect(try await iterator.next(bigEndian: UInt32.self) == 0x0304_0506)
             
-            await #expect(throws: BytesError.Iteration<Never>.BufferSizeError.castingFailure(.invalidBufferSize(targetSize: 8, targetType: "Bytes", actualSize: 1))) {
+            await #expect(throws: BytesError.Iteration<Never>.BufferSizeError.castingFailure(.invalidBufferSize(targetSize: 8, targetType: "UInt64", actualSize: 1))) {
                 try await iterator.next(bigEndian: UInt64.self)
             }
         }

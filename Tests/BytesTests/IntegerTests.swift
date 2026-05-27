@@ -132,10 +132,10 @@ final class IntegerTests: XCTestCase {
         
         let invalidBytes: Bytes = [0x00,0x01,0x00,0x10,0x01,0x00,0x10]
         XCTAssertThrowsError(try [UInt16](bigEndianBytes: invalidBytes)) {
-            BytesError.testInvalidMemorySize($0, targetSize: 8, targetType: "UInt16", actualSize: 7)
+            BytesError.testInvalidMemorySize($0, targetSize: 8, targetType: "UInt16<4>", actualSize: 7)
         }
         XCTAssertThrowsError(try [UInt16](littleEndianBytes: invalidBytes)) {
-            BytesError.testInvalidMemorySize($0, targetSize: 8, targetType: "UInt16", actualSize: 7)
+            BytesError.testInvalidMemorySize($0, targetSize: 8, targetType: "UInt16<4>", actualSize: 7)
         }
     }
     

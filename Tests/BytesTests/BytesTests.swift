@@ -27,39 +27,15 @@ extension BytesError {
         switch expressionResult {
         case
             let BytesError.BufferSizeError.invalidBufferSize(a1, a2, a3),
-            let BytesError.ContiguousBytes.BufferSizeError.castingFailure(.invalidBufferSize(a1, a2, a3)),
             let BytesError.UUIDDecoding.BufferSizeError.castingFailure(.invalidBufferSize(a1, a2, a3)),
             let BytesError.RawRepresentable.BufferSizeError.castingFailure(.invalidBufferSize(a1, a2, a3)),
-            let BytesError.RawRepresentable.ContiguousBytes.BufferSizeError.castingFailure(.castingFailure(.invalidBufferSize(a1, a2, a3))),
-            let BytesError.Transformation<any Error>.BufferSizeError.castingFailure(.invalidBufferSize(a1, a2, a3)):
+            let BytesError.RawRepresentable.ContiguousBytes.BufferSizeError.castingFailure(.castingFailure(.invalidBufferSize(a1, a2, a3))):
             XCTAssertEqual(a1, try targetSize(), messageResult, file: (file), line: line)
             XCTAssertEqual(a2, try targetType(), messageResult, file: (file), line: line)
             XCTAssertEqual(a3, try actualSize(), messageResult, file: (file), line: line)
         default:
             if messageResult.isEmpty {
                 XCTFail("\(type(of: expressionResult)).\(expressionResult) is not BytesError.invalidMemorySize", file: (file), line: line)
-            } else {
-                XCTFail(messageResult, file: (file), line: line)
-            }
-        }
-    }
-    
-    static func testContiguousMemoryUnavailable(
-        _ expression: @autoclosure () throws -> any Error,
-        collectionType: @autoclosure () throws -> String,
-        _ message: @autoclosure () -> String = "",
-        file: StaticString = #file,
-        line: UInt = #line
-    ) rethrows {
-        let expressionResult = try expression()
-        let messageResult = message()
-        
-        switch expressionResult {
-        case let BytesError.ContiguousBytes.BufferSizeError.contiguousBytesUnavailable(a1):
-            XCTAssertEqual(a1, try collectionType(), messageResult, file: (file), line: line)
-        default:
-            if messageResult.isEmpty {
-                XCTFail("\(type(of: expressionResult)).\(expressionResult) is not BytesError.contiguousMemoryUnavailable", file: (file), line: line)
             } else {
                 XCTFail(messageResult, file: (file), line: line)
             }

@@ -36,10 +36,10 @@ final class UUIDTests: XCTestCase {
         XCTAssertEqual(try [UUID](bytes: []), [])
         XCTAssertEqual(try Set<UUID>(bytes: []), [])
         XCTAssertThrowsError(try [UUID](bytes: rawUUIDBytes+[0])) {
-            BytesError.testInvalidMemorySize($0, targetSize: 32, targetType: "(UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8)", actualSize: 17)
+            BytesError.testInvalidMemorySize($0, targetSize: 32, targetType: "(UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8)<2>", actualSize: 17)
         }
         XCTAssertThrowsError(try Set<UUID>(bytes: rawUUIDBytes+[0])) {
-            BytesError.testInvalidMemorySize($0, targetSize: 32, targetType: "(UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8)", actualSize: 17)
+            BytesError.testInvalidMemorySize($0, targetSize: 32, targetType: "(UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8)<2>", actualSize: 17)
         }
         
         XCTAssertEqual(try [UUID](stringBytes: rawUUIDStringBytes+rawUUIDStringBytes), [validUUID, validUUID])
@@ -47,10 +47,10 @@ final class UUIDTests: XCTestCase {
         XCTAssertEqual(try [UUID](stringBytes: []), [])
         XCTAssertEqual(try Set<UUID>(stringBytes: []), [])
         XCTAssertThrowsError(try [UUID](stringBytes: rawUUIDStringBytes+[0])) {
-            BytesError.testInvalidMemorySize($0, targetSize: 72, targetType: "(UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8)", actualSize: 37)
+            BytesError.testInvalidMemorySize($0, targetSize: 72, targetType: "(UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8)<2>", actualSize: 37)
         }
         XCTAssertThrowsError(try Set<UUID>(stringBytes: rawUUIDStringBytes+[0])) {
-            BytesError.testInvalidMemorySize($0, targetSize: 72, targetType: "(UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8)", actualSize: 37)
+            BytesError.testInvalidMemorySize($0, targetSize: 72, targetType: "(UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8, UInt8)<2>", actualSize: 37)
         }
         XCTAssertThrowsError(try [UUID](stringBytes: "000000000000000000000000000000000000000000000000000000000000000000000000".utf8Bytes)) {
             BytesError.testInvalidUUIDByteSequence($0)

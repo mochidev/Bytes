@@ -117,16 +117,16 @@ final class RawRepresentableTests: XCTestCase {
             BytesError.testInvalidRawRepresentableByteSequence($0)
         }
         XCTAssertThrowsError(try [IntEnum](bigEndianBytes: [0x00])) {
-            BytesError.testInvalidMemorySize($0, targetSize: 2, targetType: "UInt16", actualSize: 1)
+            BytesError.testInvalidMemorySize($0, targetSize: 2, targetType: "UInt16<1>", actualSize: 1)
         }
         XCTAssertThrowsError(try [IntEnum](littleEndianBytes: [0x00])) {
-            BytesError.testInvalidMemorySize($0, targetSize: 2, targetType: "UInt16", actualSize: 1)
+            BytesError.testInvalidMemorySize($0, targetSize: 2, targetType: "UInt16<1>", actualSize: 1)
         }
         XCTAssertThrowsError(try Set<IntEnum>(bigEndianBytes: [0x00])) {
-            BytesError.testInvalidMemorySize($0, targetSize: 2, targetType: "UInt16", actualSize: 1)
+            BytesError.testInvalidMemorySize($0, targetSize: 2, targetType: "UInt16<1>", actualSize: 1)
         }
         XCTAssertThrowsError(try Set<IntEnum>(littleEndianBytes: [0x00])) {
-            BytesError.testInvalidMemorySize($0, targetSize: 2, targetType: "UInt16", actualSize: 1)
+            BytesError.testInvalidMemorySize($0, targetSize: 2, targetType: "UInt16<1>", actualSize: 1)
         }
         
         XCTAssertEqual(try StringEnum(utf8Bytes: [0x61]), .a)

@@ -43,7 +43,7 @@ extension UUID {
     public init<Bytes: BytesCollection>(
         bytes: Bytes
     ) throws(BytesError.BufferSizeError) {
-        self.init(uuid: try bytes.contiguousCasting())
+        self.init(uuid: try bytes.contiguousCasting(targetType: "UUID(Byte<16>)"))
     }
     
     /// Initialize a UUID from a contiguous sequence of Bytes representing the 16-byte compact format.
@@ -54,7 +54,7 @@ extension UUID {
     public init<Bytes: ContiguousBytesCollection>(
         bytes: Bytes
     ) throws(BytesError.BufferSizeError) {
-        self.init(uuid: try bytes.casting())
+        self.init(uuid: try bytes.casting(targetType: "UUID(Byte<16>)"))
     }
     
     /// The 36-character Byte representation of a UUID.
@@ -73,7 +73,7 @@ extension UUID {
         stringBytes: Bytes
     ) throws(BytesError.UUIDDecoding.BufferSizeError) {
         do {
-            try stringBytes.canBeCasted(to: UUIDTextualBytes.self)
+            try stringBytes.canBeCasted(to: UUIDTextualBytes.self, targetType: "UUID(Byte<36>)")
         } catch {
             throw .castingFailure(error)
         }
@@ -102,7 +102,7 @@ extension Collection where Element == UUID {
         bytes: Bytes
     ) throws(BytesError.BufferSizeError) where Self: RangeReplaceableCollection {
         do {
-            try self.init(bytes: bytes, element: uuid_t.self, mapping: Element.init(bytes:))
+            try self.init(bytes: bytes, element: uuid_t.self, targetType: "UUID(Byte<16>)", mapping: Element.init(bytes:))
         } catch {
             throw error.flattened
         }
@@ -117,7 +117,7 @@ extension Collection where Element == UUID {
         bytes: Bytes
     ) throws(BytesError.BufferSizeError) where Self: RangeReplaceableCollection, Bytes.SubSequence: ContiguousBytesCollection {
         do {
-            try self.init(bytes: bytes, element: uuid_t.self, mapping: Element.init(bytes:))
+            try self.init(bytes: bytes, element: uuid_t.self, targetType: "UUID(Byte<16>)", mapping: Element.init(bytes:))
         } catch {
             throw error.flattened
         }
@@ -139,7 +139,7 @@ extension Collection where Element == UUID {
         stringBytes: Bytes
     ) throws(BytesError.UUIDDecoding.BufferSizeError) where Self: RangeReplaceableCollection {
         do {
-            try self.init(bytes: stringBytes, element: UUIDTextualBytes.self, mapping: Element.init(stringBytes:))
+            try self.init(bytes: stringBytes, element: UUIDTextualBytes.self, targetType: "UUID(Byte<36>)", mapping: Element.init(stringBytes:))
         } catch {
             throw error.flattened
         }
@@ -158,7 +158,7 @@ extension Set where Element == UUID {
         bytes: Bytes
     ) throws(BytesError.BufferSizeError) {
         do {
-            try self.init(bytes: bytes, element: uuid_t.self, mapping: Element.init(bytes:))
+            try self.init(bytes: bytes, element: uuid_t.self, targetType: "UUID(Byte<16>)", mapping: Element.init(bytes:))
         } catch {
             throw error.flattened
         }
@@ -173,7 +173,7 @@ extension Set where Element == UUID {
         bytes: Bytes
     ) throws(BytesError.BufferSizeError) where Bytes.SubSequence: ContiguousBytesCollection {
         do {
-            try self.init(bytes: bytes, element: uuid_t.self, mapping: Element.init(bytes:))
+            try self.init(bytes: bytes, element: uuid_t.self, targetType: "UUID(Byte<16>)", mapping: Element.init(bytes:))
         } catch {
             throw error.flattened
         }
@@ -189,7 +189,7 @@ extension Set where Element == UUID {
         stringBytes: Bytes
     ) throws(BytesError.UUIDDecoding.BufferSizeError) {
         do {
-            try self.init(bytes: stringBytes, element: UUIDTextualBytes.self, mapping: Element.init(stringBytes:))
+            try self.init(bytes: stringBytes, element: UUIDTextualBytes.self, targetType: "UUID(Byte<36>)", mapping: Element.init(stringBytes:))
         } catch {
             throw error.flattened
         }
@@ -210,7 +210,7 @@ extension IteratorProtocol where Element == Byte {
     public mutating func next(
         _ type: UUID.Type
     ) throws(BytesError.BufferSizeError) -> UUID {
-        try UUID(bytes: try next(Bytes.self, count: MemoryLayout<uuid_t>.size))
+        try UUID(bytes: try next(Bytes.self, count: MemoryLayout<uuid_t>.size, targetType: "UUID(Byte<16>)"))
     }
     
     /// Asynchronously advances to the next UUID String, or throws if it could not.
@@ -227,7 +227,7 @@ extension IteratorProtocol where Element == Byte {
     ) throws(BytesError.UUIDDecoding.BufferSizeError) -> UUID {
         let stringBytes: Bytes
         do {
-            stringBytes = try next(Bytes.self, count: MemoryLayout<UUIDTextualBytes>.size)
+            stringBytes = try next(Bytes.self, count: MemoryLayout<UUIDTextualBytes>.size, targetType: "UUID(Byte<36>)")
         } catch {
             throw .castingFailure(error)
         }
@@ -244,7 +244,7 @@ extension IteratorProtocol where Element == Byte {
     public mutating func nextIfPresent(
         _ type: UUID.Type
     ) throws(BytesError.BufferSizeError) -> UUID? {
-        guard let bytes = try nextIfPresent(Bytes.self, count: MemoryLayout<uuid_t>.size)
+        guard let bytes = try nextIfPresent(Bytes.self, count: MemoryLayout<uuid_t>.size, targetType: "UUID(Byte<16>)")
         else { return nil }
         return try UUID(bytes: bytes)
     }
@@ -263,7 +263,7 @@ extension IteratorProtocol where Element == Byte {
     ) throws(BytesError.UUIDDecoding.BufferSizeError) -> UUID? {
         let stringBytes: Bytes?
         do {
-            stringBytes = try nextIfPresent(Bytes.self, count: MemoryLayout<UUIDTextualBytes>.size)
+            stringBytes = try nextIfPresent(Bytes.self, count: MemoryLayout<UUIDTextualBytes>.size, targetType: "UUID(Byte<36>)")
         } catch {
             throw .castingFailure(error)
         }
@@ -367,7 +367,7 @@ extension AsyncIteratorProtocol where Element == Byte {
         _ type: UUID.Type
     ) async throws(BytesError.Iteration<any Error>.BufferSizeError) -> UUID {
         /// We know the inner `try` validates the size already, so the outer one can never fail, and we can simplify the reported error types.
-        try! UUID(bytes: try await next(Bytes.self, count: MemoryLayout<uuid_t>.size))
+        try! UUID(bytes: try await next(Bytes.self, count: MemoryLayout<uuid_t>.size, targetType: "UUID(Byte<16>)"))
     }
     
     /// Asynchronously advances to the next UUID String, or throws if it could not.
@@ -389,7 +389,7 @@ extension AsyncIteratorProtocol where Element == Byte {
     ) async throws(BytesError.Iteration<any Error>.UUIDDecoding.BufferSizeError) -> UUID {
         let stringBytes: Bytes
         do {
-            stringBytes = try await next(Bytes.self, count: MemoryLayout<UUIDTextualBytes>.size)
+            stringBytes = try await next(Bytes.self, count: MemoryLayout<UUIDTextualBytes>.size, targetType: "UUID(Byte<36>)")
         } catch {
             throw error.mapCastingFailure { .castingFailure($0) }
         }
@@ -417,7 +417,7 @@ extension AsyncIteratorProtocol where Element == Byte {
         _ type: UUID.Type
     ) async throws(BytesError.Iteration<any Error>.BufferSizeError) -> UUID? {
         /// We know the first `try` validates the size already, so the mapped one can never fail, and we can simplify the reported error types.
-        try await nextIfPresent(Bytes.self, count: MemoryLayout<uuid_t>.size)
+        try await nextIfPresent(Bytes.self, count: MemoryLayout<uuid_t>.size, targetType: "UUID(Byte<16>)")
             .map { try! UUID(bytes: $0) }
     }
     
@@ -440,7 +440,7 @@ extension AsyncIteratorProtocol where Element == Byte {
     ) async throws(BytesError.Iteration<any Error>.UUIDDecoding.BufferSizeError) -> UUID? {
         let stringBytes: Bytes?
         do {
-            stringBytes = try await nextIfPresent(Bytes.self, count: MemoryLayout<UUIDTextualBytes>.size)
+            stringBytes = try await nextIfPresent(Bytes.self, count: MemoryLayout<UUIDTextualBytes>.size, targetType: "UUID(Byte<36>)")
         } catch {
             throw error.mapCastingFailure { .castingFailure($0) }
         }
@@ -567,7 +567,7 @@ extension AsyncIteratorProtocol where Element == Byte {
         isolation actor: isolated (any Actor)? = #isolation
     ) async throws(BytesError.Iteration<Failure>.BufferSizeError) -> UUID {
         /// We know the inner `try` validates the size already, so the outer one can never fail, and we can simplify the reported error types.
-        try! UUID(bytes: try await next(Bytes.self, count: MemoryLayout<uuid_t>.size))
+        try! UUID(bytes: try await next(Bytes.self, count: MemoryLayout<uuid_t>.size, targetType: "UUID(Byte<16>)"))
     }
     
     /// Asynchronously advances to the next UUID String, or throws if it could not.
@@ -587,7 +587,7 @@ extension AsyncIteratorProtocol where Element == Byte {
     ) async throws(BytesError.Iteration<Failure>.UUIDDecoding.BufferSizeError) -> UUID {
         let stringBytes: Bytes
         do {
-            stringBytes = try await next(Bytes.self, count: MemoryLayout<UUIDTextualBytes>.size)
+            stringBytes = try await next(Bytes.self, count: MemoryLayout<UUIDTextualBytes>.size, targetType: "UUID(Byte<36>)")
         } catch {
             throw error.mapCastingFailure { .castingFailure($0) }
         }
@@ -613,7 +613,7 @@ extension AsyncIteratorProtocol where Element == Byte {
         isolation actor: isolated (any Actor)? = #isolation
     ) async throws(BytesError.Iteration<Failure>.BufferSizeError) -> UUID? {
         /// We know the first `try` validates the size already, so the mapped one can never fail, and we can simplify the reported error types.
-        try await nextIfPresent(Bytes.self, count: MemoryLayout<uuid_t>.size)
+        try await nextIfPresent(Bytes.self, count: MemoryLayout<uuid_t>.size, targetType: "UUID(Byte<16>)")
             .map { try! UUID(bytes: $0) }
     }
     
@@ -634,7 +634,7 @@ extension AsyncIteratorProtocol where Element == Byte {
     ) async throws(BytesError.Iteration<Failure>.UUIDDecoding.BufferSizeError) -> UUID? {
         let stringBytes: Bytes?
         do {
-            stringBytes = try await nextIfPresent(Bytes.self, count: MemoryLayout<UUIDTextualBytes>.size)
+            stringBytes = try await nextIfPresent(Bytes.self, count: MemoryLayout<UUIDTextualBytes>.size, targetType: "UUID(Byte<36>)")
         } catch {
             throw error.mapCastingFailure { .castingFailure($0) }
         }

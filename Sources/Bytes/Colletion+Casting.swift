@@ -10,25 +10,32 @@
 extension Collection where Element == Byte {
     /// Check if a sequence of ``Bytes`` can be safely casted to an element.
     /// - Parameter target: The type of element to cast to.
+    /// - Parameter targetType: An optional name to report when throwing errors.
     /// - Throws: ``BytesError/BufferSizeError/invalidBufferSize(targetSize:targetType:actualSize:)`` if the size of the bytes sequence is not equal to the element's size.
     @inlinable
-    func canBeCasted<Element>(to target: Element.Type) throws(BytesError.BufferSizeError) {
+    func canBeCasted<Element>(
+        to target: Element.Type,
+        targetType: String? = nil
+    ) throws(BytesError.BufferSizeError) {
         guard MemoryLayout<Element>.size == self.count else {
-            throw .invalidBufferSize(targetSize: MemoryLayout<Element>.size, targetType: "\(Element.self)", actualSize: self.count)
+            throw .invalidBufferSize(targetSize: MemoryLayout<Element>.size, targetType: targetType ?? "\(Element.self)", actualSize: self.count)
         }
     }
     
     /// Cast an _entire_ ``Bytes`` sequence to the lhs's type.
+    /// - Parameter target: The type of element to cast to.
+    /// - Parameter targetType: An optional name to report when throwing errors.
     /// - Throws:
     ///     - ``BytesError/BufferSizeError/invalidBufferSize(targetSize:targetType:actualSize:)`` if the memory layout of the bytes sequence does not match the desired type.
     ///     - ``BytesError/ContiguousBytesError/contiguousBytesUnavailable(type:)-enum.case`` if contiguous memory could not be made available.
     /// - Returns: An instance represented by the ``Bytes`` sequence.
     @inlinable
     public func casting<R>(
-        to target: R.Type = R.self
+        to target: R.Type = R.self,
+        targetType: String? = nil
     ) throws(BytesError.ContiguousBytes.BufferSizeError) -> R {
         do {
-            try canBeCasted(to: R.self)
+            try canBeCasted(to: R.self, targetType: targetType)
         } catch {
             throw .castingFailure(error)
         }
@@ -48,14 +55,17 @@ extension Collection where Element == Byte {
     
     /// Cast an _entire_ ``Bytes`` sequence to the lhs's type, copying buffers if needed no matter the size.
     /// - Warning: Only use this variant if you are absolutely certain the number of bytes to be copied won't have performance repercussions.
+    /// - Parameter target: The type of element to cast to.
+    /// - Parameter targetType: An optional name to report when throwing errors.
     /// - Throws:
     ///     - ``BytesError/BufferSizeError/invalidBufferSize(targetSize:targetType:actualSize:)`` if the memory layout of the bytes sequence does not match the desired type.
     /// - Returns: An instance represented by the ``Bytes`` sequence.
     @inlinable
     public func contiguousCasting<R>(
-        to target: R.Type = R.self
+        to target: R.Type = R.self,
+        targetType: String? = nil
     ) throws(BytesError.BufferSizeError) -> R {
-        try canBeCasted(to: R.self)
+        try canBeCasted(to: R.self, targetType: targetType)
         
         if let result = self.withContiguousStorageIfAvailable({
             UnsafeRawBufferPointer($0).loadUnaligned(as: R.self)
@@ -68,14 +78,17 @@ extension Collection where Element == Byte {
     }
     
     /// Cast an _entire_ ``Bytes`` sequence to the lhs's type.
+    /// - Parameter target: The type of element to cast to.
+    /// - Parameter targetType: An optional name to report when throwing errors.
     /// - Throws:
     ///     - ``BytesError/BufferSizeError/invalidBufferSize(targetSize:targetType:actualSize:)`` if the memory layout of the bytes sequence does not match the desired type.
     /// - Returns: An instance represented by the ``Bytes`` sequence.
     @inlinable
     public func casting<R>(
-        to target: R.Type = R.self
+        to target: R.Type = R.self,
+        targetType: String? = nil
     ) throws(BytesError.BufferSizeError) -> R where Self: ContiguousBytesCollection {
-        try canBeCasted(to: R.self)
+        try canBeCasted(to: R.self, targetType: targetType)
         return self.withUnsafeBytes { $0.loadUnaligned(as: R.self) }
     }
     
@@ -88,18 +101,20 @@ extension Collection where Element == Byte {
     
     /// Check if a sequence of ``Bytes`` can be safely mapped to a collection of elements.
     /// - Parameter target: The type of element to map to.
+    /// - Parameter targetType: An optional name to report when throwing errors.
     /// - Throws: ``BytesError/BufferSizeError/invalidBufferSize(targetSize:targetType:actualSize:)`` if the total size of the bytes sequence is not a multiple of the element's size.
     /// - Returns: `(elementSize: Int, elementCount: Int)`, to aid in building the new collection.
     @inlinable
     func canBeMapped<Element>(
-        to target: Element.Type
+        to target: Element.Type,
+        targetType: String?
     ) throws(BytesError.BufferSizeError) -> (elementSize: Int, elementCount: Int) {
         let elementSize = MemoryLayout<Element>.size
         let numberOfBytes = self.count
         let (elementCount, remainingElementSize) = numberOfBytes.quotientAndRemainder(dividingBy: elementSize)
         
         guard remainingElementSize == 0 else {
-            throw .invalidBufferSize(targetSize: (elementCount + 1)*elementSize, targetType: "\(Element.self)<\(elementCount + 1)>", actualSize: numberOfBytes)
+            throw .invalidBufferSize(targetSize: (elementCount + 1)*elementSize, targetType: "\(targetType ?? "\(Element.self)")<\(elementCount + 1)>", actualSize: numberOfBytes)
         }
         
         return (elementSize, elementCount)
@@ -107,17 +122,19 @@ extension Collection where Element == Byte {
     
     /// Check if a sequence of ``Bytes`` can be safely mapped to a collection of elements of a given size.
     /// - Parameter targetSize: The size of element to map to.
+    /// - Parameter targetType: An optional name to report when throwing errors.
     /// - Throws: ``BytesError/BufferSizeError/invalidBufferSize(targetSize:targetType:actualSize:)`` if the total size of the bytes sequence is not a multiple of the element's size.
     /// - Returns: the number of elements to aid in building the new collection.
     @inlinable
     func canBeMapped(
-        to targetSize: Int
+        to targetSize: Int,
+        targetType: String
     ) throws(BytesError.BufferSizeError) -> Int {
         let numberOfBytes = self.count
         let (elementCount, remainingElementSize) = numberOfBytes.quotientAndRemainder(dividingBy: targetSize)
         
         guard remainingElementSize == 0 else {
-            throw .invalidBufferSize(targetSize: (elementCount+1)*targetSize, targetType: "Bytes<\(targetSize)>", actualSize: numberOfBytes)
+            throw .invalidBufferSize(targetSize: (elementCount+1)*targetSize, targetType: "\(targetType)<\(targetSize)>", actualSize: numberOfBytes)
         }
         
         return elementCount
@@ -153,6 +170,7 @@ extension RangeReplaceableCollection {
     /// Creates a new collection from a sequence of bytes, transforming batches of bytes into the element type of the collection.
     /// - Parameters:
     ///   - bytes: The bytes to transform.
+    ///   - targetType: An optional name to report when throwing errors.
     ///   - transform: The transformation to perform on each element.
     /// - Throws:
     ///     - ``BytesError/BufferSizeError/invalidBufferSize(targetSize:targetType:actualSize:)`` if the total size of the bytes sequence is not a multiple of the element's size.
@@ -165,9 +183,10 @@ extension RangeReplaceableCollection {
         TransformationFailure: Error
     >(
         bytes: Bytes,
+        targetType: String? = nil,
         mapping transform: (Bytes.SubSequence) throws(TransformationFailure) -> Self.Element
     ) throws(BytesError.Transformation<TransformationFailure>.BufferSizeError) {
-        try self.init(bytes: bytes, element: Element.self, mapping: transform)
+        try self.init(bytes: bytes, element: Element.self, targetType: targetType, mapping: transform)
     }
     
     /// Creates a new collection from a sequence of bytes, transforming batches of bytes into the specified element type.
@@ -176,6 +195,7 @@ extension RangeReplaceableCollection {
     /// - Parameters:
     ///   - bytes: The bytes to transform.
     ///   - element: The element that was used to encode the byte sequence.
+    ///   - targetType: An optional name to report when throwing errors.
     ///   - transform: The transformation to perform on each element.
     /// - Throws:
     ///     - ``BytesError/BufferSizeError/invalidBufferSize(targetSize:targetType:actualSize:)`` if the total size of the bytes sequence is not a multiple of the element's size.
@@ -190,12 +210,13 @@ extension RangeReplaceableCollection {
     >(
         bytes: Bytes,
         element: EncodedElement.Type,
+        targetType: String? = nil,
         mapping transform: (Bytes.SubSequence) throws(TransformationFailure) -> Self.Element
     ) throws(BytesError.Transformation<TransformationFailure>.BufferSizeError) {
         let elementSize: Int
         let elementCount: Int
         do {
-            (elementSize, elementCount) = try bytes.canBeMapped(to: EncodedElement.self)
+            (elementSize, elementCount) = try bytes.canBeMapped(to: EncodedElement.self, targetType: targetType)
         } catch {
             throw .castingFailure(error)
         }
@@ -224,6 +245,7 @@ extension RangeReplaceableCollection {
     /// - Parameters:
     ///   - bytes: The bytes to transform.
     ///   - elementSize: The size of the element that was used to encode the byte sequence.
+    ///   - targetType: An optional name to report when throwing errors.
     ///   - transform: The transformation to perform on each element.
     /// - Throws:
     ///     - ``BytesError/BufferSizeError/invalidBufferSize(targetSize:targetType:actualSize:)`` if the total size of the bytes sequence is not a multiple of the element's size.
@@ -237,11 +259,12 @@ extension RangeReplaceableCollection {
     >(
         bytes: Bytes,
         elementSize: Int,
+        targetType: String = "Bytes",
         mapping transform: (Bytes.SubSequence) throws(TransformationFailure) -> Self.Element
     ) throws(BytesError.Transformation<TransformationFailure>.BufferSizeError) {
         let elementCount: Int
         do {
-            elementCount = try bytes.canBeMapped(to: elementSize)
+            elementCount = try bytes.canBeMapped(to: elementSize, targetType: targetType)
         } catch {
             throw .castingFailure(error)
         }
@@ -269,6 +292,7 @@ extension Set {
     /// Creates a new Set from a sequence of bytes, transforming batches of bytes into the element type of the Set.
     /// - Parameters:
     ///   - bytes: The bytes to transform.
+    ///   - targetType: An optional name to report when throwing errors.
     ///   - transform: The transformation to perform on each element.
     /// - Throws:
     ///     - ``BytesError/BufferSizeError/invalidBufferSize(targetSize:targetType:actualSize:)`` if the total size of the bytes sequence is not a multiple of the element's size.
@@ -281,9 +305,10 @@ extension Set {
         TransformationFailure: Error
     >(
         bytes: Bytes,
+        targetType: String? = nil,
         mapping transform: (Bytes.SubSequence) throws(TransformationFailure) -> Self.Element
     ) throws(BytesError.Transformation<TransformationFailure>.BufferSizeError) {
-        try self.init(bytes: bytes, element: Element.self, mapping: transform)
+        try self.init(bytes: bytes, element: Element.self, targetType: targetType, mapping: transform)
     }
     
     /// Creates a new Set from a sequence of bytes, transforming batches of bytes into the specified element type.
@@ -292,6 +317,7 @@ extension Set {
     /// - Parameters:
     ///   - bytes: The bytes to transform.
     ///   - element: The element that was used to encode the byte sequence.
+    ///   - targetType: An optional name to report when throwing errors.
     ///   - transform: The transformation to perform on each element.
     /// - Throws:
     ///     - ``BytesError/BufferSizeError/invalidBufferSize(targetSize:targetType:actualSize:)`` if the total size of the bytes sequence is not a multiple of the element's size.
@@ -306,12 +332,13 @@ extension Set {
     >(
         bytes: Bytes,
         element: EncodedElement.Type,
+        targetType: String? = nil,
         mapping transform: (Bytes.SubSequence) throws(TransformationFailure) -> Self.Element
     ) throws(BytesError.Transformation<TransformationFailure>.BufferSizeError) {
         let elementSize: Int
         let elementCount: Int
         do {
-            (elementSize, elementCount) = try bytes.canBeMapped(to: EncodedElement.self)
+            (elementSize, elementCount) = try bytes.canBeMapped(to: EncodedElement.self, targetType: targetType)
         } catch {
             throw .castingFailure(error)
         }
@@ -340,6 +367,7 @@ extension Set {
     /// - Parameters:
     ///   - bytes: The bytes to transform.
     ///   - elementSize: The size of the element that was used to encode the byte sequence.
+    ///   - targetType: An optional name to report when throwing errors.
     ///   - transform: The transformation to perform on each element.
     /// - Throws:
     ///     - ``BytesError/BufferSizeError/invalidBufferSize(targetSize:targetType:actualSize:)`` if the total size of the bytes sequence is not a multiple of the element's size.
@@ -353,11 +381,12 @@ extension Set {
     >(
         bytes: Bytes,
         elementSize: Int,
+        targetType: String = "Bytes",
         mapping transform: (Bytes.SubSequence) throws(TransformationFailure) -> Self.Element
     ) throws(BytesError.Transformation<TransformationFailure>.BufferSizeError) {
         let elementCount: Int
         do {
-            elementCount = try bytes.canBeMapped(to: elementSize)
+            elementCount = try bytes.canBeMapped(to: elementSize, targetType: targetType)
         } catch {
             throw .castingFailure(error)
         }

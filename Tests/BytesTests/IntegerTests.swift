@@ -722,7 +722,7 @@ import Testing
             #expect(try iterator.next(littleEndian: UInt16.self) == 0x0201)
             #expect(try iterator.next(littleEndian: UInt32.self) == 0x0605_0403)
             
-            #expect(throws: BytesError.BufferSizeError.invalidBufferSize(targetSize: 8, targetType: "Bytes", actualSize: 1)) {
+            #expect(throws: BytesError.BufferSizeError.invalidBufferSize(targetSize: 8, targetType: "UInt64", actualSize: 1)) {
                 try iterator.next(littleEndian: UInt64.self)
             }
         }
@@ -733,7 +733,7 @@ import Testing
             #expect(try iterator.next(bigEndian: UInt16.self) == 0x0102)
             #expect(try iterator.next(bigEndian: UInt32.self) == 0x0304_0506)
             
-            #expect(throws: BytesError.BufferSizeError.invalidBufferSize(targetSize: 8, targetType: "Bytes", actualSize: 1)) {
+            #expect(throws: BytesError.BufferSizeError.invalidBufferSize(targetSize: 8, targetType: "UInt64", actualSize: 1)) {
                 try iterator.next(bigEndian: UInt64.self)
             }
         }

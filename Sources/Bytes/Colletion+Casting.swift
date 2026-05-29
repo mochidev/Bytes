@@ -89,11 +89,11 @@ extension Collection where Element == Byte {
     /// Check if a sequence of ``Bytes`` can be safely mapped to a collection of elements.
     /// - Parameter target: The type of element to map to.
     /// - Throws: ``BytesError/BufferSizeError/invalidBufferSize(targetSize:targetType:actualSize:)`` if the total size of the bytes sequence is not a multiple of the element's size.
-    /// - Returns: `(elementSize: Int, numberOfBytes: Int, elementCount: Int)`, to aid in building the new collection.
+    /// - Returns: `(elementSize: Int, elementCount: Int)`, to aid in building the new collection.
     @inlinable
     func canBeMapped<Element>(
         to target: Element.Type
-    ) throws(BytesError.BufferSizeError) -> (elementSize: Int, numberOfBytes: Int, elementCount: Int) {
+    ) throws(BytesError.BufferSizeError) -> (elementSize: Int, elementCount: Int) {
         let elementSize = MemoryLayout<Element>.size
         let numberOfBytes = self.count
         let (elementCount, remainingElementSize) = numberOfBytes.quotientAndRemainder(dividingBy: elementSize)
@@ -102,17 +102,17 @@ extension Collection where Element == Byte {
             throw .invalidBufferSize(targetSize: (elementCount + 1)*elementSize, targetType: "\(Element.self)<\(elementCount + 1)>", actualSize: numberOfBytes)
         }
         
-        return (elementSize, numberOfBytes, elementCount)
+        return (elementSize, elementCount)
     }
     
     /// Check if a sequence of ``Bytes`` can be safely mapped to a collection of elements of a given size.
     /// - Parameter targetSize: The size of element to map to.
     /// - Throws: ``BytesError/BufferSizeError/invalidBufferSize(targetSize:targetType:actualSize:)`` if the total size of the bytes sequence is not a multiple of the element's size.
-    /// - Returns: `(numberOfBytes: Int, elementCount: Int)`, to aid in building the new collection.
+    /// - Returns: the number of elements to aid in building the new collection.
     @inlinable
     func canBeMapped(
         to targetSize: Int
-    ) throws(BytesError.BufferSizeError) -> (numberOfBytes: Int, elementCount: Int) {
+    ) throws(BytesError.BufferSizeError) -> Int {
         let numberOfBytes = self.count
         let (elementCount, remainingElementSize) = numberOfBytes.quotientAndRemainder(dividingBy: targetSize)
         
@@ -120,7 +120,7 @@ extension Collection where Element == Byte {
             throw .invalidBufferSize(targetSize: (elementCount+1)*targetSize, targetType: "Bytes<\(targetSize)>", actualSize: numberOfBytes)
         }
         
-        return (numberOfBytes, elementCount)
+        return elementCount
     }
 }
 
@@ -193,10 +193,9 @@ extension RangeReplaceableCollection {
         mapping transform: (Bytes.SubSequence) throws(TransformationFailure) -> Self.Element
     ) throws(BytesError.Transformation<TransformationFailure>.BufferSizeError) {
         let elementSize: Int
-        let numberOfBytes: Int
         let elementCount: Int
         do {
-            (elementSize, numberOfBytes, elementCount) = try bytes.canBeMapped(to: EncodedElement.self)
+            (elementSize, elementCount) = try bytes.canBeMapped(to: EncodedElement.self)
         } catch {
             throw .castingFailure(error)
         }
@@ -204,8 +203,11 @@ extension RangeReplaceableCollection {
         var result = Self()
         result.reserveCapacity(elementCount)
         
-        for sliceStart in stride(from: 0, to: numberOfBytes, by: elementSize) {
-            let slice = bytes[sliceStart..<(sliceStart+elementSize)]
+        var startIndex = bytes.startIndex
+        var nextIndex = startIndex
+        while bytes.formIndex(&nextIndex, offsetBy: elementSize, limitedBy: bytes.endIndex) {
+            let slice = bytes[startIndex..<nextIndex]
+            startIndex = nextIndex
             do {
                 result.append(try transform(slice))
             } catch {
@@ -237,10 +239,9 @@ extension RangeReplaceableCollection {
         elementSize: Int,
         mapping transform: (Bytes.SubSequence) throws(TransformationFailure) -> Self.Element
     ) throws(BytesError.Transformation<TransformationFailure>.BufferSizeError) {
-        let numberOfBytes: Int
         let elementCount: Int
         do {
-            (numberOfBytes, elementCount) = try bytes.canBeMapped(to: elementSize)
+            elementCount = try bytes.canBeMapped(to: elementSize)
         } catch {
             throw .castingFailure(error)
         }
@@ -248,8 +249,11 @@ extension RangeReplaceableCollection {
         var result = Self()
         result.reserveCapacity(elementCount)
         
-        for sliceStart in stride(from: 0, to: numberOfBytes, by: elementSize) {
-            let slice = bytes[sliceStart..<(sliceStart+elementSize)]
+        var startIndex = bytes.startIndex
+        var nextIndex = startIndex
+        while bytes.formIndex(&nextIndex, offsetBy: elementSize, limitedBy: bytes.endIndex) {
+            let slice = bytes[startIndex..<nextIndex]
+            startIndex = nextIndex
             do {
                 result.append(try transform(slice))
             } catch {
@@ -305,10 +309,9 @@ extension Set {
         mapping transform: (Bytes.SubSequence) throws(TransformationFailure) -> Self.Element
     ) throws(BytesError.Transformation<TransformationFailure>.BufferSizeError) {
         let elementSize: Int
-        let numberOfBytes: Int
         let elementCount: Int
         do {
-            (elementSize, numberOfBytes, elementCount) = try bytes.canBeMapped(to: EncodedElement.self)
+            (elementSize, elementCount) = try bytes.canBeMapped(to: EncodedElement.self)
         } catch {
             throw .castingFailure(error)
         }
@@ -316,8 +319,11 @@ extension Set {
         var result = Self()
         result.reserveCapacity(elementCount)
         
-        for sliceStart in stride(from: 0, to: numberOfBytes, by: elementSize) {
-            let slice = bytes[sliceStart..<(sliceStart+elementSize)]
+        var startIndex = bytes.startIndex
+        var nextIndex = startIndex
+        while bytes.formIndex(&nextIndex, offsetBy: elementSize, limitedBy: bytes.endIndex) {
+            let slice = bytes[startIndex..<nextIndex]
+            startIndex = nextIndex
             do {
                 result.insert(try transform(slice))
             } catch {
@@ -349,10 +355,9 @@ extension Set {
         elementSize: Int,
         mapping transform: (Bytes.SubSequence) throws(TransformationFailure) -> Self.Element
     ) throws(BytesError.Transformation<TransformationFailure>.BufferSizeError) {
-        let numberOfBytes: Int
         let elementCount: Int
         do {
-            (numberOfBytes, elementCount) = try bytes.canBeMapped(to: elementSize)
+            elementCount = try bytes.canBeMapped(to: elementSize)
         } catch {
             throw .castingFailure(error)
         }
@@ -360,8 +365,11 @@ extension Set {
         var result = Self()
         result.reserveCapacity(elementCount)
         
-        for sliceStart in stride(from: 0, to: numberOfBytes, by: elementSize) {
-            let slice = bytes[sliceStart..<(sliceStart+elementSize)]
+        var startIndex = bytes.startIndex
+        var nextIndex = startIndex
+        while bytes.formIndex(&nextIndex, offsetBy: elementSize, limitedBy: bytes.endIndex) {
+            let slice = bytes[startIndex..<nextIndex]
+            startIndex = nextIndex
             do {
                 result.insert(try transform(slice))
             } catch {

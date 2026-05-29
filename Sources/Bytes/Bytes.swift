@@ -11,10 +11,10 @@
 public typealias Byte = UInt8
 
 /// A type that has the same API as ``Bytes``, and ``BytesSlice``.
-public protocol BytesCollection: Collection where Element == Byte, Index == Int, SubSequence: BytesCollection {}
+public protocol BytesCollection: Collection where Element == Byte, SubSequence: BytesCollection {}
 
 /// A collection that supports contiguous reads of its underlying storage
-public protocol ContiguousBytesCollection: BytesCollection where Element == Byte {
+public protocol ContiguousBytesCollection: BytesCollection {
     /// Calls the given closure with a pointer to the underlying bytes of the collection's contiguous storage.
     @inlinable
     func withUnsafeBytes<R>(_ body: (UnsafeRawBufferPointer) throws -> R) rethrows -> R

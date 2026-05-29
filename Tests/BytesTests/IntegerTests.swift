@@ -744,7 +744,7 @@ import Testing
             #expect(try iterator.nextIfPresent(littleEndian: UInt16.self) == 0x0201)
             #expect(try iterator.nextIfPresent(littleEndian: UInt32.self) == 0x0605_0403)
             
-            #expect(throws: BytesError.BufferSizeError.invalidBufferSize(targetSize: 8, targetType: "Bytes", actualSize: 1)) {
+            #expect(throws: BytesError.BufferSizeError.invalidBufferSize(targetSize: 8, targetType: "UInt64", actualSize: 1)) {
                 try iterator.nextIfPresent(littleEndian: UInt64.self)
             }
             
@@ -757,7 +757,7 @@ import Testing
             #expect(try iterator.nextIfPresent(bigEndian: UInt16.self) == 0x0102)
             #expect(try iterator.nextIfPresent(bigEndian: UInt32.self) == 0x0304_0506)
             
-            #expect(throws: BytesError.BufferSizeError.invalidBufferSize(targetSize: 8, targetType: "Bytes", actualSize: 1)) {
+            #expect(throws: BytesError.BufferSizeError.invalidBufferSize(targetSize: 8, targetType: "UInt64", actualSize: 1)) {
                 try iterator.nextIfPresent(bigEndian: UInt64.self)
             }
             
@@ -893,7 +893,7 @@ import Testing
                 _ = try await iterator.nextIfPresent(littleEndian: UInt64.self)
                 Issue.record("Error was expected here")
             } catch {
-                guard error == .castingFailure(.invalidBufferSize(targetSize: 8, targetType: "Bytes", actualSize: 1))
+                guard error == .castingFailure(.invalidBufferSize(targetSize: 8, targetType: "UInt64", actualSize: 1))
                 else { throw error }
             }
             
@@ -927,7 +927,7 @@ import Testing
                 _ = try await iterator.nextIfPresent(bigEndian: UInt64.self)
                 Issue.record("Error was expected here")
             } catch {
-                guard error == .invalidBufferSize(targetSize: 8, targetType: "Bytes", actualSize: 1)
+                guard error == .invalidBufferSize(targetSize: 8, targetType: "UInt64", actualSize: 1)
                 else { throw error }
             }
             
@@ -1193,7 +1193,7 @@ import Testing
                 _ = try await iterator.nextIfPresent(littleEndian: UInt64.self)
                 Issue.record("Error was expected here")
             } catch {
-                guard error == .castingFailure(.invalidBufferSize(targetSize: 8, targetType: "Bytes", actualSize: 1))
+                guard error == .castingFailure(.invalidBufferSize(targetSize: 8, targetType: "UInt64", actualSize: 1))
                 else { throw error }
             }
             
@@ -1229,7 +1229,7 @@ import Testing
                 _ = try await iterator.nextIfPresent(bigEndian: UInt64.self)
                 Issue.record("Error was expected here")
             } catch {
-                guard error == .invalidBufferSize(targetSize: 8, targetType: "Bytes", actualSize: 1)
+                guard error == .invalidBufferSize(targetSize: 8, targetType: "UInt64", actualSize: 1)
                 else { throw error }
             }
             

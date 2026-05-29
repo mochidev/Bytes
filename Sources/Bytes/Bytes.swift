@@ -28,6 +28,22 @@ extension Bytes: BytesCollection, ContiguousBytesCollection {}
 public typealias BytesSlice = ArraySlice<Byte>
 extension BytesSlice: BytesCollection, ContiguousBytesCollection {}
 
+extension AnyCollection<Byte>: BytesCollection {}
+extension ClosedRange<Byte>: BytesCollection {}
+extension DefaultIndices: BytesCollection where Element == Byte {}
+extension Dictionary.Keys: BytesCollection where Element == Byte {}
+extension Dictionary.Values: BytesCollection where Element == Byte {}
+extension FlattenSequence: BytesCollection where Base: Collection, Base.Element: BytesCollection {}
+extension LazyDropWhileSequence: BytesCollection where Base: BytesCollection {}
+extension LazyFilterSequence: BytesCollection where Base: BytesCollection {}
+extension LazyMapSequence: BytesCollection where Base: Collection, Element == Byte {}
+extension LazyPrefixWhileCollection: BytesCollection where Base: BytesCollection {}
+extension LazySequence: BytesCollection where Base: BytesCollection {}
+extension Range<Byte>: BytesCollection {}
+
+@available(macOS 15.0, iOS 18.0, watchOS 11.0, tvOS 18.0, visionOS 2.0, *)
+extension DiscontiguousSlice: BytesCollection where Base: BytesCollection {}
+
 extension Slice: BytesCollection where Base: BytesCollection {}
 extension Slice: ContiguousBytesCollection where Base: ContiguousBytesCollection, Index == Int {
     @inlinable
@@ -38,9 +54,9 @@ extension Slice: ContiguousBytesCollection where Base: ContiguousBytesCollection
     }
 }
 
+extension CollectionOfOne<Byte>: BytesCollection, ContiguousBytesCollection {}
 extension ContiguousArray<Byte>: BytesCollection, ContiguousBytesCollection {}
 extension EmptyCollection<Byte>: BytesCollection, ContiguousBytesCollection {}
-extension CollectionOfOne<Byte>: BytesCollection, ContiguousBytesCollection {}
 extension UnsafeBufferPointer<Byte>: BytesCollection, ContiguousBytesCollection {}
 extension UnsafeMutableBufferPointer<Byte>: BytesCollection, ContiguousBytesCollection {}
 extension UnsafeRawBufferPointer: BytesCollection, ContiguousBytesCollection {}

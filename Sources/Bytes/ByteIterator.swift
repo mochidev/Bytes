@@ -60,7 +60,7 @@ extension IteratorProtocol where Element == Byte {
         }
         
         guard result.count >= minCount else {
-            throw .invalidBufferSize(targetSize: minCount, targetType: "Bytes", actualSize: result.count)
+            throw .invalidBufferSize(targetSize: minCount, targetType: targetType, actualSize: result.count)
         }
         
         return result

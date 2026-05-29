@@ -253,7 +253,7 @@ extension IteratorProtocol where Element == Byte {
     public mutating func nextIfPresent<T: FixedWidthInteger>(
         littleEndian type: T.Type
     ) throws(BytesError.BufferSizeError) -> T? {
-        guard let bytes = try nextIfPresent(Bytes.self, count: MemoryLayout<T>.size)
+        guard let bytes = try nextIfPresent(Bytes.self, count: MemoryLayout<T>.size, targetType: "\(T.self)")
         else { return nil }
         return try T(littleEndianBytes: bytes)
     }
@@ -270,7 +270,7 @@ extension IteratorProtocol where Element == Byte {
     public mutating func nextIfPresent<T: FixedWidthInteger>(
         bigEndian type: T.Type
     ) throws(BytesError.BufferSizeError) -> T? {
-        guard let bytes = try nextIfPresent(Bytes.self, count: MemoryLayout<T>.size)
+        guard let bytes = try nextIfPresent(Bytes.self, count: MemoryLayout<T>.size, targetType: "\(T.self)")
         else { return nil }
         return try T(bigEndianBytes: bytes)
     }
@@ -407,7 +407,7 @@ extension AsyncIteratorProtocol where Element == Byte {
         littleEndian type: T.Type
     ) async throws(BytesError.Iteration<any Error>.BufferSizeError) -> T? {
         /// We know the first `try` validates the size already, so the mapped one can never fail, and we can simplify the reported error types.
-        try await nextIfPresent(Bytes.self, count: MemoryLayout<T>.size)
+        try await nextIfPresent(Bytes.self, count: MemoryLayout<T>.size, targetType: "\(T.self)")
             .map { try! T(littleEndianBytes: $0) }
     }
     
@@ -430,7 +430,7 @@ extension AsyncIteratorProtocol where Element == Byte {
         bigEndian type: T.Type
     ) async throws(BytesError.Iteration<any Error>.BufferSizeError) -> T? {
         /// We know the first `try` validates the size already, so the mapped one can never fail, and we can simplify the reported error types.
-        try await nextIfPresent(Bytes.self, count: MemoryLayout<T>.size)
+        try await nextIfPresent(Bytes.self, count: MemoryLayout<T>.size, targetType: "\(T.self)")
             .map { try! T(bigEndianBytes: $0) }
     }
     
@@ -581,7 +581,7 @@ extension AsyncIteratorProtocol where Element == Byte {
         isolation actor: isolated (any Actor)? = #isolation
     ) async throws(BytesError.Iteration<Failure>.BufferSizeError) -> T? {
         /// We know the first `try` validates the size already, so the mapped one can never fail, and we can simplify the reported error types.
-        try await nextIfPresent(Bytes.self, count: MemoryLayout<T>.size)
+        try await nextIfPresent(Bytes.self, count: MemoryLayout<T>.size, targetType: "\(T.self)")
             .map { try! T(littleEndianBytes: $0) }
     }
     
@@ -602,7 +602,7 @@ extension AsyncIteratorProtocol where Element == Byte {
         isolation actor: isolated (any Actor)? = #isolation
     ) async throws(BytesError.Iteration<Failure>.BufferSizeError) -> T? {
         /// We know the first `try` validates the size already, so the mapped one can never fail, and we can simplify the reported error types.
-        try await nextIfPresent(Bytes.self, count: MemoryLayout<T>.size)
+        try await nextIfPresent(Bytes.self, count: MemoryLayout<T>.size, targetType: "\(T.self)")
             .map { try! T(bigEndianBytes: $0) }
     }
     

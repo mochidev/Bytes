@@ -366,8 +366,9 @@ extension AsyncIteratorProtocol where Element == Byte {
     public mutating func next(
         _ type: UUID.Type
     ) async throws(BytesError.Iteration<any Error>.BufferSizeError) -> UUID {
-        /// We know the inner `try` validates the size already, so the outer one can never fail, and we can simplify the reported error types.
-        try! UUID(bytes: try await next(Bytes.self, count: MemoryLayout<uuid_t>.size, targetType: "UUID(Byte<16>)"))
+        let bytes = try await next(Bytes.self, count: MemoryLayout<uuid_t>.size, targetType: "UUID(Byte<16>)")
+        /// We know the first `try` validates the size already, so the second one can never fail, allowing us to simplify the reported error types.
+        return try! UUID(bytes: bytes)
     }
     
     /// Asynchronously advances to the next UUID String, or throws if it could not.
@@ -566,8 +567,9 @@ extension AsyncIteratorProtocol where Element == Byte {
         _ type: UUID.Type,
         isolation actor: isolated (any Actor)? = #isolation
     ) async throws(BytesError.Iteration<Failure>.BufferSizeError) -> UUID {
-        /// We know the inner `try` validates the size already, so the outer one can never fail, and we can simplify the reported error types.
-        try! UUID(bytes: try await next(Bytes.self, count: MemoryLayout<uuid_t>.size, targetType: "UUID(Byte<16>)"))
+        let bytes = try await next(Bytes.self, count: MemoryLayout<uuid_t>.size, targetType: "UUID(Byte<16>)")
+        /// We know the first `try` validates the size already, so the second one can never fail, allowing us to simplify the reported error types.
+        return try! UUID(bytes: bytes)
     }
     
     /// Asynchronously advances to the next UUID String, or throws if it could not.

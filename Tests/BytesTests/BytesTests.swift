@@ -27,7 +27,6 @@ extension BytesError {
         switch expressionResult {
         case
             let BytesError.BufferSizeError.invalidBufferSize(a1, a2, a3),
-            let BytesError.UUIDDecoding.BufferSizeError.castingFailure(.invalidBufferSize(a1, a2, a3)),
             let BytesError.RawRepresentable.BufferSizeError.castingFailure(.invalidBufferSize(a1, a2, a3)),
             let BytesError.RawRepresentable.ContiguousBytes.BufferSizeError.castingFailure(.castingFailure(.invalidBufferSize(a1, a2, a3))):
             XCTAssertEqual(a1, try targetSize(), messageResult, file: (file), line: line)
@@ -84,29 +83,6 @@ extension BytesError {
         default:
             if messageResult.isEmpty {
                 XCTFail("\(type(of: expressionResult)).\(expressionResult) is not BytesError.invalidRawRepresentableByteSequence", file: (file), line: line)
-            } else {
-                XCTFail(messageResult, file: (file), line: line)
-            }
-        }
-    }
-    
-    static func testInvalidUUIDByteSequence(
-        _ expression: @autoclosure () throws -> any Error,
-        _ message: @autoclosure () -> String = "",
-        file: StaticString = #file,
-        line: UInt = #line
-    ) rethrows {
-        let expressionResult = try expression()
-        let messageResult = message()
-        
-        switch expressionResult {
-        case
-            BytesError.UUIDDecodingError<Never>.invalidUUIDByteSequence,
-            BytesError.UUIDDecodingError<BufferSizeError>.invalidUUIDByteSequence:
-            break
-        default:
-            if messageResult.isEmpty {
-                XCTFail("\(type(of: expressionResult)).\(expressionResult) is not BytesError.invalidUUIDByteSequence", file: (file), line: line)
             } else {
                 XCTFail(messageResult, file: (file), line: line)
             }

@@ -52,7 +52,6 @@ extension BytesError {
         
         switch expressionResult {
         case
-            BytesError.CharacterDecodingError.invalidCharacterByteSequence,
             BytesError.RawRepresentable.CharacterDecodingError.castingFailure(.invalidCharacterByteSequence):
             break
         default:

@@ -272,6 +272,26 @@ extension AsyncIteratorProtocol where Element == Byte {
         try await nextIfPresent(Bytes.self, min: minCount, max: maxCount).map { String(utf8Bytes: $0) }
     }
     
+    /// Asynchronously advances by the specified UTF-8 encoded Character if found, or throws if the next bytes in the iterator do not match.
+    ///
+    /// Use this method when you expect a Character to be next in the sequence, and it would be an error if something else were encountered.
+    ///
+    /// **Learn More:** [Integration with AsyncSequenceReader](https://github.com/mochidev/AsyncSequenceReader#integration-with-bytes)
+    /// - Parameter character: The character to check for.
+    /// - Throws:
+    ///     - ``BytesError/SequenceCheckError/checkedSequenceNotFound`` if the character could not be identified.
+    ///     - ``BytesError/IterationError/iterationFailure(_:)`` if the underlying sequence threw an error while producing bytes.
+    #if swift(>=6.2)
+    @concurrent
+    #endif
+    @inlinable
+    @_disfavoredOverload
+    public mutating func check(
+        utf8 string: Character
+    ) async throws(BytesError.Iteration<any Error>.SequenceCheckError) {
+        try await check(string.utf8Bytes)
+    }
+    
     /// Asynchronously advances by the specified UTF-8 encoded String if found, or throws if the next bytes in the iterator do not match.
     ///
     /// Use this method when you expect a String to be next in the sequence, and it would be an error if something else were encountered.
@@ -294,6 +314,28 @@ extension AsyncIteratorProtocol where Element == Byte {
         utf8 string: String
     ) async throws(BytesError.Iteration<any Error>.SequenceCheckError) {
         try await check(string.utf8Bytes)
+    }
+    
+    /// Asynchronously advances by the specified UTF-8 encoded Character if found, throws if the next bytes in the iterator do not match, or returns false if the sequence ended.
+    ///
+    /// Use this method when you expect a Character to be next in the sequence, and it would be an error if something else were encountered.
+    ///
+    /// **Learn More:** [Integration with AsyncSequenceReader](https://github.com/mochidev/AsyncSequenceReader#integration-with-bytes)
+    /// - Parameter character: The character to check for.
+    /// - Returns: `true` if the character was found, or `false` if the sequence finished.
+    /// - Throws:
+    ///     - ``BytesError/SequenceCheckError/checkedSequenceNotFound`` if the character could not be identified.
+    ///     - ``BytesError/IterationError/iterationFailure(_:)`` if the underlying sequence threw an error while producing bytes.
+    #if swift(>=6.2)
+    @concurrent
+    #endif
+    @inlinable
+    @discardableResult
+    @_disfavoredOverload
+    public mutating func checkIfPresent(
+        utf8 string: Character
+    ) async throws(BytesError.Iteration<any Error>.SequenceCheckError) -> Bool {
+        try await checkIfPresent(string.utf8Bytes)
     }
     
     /// Asynchronously advances by the specified UTF-8 encoded String if found, throws if the next bytes in the iterator do not match, or returns false if the sequence ended.
@@ -406,6 +448,24 @@ extension AsyncIteratorProtocol where Element == Byte {
         try await nextIfPresent(Bytes.self, min: minCount, max: maxCount).map { String(utf8Bytes: $0) }
     }
     
+    /// Asynchronously advances by the specified UTF-8 encoded Character if found, or throws if the next bytes in the iterator do not match.
+    ///
+    /// Use this method when you expect a Character to be next in the sequence, and it would be an error if something else were encountered.
+    ///
+    /// **Learn More:** [Integration with AsyncSequenceReader](https://github.com/mochidev/AsyncSequenceReader#integration-with-bytes)
+    /// - Parameter character: The character to check for.
+    /// - Parameter actor: The isolation context to run the reciever on.
+    /// - Throws:
+    ///     - ``BytesError/SequenceCheckError/checkedSequenceNotFound`` if the character could not be identified.
+    ///     - ``BytesError/IterationError/iterationFailure(_:)`` if the underlying sequence threw an error while producing bytes.
+    @inlinable
+    public mutating func check(
+        utf8 string: Character,
+        isolation actor: isolated (any Actor)? = #isolation
+    ) async throws(BytesError.Iteration<Failure>.SequenceCheckError) {
+        try await check(string.utf8Bytes)
+    }
+    
     /// Asynchronously advances by the specified UTF-8 encoded String if found, or throws if the next bytes in the iterator do not match.
     ///
     /// Use this method when you expect a String to be next in the sequence, and it would be an error if something else were encountered.
@@ -426,6 +486,26 @@ extension AsyncIteratorProtocol where Element == Byte {
         isolation actor: isolated (any Actor)? = #isolation
     ) async throws(BytesError.Iteration<Failure>.SequenceCheckError) {
         try await check(string.utf8Bytes)
+    }
+    
+    /// Asynchronously advances by the specified UTF-8 encoded Character if found, throws if the next bytes in the iterator do not match, or returns false if the sequence ended.
+    ///
+    /// Use this method when you expect a Character to be next in the sequence, and it would be an error if something else were encountered.
+    ///
+    /// **Learn More:** [Integration with AsyncSequenceReader](https://github.com/mochidev/AsyncSequenceReader#integration-with-bytes)
+    /// - Parameter character: The character to check for.
+    /// - Parameter actor: The isolation context to run the reciever on.
+    /// - Returns: `true` if the character was found, or `false` if the sequence finished.
+    /// - Throws:
+    ///     - ``BytesError/SequenceCheckError/checkedSequenceNotFound`` if the character could not be identified.
+    ///     - ``BytesError/IterationError/iterationFailure(_:)`` if the underlying sequence threw an error while producing bytes.
+    @inlinable
+    @discardableResult
+    public mutating func checkIfPresent(
+        utf8 string: Character,
+        isolation actor: isolated (any Actor)? = #isolation
+    ) async throws(BytesError.Iteration<Failure>.SequenceCheckError) -> Bool {
+        try await checkIfPresent(string.utf8Bytes)
     }
     
     /// Asynchronously advances by the specified UTF-8 encoded String if found, throws if the next bytes in the iterator do not match, or returns false if the sequence ended.

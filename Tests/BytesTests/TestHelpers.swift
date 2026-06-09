@@ -34,6 +34,14 @@ struct AsyncTestIterator: AsyncIteratorProtocol {
     }
 }
 
+struct AsyncTestSequence: AsyncSequence {
+    let bytes: Bytes = [0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07]
+    
+    func makeAsyncIterator() -> AsyncTestIterator {
+        AsyncTestIterator(bytes)
+    }
+}
+
 struct AsyncThrowingTestIterator: AsyncIteratorProtocol {
     typealias Element = Byte
     typealias Failure = LocalError
@@ -54,6 +62,14 @@ struct AsyncThrowingTestIterator: AsyncIteratorProtocol {
         } else {
             return nil
         }
+    }
+}
+
+struct AsyncThrowingTestSequence: AsyncSequence {
+    let bytes: Bytes = [0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07]
+    
+    func makeAsyncIterator() -> AsyncThrowingTestIterator {
+        AsyncThrowingTestIterator(bytes)
     }
 }
 

@@ -47,7 +47,7 @@ public struct AsyncChunkedBytes<Base: AsyncSequence> where Base.Element == Byte 
         _ base: Base,
         capacity: Int
     ) {
-        precondition(capacity >= 0, "capacity must be larger than 0")
+        precondition(capacity > 0, "capacity must be larger than 0")
         self.base = base
         self.capacity = capacity
     }

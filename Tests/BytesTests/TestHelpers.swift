@@ -13,12 +13,37 @@ import Bytes
 
 struct LocalError: Error, Equatable {}
 
-struct ThrowingIterator: AsyncIteratorProtocol {
+struct AsyncTestIterator: AsyncIteratorProtocol {
+    typealias Element = Byte
+    typealias Failure = Never
+    
+    let bytes: Bytes
+    var index = 0
+    
+    init(_ bytes: Bytes) {
+        self.bytes = bytes
+    }
+    
+    mutating func next() async throws(Failure) -> Byte? {
+        defer { index += 1 }
+        if bytes.indices ~= index {
+            return self.bytes[index]
+        } else {
+            return nil
+        }
+    }
+}
+
+struct AsyncThrowingTestIterator: AsyncIteratorProtocol {
     typealias Element = Byte
     typealias Failure = LocalError
     
-    let bytes: Bytes = [0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07]
+    let bytes: Bytes
     var index = 0
+    
+    init(_ bytes: Bytes) {
+        self.bytes = bytes
+    }
     
     mutating func next() async throws(Failure) -> Byte? {
         defer { index += 1 }

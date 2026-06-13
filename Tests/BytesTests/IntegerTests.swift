@@ -825,22 +825,8 @@ import Testing
     
     #if canImport(Darwin)
     @Suite struct IntegerLegacyAsyncByteIteratorTests {
-        static func makeAsyncByteIterator() -> AsyncStream<Byte>.Iterator {
-            AsyncStream { continuation in
-                let bytes: Bytes = [0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07]
-                for byte in bytes {
-                    continuation.yield(byte)
-                }
-                continuation.finish()
-            }.makeAsyncIterator()
-        }
-        
-        fileprivate static func makeThrowingAsyncByteIterator() -> ThrowingIterator {
-            ThrowingIterator()
-        }
-        
         @Test func nextLittleEndian() async throws {
-            var iterator = Self.makeAsyncByteIterator()
+            var iterator = AsyncTestIterator([0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07])
             #expect(try await iterator.next(littleEndian: UInt8.self) == 0x00)
             #expect(try await iterator.next(littleEndian: UInt16.self) == 0x0201)
             #expect(try await iterator.next(littleEndian: UInt32.self) == 0x0605_0403)
@@ -851,7 +837,7 @@ import Testing
         }
         
         @Test func nextLittleEndianThrows() async throws {
-            var iterator = Self.makeThrowingAsyncByteIterator()
+            var iterator = AsyncThrowingTestIterator([0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07])
             #expect(try await iterator.next(littleEndian: UInt8.self) == 0x00)
             #expect(try await iterator.next(littleEndian: UInt16.self) == 0x0201)
             #expect(try await iterator.next(littleEndian: UInt32.self) == 0x0605_0403)
@@ -862,7 +848,7 @@ import Testing
         }
         
         @Test func nextBigEndian() async throws {
-            var iterator = Self.makeAsyncByteIterator()
+            var iterator = AsyncTestIterator([0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07])
             #expect(try await iterator.next(bigEndian: UInt8.self) == 0x00)
             #expect(try await iterator.next(bigEndian: UInt16.self) == 0x0102)
             #expect(try await iterator.next(bigEndian: UInt32.self) == 0x0304_0506)
@@ -873,7 +859,7 @@ import Testing
         }
         
         @Test func nextBigEndianThrows() async throws {
-            var iterator = Self.makeThrowingAsyncByteIterator()
+            var iterator = AsyncThrowingTestIterator([0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07])
             #expect(try await iterator.next(bigEndian: UInt8.self) == 0x00)
             #expect(try await iterator.next(bigEndian: UInt16.self) == 0x0102)
             #expect(try await iterator.next(bigEndian: UInt32.self) == 0x0304_0506)
@@ -884,84 +870,64 @@ import Testing
         }
         
         @Test func nextIfPresentLittleEndian() async throws {
-            var iterator = Self.makeAsyncByteIterator()
+            var iterator = AsyncTestIterator([0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07])
             #expect(try await iterator.nextIfPresent(littleEndian: UInt8.self) == 0x00)
             #expect(try await iterator.nextIfPresent(littleEndian: UInt16.self) == 0x0201)
             #expect(try await iterator.nextIfPresent(littleEndian: UInt32.self) == 0x0605_0403)
             
-            do {
-                _ = try await iterator.nextIfPresent(littleEndian: UInt64.self)
-                Issue.record("Error was expected here")
-            } catch {
-                guard error == .castingFailure(.invalidBufferSize(targetSize: 8, targetType: "UInt64", actualSize: 1))
-                else { throw error }
+            await #expect(throws: BytesError.Iteration<any Error>.BufferSizeError.invalidBufferSize(targetSize: 8, targetType: "UInt64", actualSize: 1)) {
+                try await iterator.nextIfPresent(littleEndian: UInt64.self)
             }
             
             #expect(try await iterator.nextIfPresent(littleEndian: UInt64.self) == nil)
         }
         
         @Test func nextIfPresentLittleEndianThrows() async throws {
-            var iterator = Self.makeThrowingAsyncByteIterator()
+            var iterator = AsyncThrowingTestIterator([0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07])
             #expect(try await iterator.nextIfPresent(littleEndian: UInt8.self) == 0x00)
             #expect(try await iterator.nextIfPresent(littleEndian: UInt16.self) == 0x0201)
             #expect(try await iterator.nextIfPresent(littleEndian: UInt32.self) == 0x0605_0403)
             
-            do {
-                _ = try await iterator.nextIfPresent(littleEndian: UInt64.self)
-                Issue.record("Error was expected here")
-            } catch {
-                guard error == .iterationFailure(LocalError())
-                else { throw error }
+            await #expect(throws: BytesError.Iteration<any Error>.BufferSizeError.iterationFailure(LocalError())) {
+                try await iterator.nextIfPresent(littleEndian: UInt64.self)
             }
             
             #expect(try await iterator.nextIfPresent(littleEndian: UInt64.self) == nil)
         }
         
         @Test func nextIfPresentBigEndian() async throws {
-            var iterator = Self.makeAsyncByteIterator()
+            var iterator = AsyncTestIterator([0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07])
             #expect(try await iterator.nextIfPresent(bigEndian: UInt8.self) == 0x00)
             #expect(try await iterator.nextIfPresent(bigEndian: UInt16.self) == 0x0102)
             #expect(try await iterator.nextIfPresent(bigEndian: UInt32.self) == 0x0304_0506)
             
-            do {
-                _ = try await iterator.nextIfPresent(bigEndian: UInt64.self)
-                Issue.record("Error was expected here")
-            } catch {
-                guard error == .invalidBufferSize(targetSize: 8, targetType: "UInt64", actualSize: 1)
-                else { throw error }
+            await #expect(throws: BytesError.Iteration<any Error>.BufferSizeError.invalidBufferSize(targetSize: 8, targetType: "UInt64", actualSize: 1)) {
+                try await iterator.nextIfPresent(bigEndian: UInt64.self)
             }
             
             #expect(try await iterator.nextIfPresent(bigEndian: UInt64.self) == nil)
         }
         
         @Test func nextIfPresentBigEndianThrows() async throws {
-            var iterator = Self.makeThrowingAsyncByteIterator()
+            var iterator = AsyncThrowingTestIterator([0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07])
             #expect(try await iterator.nextIfPresent(bigEndian: UInt8.self) == 0x00)
             #expect(try await iterator.nextIfPresent(bigEndian: UInt16.self) == 0x0102)
             #expect(try await iterator.nextIfPresent(bigEndian: UInt32.self) == 0x0304_0506)
             
-            do {
-                _ = try await iterator.nextIfPresent(bigEndian: UInt64.self)
-                Issue.record("Error was expected here")
-            } catch {
-                guard error == .iterationFailure(LocalError())
-                else { throw error }
+            await #expect(throws: BytesError.Iteration<any Error>.BufferSizeError.iterationFailure(LocalError())) {
+                try await iterator.nextIfPresent(bigEndian: UInt64.self)
             }
             
             #expect(try await iterator.nextIfPresent(bigEndian: UInt64.self) == nil)
         }
         
         @Test func checkLittleEndian() async throws {
-            var iterator = Self.makeAsyncByteIterator()
+            var iterator = AsyncTestIterator([0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07])
             try await iterator.check(littleEndian: UInt8(0x00))
             try await iterator.check(littleEndian: UInt16(0x0201))
             
-            do {
-                _ = try await iterator.check(littleEndian: UInt16(0xff03))
-                Issue.record("Error was expected here")
-            } catch {
-                guard error == .checkedSequenceNotFound
-                else { throw error }
+            await #expect(throws: BytesError.Iteration<any Error>.SequenceCheckError.checkedSequenceNotFound) {
+                try await iterator.check(littleEndian: UInt16(0xff03))
             }
             
             try await iterator.check(littleEndian: UInt16(0x0605))
@@ -972,16 +938,12 @@ import Testing
         }
         
         @Test func checkLittleEndianThrows() async throws {
-            var iterator = Self.makeThrowingAsyncByteIterator()
+            var iterator = AsyncThrowingTestIterator([0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07])
             try await iterator.check(littleEndian: UInt8(0x00))
             try await iterator.check(littleEndian: UInt16(0x0201))
             
-            do {
-                _ = try await iterator.check(littleEndian: UInt16(0xff03))
-                Issue.record("Error was expected here")
-            } catch {
-                guard error == .checkedSequenceNotFound
-                else { throw error }
+            await #expect(throws: BytesError.Iteration<any Error>.SequenceCheckError.checkedSequenceNotFound) {
+                try await iterator.check(littleEndian: UInt16(0xff03))
             }
             
             try await iterator.check(littleEndian: UInt16(0x0605))
@@ -992,16 +954,12 @@ import Testing
         }
         
         @Test func checkBigEndian() async throws {
-            var iterator = Self.makeAsyncByteIterator()
+            var iterator = AsyncTestIterator([0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07])
             try await iterator.check(bigEndian: UInt8(0x00))
             try await iterator.check(bigEndian: UInt16(0x0102))
             
-            do {
-                _ = try await iterator.check(bigEndian: UInt16(0x03ff))
-                Issue.record("Error was expected here")
-            } catch {
-                guard error == .castingFailure(.checkedSequenceNotFound)
-                else { throw error }
+            await #expect(throws: BytesError.Iteration<any Error>.SequenceCheckError.checkedSequenceNotFound) {
+                try await iterator.check(bigEndian: UInt16(0x03ff))
             }
             
             try await iterator.check(bigEndian: UInt16(0x0506))
@@ -1012,16 +970,12 @@ import Testing
         }
         
         @Test func checkBigEndianThrows() async throws {
-            var iterator = Self.makeThrowingAsyncByteIterator()
+            var iterator = AsyncThrowingTestIterator([0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07])
             try await iterator.check(bigEndian: UInt8(0x00))
             try await iterator.check(bigEndian: UInt16(0x0102))
             
-            do {
-                _ = try await iterator.check(bigEndian: UInt16(0x03ff))
-                Issue.record("Error was expected here")
-            } catch {
-                guard error == .castingFailure(.checkedSequenceNotFound)
-                else { throw error }
+            await #expect(throws: BytesError.Iteration<any Error>.SequenceCheckError.checkedSequenceNotFound) {
+                try await iterator.check(bigEndian: UInt16(0x03ff))
             }
             
             try await iterator.check(bigEndian: UInt16(0x0506))
@@ -1032,16 +986,12 @@ import Testing
         }
         
         @Test func checkIfPresentLittleEndian() async throws {
-            var iterator = Self.makeAsyncByteIterator()
+            var iterator = AsyncTestIterator([0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07])
             #expect(try await iterator.checkIfPresent(littleEndian: UInt8(0x00)) == true)
             #expect(try await iterator.checkIfPresent(littleEndian: UInt16(0x0201)) == true)
             
-            do {
-                _ = try await iterator.checkIfPresent(littleEndian: UInt32(0xffff0403))
-                Issue.record("Error was expected here")
-            } catch {
-                guard error == .checkedSequenceNotFound
-                else { throw error }
+            await #expect(throws: BytesError.Iteration<any Error>.SequenceCheckError.checkedSequenceNotFound) {
+                try await iterator.checkIfPresent(littleEndian: UInt32(0xffff0403))
             }
             
             #expect(try await iterator.checkIfPresent(littleEndian: UInt16(0x0706)) == true)
@@ -1049,42 +999,30 @@ import Testing
         }
         
         @Test func checkIfPresentLittleEndianThrows() async throws {
-            var iterator = Self.makeThrowingAsyncByteIterator()
+            var iterator = AsyncThrowingTestIterator([0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07])
             #expect(try await iterator.checkIfPresent(littleEndian: UInt8(0x00)) == true)
             #expect(try await iterator.checkIfPresent(littleEndian: UInt16(0x0201)) == true)
             
-            do {
-                _ = try await iterator.checkIfPresent(littleEndian: UInt32(0xffff0403))
-                Issue.record("Error was expected here")
-            } catch {
-                guard error == .checkedSequenceNotFound
-                else { throw error }
+            await #expect(throws: BytesError.Iteration<any Error>.SequenceCheckError.checkedSequenceNotFound) {
+                try await iterator.checkIfPresent(littleEndian: UInt32(0xffff0403))
             }
             
             #expect(try await iterator.checkIfPresent(littleEndian: UInt16(0x0706)) == true)
             
-            do {
-                _ = try await iterator.checkIfPresent(littleEndian: UInt16(0xffff))
-                Issue.record("Error was expected here")
-            } catch {
-                guard error == .iterationFailure(LocalError())
-                else { throw error }
+            await #expect(throws: BytesError.Iteration<any Error>.SequenceCheckError.iterationFailure(LocalError())) {
+                try await iterator.checkIfPresent(littleEndian: UInt16(0xffff))
             }
             
             #expect(try await iterator.checkIfPresent(littleEndian: UInt16(0xffff)) == false)
         }
         
         @Test func checkIfPresentBigEndian() async throws {
-            var iterator = Self.makeAsyncByteIterator()
+            var iterator = AsyncTestIterator([0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07])
             #expect(try await iterator.checkIfPresent(bigEndian: UInt8(0x00)) == true)
             #expect(try await iterator.checkIfPresent(bigEndian: UInt16(0x0102)) == true)
             
-            do {
-                _ = try await iterator.checkIfPresent(bigEndian: UInt32(0x0304ffff))
-                Issue.record("Error was expected here")
-            } catch {
-                guard error == .checkedSequenceNotFound
-                else { throw error }
+            await #expect(throws: BytesError.Iteration<any Error>.SequenceCheckError.checkedSequenceNotFound) {
+                try await iterator.checkIfPresent(bigEndian: UInt32(0x0304ffff))
             }
             
             #expect(try await iterator.checkIfPresent(bigEndian: UInt16(0x0607)) == true)
@@ -1092,26 +1030,18 @@ import Testing
         }
         
         @Test func checkIfPresentBigEndianThrows() async throws {
-            var iterator = Self.makeThrowingAsyncByteIterator()
+            var iterator = AsyncThrowingTestIterator([0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07])
             #expect(try await iterator.checkIfPresent(bigEndian: UInt8(0x00)) == true)
             #expect(try await iterator.checkIfPresent(bigEndian: UInt16(0x0102)) == true)
             
-            do {
-                _ = try await iterator.checkIfPresent(bigEndian: UInt32(0x0304ffff))
-                Issue.record("Error was expected here")
-            } catch {
-                guard error == .checkedSequenceNotFound
-                else { throw error }
+            await #expect(throws: BytesError.Iteration<any Error>.SequenceCheckError.checkedSequenceNotFound) {
+                try await iterator.checkIfPresent(bigEndian: UInt32(0x0304ffff))
             }
             
             #expect(try await iterator.checkIfPresent(bigEndian: UInt16(0x0607)) == true)
             
-            do {
-                _ = try await iterator.checkIfPresent(bigEndian: UInt16(0xffff))
-                Issue.record("Error was expected here")
-            } catch {
-                guard error == .iterationFailure(LocalError())
-                else { throw error }
+            await #expect(throws: BytesError.Iteration<any Error>.SequenceCheckError.iterationFailure(LocalError())) {
+                try await iterator.checkIfPresent(bigEndian: UInt16(0xffff))
             }
             
             #expect(try await iterator.checkIfPresent(bigEndian: UInt16(0xffff)) == false)
@@ -1120,23 +1050,9 @@ import Testing
     #endif
     
     @Suite struct IntegerAsyncByteIteratorTests {
-        static func makeAsyncByteIterator() -> AsyncStream<Byte>.Iterator {
-            AsyncStream { continuation in
-                let bytes: Bytes = [0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07]
-                for byte in bytes {
-                    continuation.yield(byte)
-                }
-                continuation.finish()
-            }.makeAsyncIterator()
-        }
-        
-        fileprivate static func makeThrowingAsyncByteIterator() -> ThrowingIterator {
-            ThrowingIterator()
-        }
-        
         @available(macOS 15.0, iOS 18.0, watchOS 11.0, tvOS 18.0, visionOS 2.0, *)
         @Test func nextLittleEndian() async throws {
-            var iterator = Self.makeAsyncByteIterator()
+            var iterator = AsyncTestIterator([0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07])
             #expect(try await iterator.next(littleEndian: UInt8.self) == 0x00)
             #expect(try await iterator.next(littleEndian: UInt16.self) == 0x0201)
             #expect(try await iterator.next(littleEndian: UInt32.self) == 0x0605_0403)
@@ -1148,7 +1064,7 @@ import Testing
         
         @available(macOS 15.0, iOS 18.0, watchOS 11.0, tvOS 18.0, visionOS 2.0, *)
         @Test func nextLittleEndianThrows() async throws {
-            var iterator = Self.makeThrowingAsyncByteIterator()
+            var iterator = AsyncThrowingTestIterator([0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07])
             #expect(try await iterator.next(littleEndian: UInt8.self) == 0x00)
             #expect(try await iterator.next(littleEndian: UInt16.self) == 0x0201)
             #expect(try await iterator.next(littleEndian: UInt32.self) == 0x0605_0403)
@@ -1160,7 +1076,7 @@ import Testing
         
         @available(macOS 15.0, iOS 18.0, watchOS 11.0, tvOS 18.0, visionOS 2.0, *)
         @Test func nextBigEndian() async throws {
-            var iterator = Self.makeAsyncByteIterator()
+            var iterator = AsyncTestIterator([0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07])
             #expect(try await iterator.next(bigEndian: UInt8.self) == 0x00)
             #expect(try await iterator.next(bigEndian: UInt16.self) == 0x0102)
             #expect(try await iterator.next(bigEndian: UInt32.self) == 0x0304_0506)
@@ -1172,7 +1088,7 @@ import Testing
         
         @available(macOS 15.0, iOS 18.0, watchOS 11.0, tvOS 18.0, visionOS 2.0, *)
         @Test func nextBigEndianThrows() async throws {
-            var iterator = Self.makeThrowingAsyncByteIterator()
+            var iterator = AsyncThrowingTestIterator([0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07])
             #expect(try await iterator.next(bigEndian: UInt8.self) == 0x00)
             #expect(try await iterator.next(bigEndian: UInt16.self) == 0x0102)
             #expect(try await iterator.next(bigEndian: UInt32.self) == 0x0304_0506)
@@ -1184,17 +1100,13 @@ import Testing
         
         @available(macOS 15.0, iOS 18.0, watchOS 11.0, tvOS 18.0, visionOS 2.0, *)
         @Test func nextIfPresentLittleEndian() async throws {
-            var iterator = Self.makeAsyncByteIterator()
+            var iterator = AsyncTestIterator([0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07])
             #expect(try await iterator.nextIfPresent(littleEndian: UInt8.self) == 0x00)
             #expect(try await iterator.nextIfPresent(littleEndian: UInt16.self) == 0x0201)
             #expect(try await iterator.nextIfPresent(littleEndian: UInt32.self) == 0x0605_0403)
             
-            do {
-                _ = try await iterator.nextIfPresent(littleEndian: UInt64.self)
-                Issue.record("Error was expected here")
-            } catch {
-                guard error == .castingFailure(.invalidBufferSize(targetSize: 8, targetType: "UInt64", actualSize: 1))
-                else { throw error }
+            await #expect(throws: BytesError.Iteration<Never>.BufferSizeError.invalidBufferSize(targetSize: 8, targetType: "UInt64", actualSize: 1)) {
+                try await iterator.nextIfPresent(littleEndian: UInt64.self)
             }
             
             #expect(try await iterator.nextIfPresent(littleEndian: UInt64.self) == nil)
@@ -1202,17 +1114,13 @@ import Testing
         
         @available(macOS 15.0, iOS 18.0, watchOS 11.0, tvOS 18.0, visionOS 2.0, *)
         @Test func nextIfPresentLittleEndianThrows() async throws {
-            var iterator = Self.makeThrowingAsyncByteIterator()
+            var iterator = AsyncThrowingTestIterator([0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07])
             #expect(try await iterator.nextIfPresent(littleEndian: UInt8.self) == 0x00)
             #expect(try await iterator.nextIfPresent(littleEndian: UInt16.self) == 0x0201)
             #expect(try await iterator.nextIfPresent(littleEndian: UInt32.self) == 0x0605_0403)
             
-            do {
-                _ = try await iterator.nextIfPresent(littleEndian: UInt64.self)
-                Issue.record("Error was expected here")
-            } catch {
-                guard error == .iterationFailure(LocalError())
-                else { throw error }
+            await #expect(throws: BytesError.Iteration<LocalError>.BufferSizeError.iterationFailure(LocalError())) {
+                try await iterator.nextIfPresent(littleEndian: UInt64.self)
             }
             
             #expect(try await iterator.nextIfPresent(littleEndian: UInt64.self) == nil)
@@ -1220,17 +1128,13 @@ import Testing
         
         @available(macOS 15.0, iOS 18.0, watchOS 11.0, tvOS 18.0, visionOS 2.0, *)
         @Test func nextIfPresentBigEndian() async throws {
-            var iterator = Self.makeAsyncByteIterator()
+            var iterator = AsyncTestIterator([0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07])
             #expect(try await iterator.nextIfPresent(bigEndian: UInt8.self) == 0x00)
             #expect(try await iterator.nextIfPresent(bigEndian: UInt16.self) == 0x0102)
             #expect(try await iterator.nextIfPresent(bigEndian: UInt32.self) == 0x0304_0506)
             
-            do {
-                _ = try await iterator.nextIfPresent(bigEndian: UInt64.self)
-                Issue.record("Error was expected here")
-            } catch {
-                guard error == .invalidBufferSize(targetSize: 8, targetType: "UInt64", actualSize: 1)
-                else { throw error }
+            await #expect(throws: BytesError.Iteration<Never>.BufferSizeError.invalidBufferSize(targetSize: 8, targetType: "UInt64", actualSize: 1)) {
+                try await iterator.nextIfPresent(bigEndian: UInt64.self)
             }
             
             #expect(try await iterator.nextIfPresent(bigEndian: UInt64.self) == nil)
@@ -1238,17 +1142,13 @@ import Testing
         
         @available(macOS 15.0, iOS 18.0, watchOS 11.0, tvOS 18.0, visionOS 2.0, *)
         @Test func nextIfPresentBigEndianThrows() async throws {
-            var iterator = Self.makeThrowingAsyncByteIterator()
+            var iterator = AsyncThrowingTestIterator([0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07])
             #expect(try await iterator.nextIfPresent(bigEndian: UInt8.self) == 0x00)
             #expect(try await iterator.nextIfPresent(bigEndian: UInt16.self) == 0x0102)
             #expect(try await iterator.nextIfPresent(bigEndian: UInt32.self) == 0x0304_0506)
             
-            do {
-                _ = try await iterator.nextIfPresent(bigEndian: UInt64.self)
-                Issue.record("Error was expected here")
-            } catch {
-                guard error == .iterationFailure(LocalError())
-                else { throw error }
+            await #expect(throws: BytesError.Iteration<LocalError>.BufferSizeError.iterationFailure(LocalError())) {
+                try await iterator.nextIfPresent(bigEndian: UInt64.self)
             }
             
             #expect(try await iterator.nextIfPresent(bigEndian: UInt64.self) == nil)
@@ -1256,16 +1156,12 @@ import Testing
         
         @available(macOS 15.0, iOS 18.0, watchOS 11.0, tvOS 18.0, visionOS 2.0, *)
         @Test func checkLittleEndian() async throws {
-            var iterator = Self.makeAsyncByteIterator()
+            var iterator = AsyncTestIterator([0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07])
             try await iterator.check(littleEndian: UInt8(0x00))
             try await iterator.check(littleEndian: UInt16(0x0201))
             
-            do {
-                _ = try await iterator.check(littleEndian: UInt16(0xff03))
-                Issue.record("Error was expected here")
-            } catch {
-                guard error == .checkedSequenceNotFound
-                else { throw error }
+            await #expect(throws: BytesError.Iteration<Never>.SequenceCheckError.checkedSequenceNotFound) {
+                try await iterator.check(littleEndian: UInt16(0xff03))
             }
             
             try await iterator.check(littleEndian: UInt16(0x0605))
@@ -1277,16 +1173,12 @@ import Testing
         
         @available(macOS 15.0, iOS 18.0, watchOS 11.0, tvOS 18.0, visionOS 2.0, *)
         @Test func checkLittleEndianThrows() async throws {
-            var iterator = Self.makeThrowingAsyncByteIterator()
+            var iterator = AsyncThrowingTestIterator([0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07])
             try await iterator.check(littleEndian: UInt8(0x00))
             try await iterator.check(littleEndian: UInt16(0x0201))
             
-            do {
-                _ = try await iterator.check(littleEndian: UInt16(0xff03))
-                Issue.record("Error was expected here")
-            } catch {
-                guard error == .checkedSequenceNotFound
-                else { throw error }
+            await #expect(throws: BytesError.Iteration<LocalError>.SequenceCheckError.checkedSequenceNotFound) {
+                try await iterator.check(littleEndian: UInt16(0xff03))
             }
             
             try await iterator.check(littleEndian: UInt16(0x0605))
@@ -1298,16 +1190,12 @@ import Testing
         
         @available(macOS 15.0, iOS 18.0, watchOS 11.0, tvOS 18.0, visionOS 2.0, *)
         @Test func checkBigEndian() async throws {
-            var iterator = Self.makeAsyncByteIterator()
+            var iterator = AsyncTestIterator([0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07])
             try await iterator.check(bigEndian: UInt8(0x00))
             try await iterator.check(bigEndian: UInt16(0x0102))
             
-            do {
-                _ = try await iterator.check(bigEndian: UInt16(0x03ff))
-                Issue.record("Error was expected here")
-            } catch {
-                guard error == .castingFailure(.checkedSequenceNotFound)
-                else { throw error }
+            await #expect(throws: BytesError.Iteration<Never>.SequenceCheckError.checkedSequenceNotFound) {
+                try await iterator.check(bigEndian: UInt16(0x03ff))
             }
             
             try await iterator.check(bigEndian: UInt16(0x0506))
@@ -1319,16 +1207,12 @@ import Testing
         
         @available(macOS 15.0, iOS 18.0, watchOS 11.0, tvOS 18.0, visionOS 2.0, *)
         @Test func checkBigEndianThrows() async throws {
-            var iterator = Self.makeThrowingAsyncByteIterator()
+            var iterator = AsyncThrowingTestIterator([0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07])
             try await iterator.check(bigEndian: UInt8(0x00))
             try await iterator.check(bigEndian: UInt16(0x0102))
             
-            do {
-                _ = try await iterator.check(bigEndian: UInt16(0x03ff))
-                Issue.record("Error was expected here")
-            } catch {
-                guard error == .castingFailure(.checkedSequenceNotFound)
-                else { throw error }
+            await #expect(throws: BytesError.Iteration<LocalError>.SequenceCheckError.checkedSequenceNotFound) {
+                try await iterator.check(bigEndian: UInt16(0x03ff))
             }
             
             try await iterator.check(bigEndian: UInt16(0x0506))
@@ -1340,16 +1224,12 @@ import Testing
         
         @available(macOS 15.0, iOS 18.0, watchOS 11.0, tvOS 18.0, visionOS 2.0, *)
         @Test func checkIfPresentLittleEndian() async throws {
-            var iterator = Self.makeAsyncByteIterator()
+            var iterator = AsyncTestIterator([0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07])
             #expect(try await iterator.checkIfPresent(littleEndian: UInt8(0x00)) == true)
             #expect(try await iterator.checkIfPresent(littleEndian: UInt16(0x0201)) == true)
             
-            do {
-                _ = try await iterator.checkIfPresent(littleEndian: UInt32(0xffff0403))
-                Issue.record("Error was expected here")
-            } catch {
-                guard error == .checkedSequenceNotFound
-                else { throw error }
+            await #expect(throws: BytesError.Iteration<Never>.SequenceCheckError.checkedSequenceNotFound) {
+                try await iterator.checkIfPresent(littleEndian: UInt32(0xffff0403))
             }
             
             #expect(try await iterator.checkIfPresent(littleEndian: UInt16(0x0706)) == true)
@@ -1358,26 +1238,18 @@ import Testing
         
         @available(macOS 15.0, iOS 18.0, watchOS 11.0, tvOS 18.0, visionOS 2.0, *)
         @Test func checkIfPresentLittleEndianThrows() async throws {
-            var iterator = Self.makeThrowingAsyncByteIterator()
+            var iterator = AsyncThrowingTestIterator([0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07])
             #expect(try await iterator.checkIfPresent(littleEndian: UInt8(0x00)) == true)
             #expect(try await iterator.checkIfPresent(littleEndian: UInt16(0x0201)) == true)
             
-            do {
-                _ = try await iterator.checkIfPresent(littleEndian: UInt32(0xffff0403))
-                Issue.record("Error was expected here")
-            } catch {
-                guard error == .checkedSequenceNotFound
-                else { throw error }
+            await #expect(throws: BytesError.Iteration<LocalError>.SequenceCheckError.checkedSequenceNotFound) {
+                try await iterator.checkIfPresent(littleEndian: UInt32(0xffff0403))
             }
             
             #expect(try await iterator.checkIfPresent(littleEndian: UInt16(0x0706)) == true)
             
-            do {
-                _ = try await iterator.checkIfPresent(littleEndian: UInt16(0xffff))
-                Issue.record("Error was expected here")
-            } catch {
-                guard error == .iterationFailure(LocalError())
-                else { throw error }
+            await #expect(throws: BytesError.Iteration<LocalError>.SequenceCheckError.iterationFailure(LocalError())) {
+                try await iterator.checkIfPresent(littleEndian: UInt16(0xffff))
             }
             
             #expect(try await iterator.checkIfPresent(littleEndian: UInt16(0xffff)) == false)
@@ -1385,16 +1257,12 @@ import Testing
         
         @available(macOS 15.0, iOS 18.0, watchOS 11.0, tvOS 18.0, visionOS 2.0, *)
         @Test func checkIfPresentBigEndian() async throws {
-            var iterator = Self.makeAsyncByteIterator()
+            var iterator = AsyncTestIterator([0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07])
             #expect(try await iterator.checkIfPresent(bigEndian: UInt8(0x00)) == true)
             #expect(try await iterator.checkIfPresent(bigEndian: UInt16(0x0102)) == true)
             
-            do {
-                _ = try await iterator.checkIfPresent(bigEndian: UInt32(0x0304ffff))
-                Issue.record("Error was expected here")
-            } catch {
-                guard error == .checkedSequenceNotFound
-                else { throw error }
+            await #expect(throws: BytesError.Iteration<Never>.SequenceCheckError.checkedSequenceNotFound) {
+                try await iterator.checkIfPresent(bigEndian: UInt32(0x0304ffff))
             }
             
             #expect(try await iterator.checkIfPresent(bigEndian: UInt16(0x0607)) == true)
@@ -1403,26 +1271,18 @@ import Testing
         
         @available(macOS 15.0, iOS 18.0, watchOS 11.0, tvOS 18.0, visionOS 2.0, *)
         @Test func checkIfPresentBigEndianThrows() async throws {
-            var iterator = Self.makeThrowingAsyncByteIterator()
+            var iterator = AsyncThrowingTestIterator([0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07])
             #expect(try await iterator.checkIfPresent(bigEndian: UInt8(0x00)) == true)
             #expect(try await iterator.checkIfPresent(bigEndian: UInt16(0x0102)) == true)
             
-            do {
-                _ = try await iterator.checkIfPresent(bigEndian: UInt32(0x0304ffff))
-                Issue.record("Error was expected here")
-            } catch {
-                guard error == .checkedSequenceNotFound
-                else { throw error }
+            await #expect(throws: BytesError.Iteration<LocalError>.SequenceCheckError.checkedSequenceNotFound) {
+                try await iterator.checkIfPresent(bigEndian: UInt32(0x0304ffff))
             }
             
             #expect(try await iterator.checkIfPresent(bigEndian: UInt16(0x0607)) == true)
             
-            do {
-                _ = try await iterator.checkIfPresent(bigEndian: UInt16(0xffff))
-                Issue.record("Error was expected here")
-            } catch {
-                guard error == .iterationFailure(LocalError())
-                else { throw error }
+            await #expect(throws: BytesError.Iteration<LocalError>.SequenceCheckError.iterationFailure(LocalError())) {
+                try await iterator.checkIfPresent(bigEndian: UInt32(0x0304ffff))
             }
             
             #expect(try await iterator.checkIfPresent(bigEndian: UInt16(0xffff)) == false)

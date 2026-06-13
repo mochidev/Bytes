@@ -22,8 +22,8 @@ import Testing
         }.makeAsyncIterator()
     }
     
-    fileprivate static func makeThrowingAsyncByteIterator() -> ThrowingIterator {
-        ThrowingIterator()
+    fileprivate static func makeThrowingAsyncByteIterator() -> AsyncThrowingTestIterator {
+        AsyncThrowingTestIterator([0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07])
     }
     
     @Test func nextCountInvalidInput() async throws {
@@ -543,8 +543,8 @@ import Testing
         }.makeAsyncIterator()
     }
     
-    fileprivate static func makeThrowingAsyncByteIterator() -> ThrowingIterator {
-        ThrowingIterator()
+    fileprivate static func makeThrowingAsyncByteIterator() -> AsyncThrowingTestIterator {
+        AsyncThrowingTestIterator([0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07])
     }
     
     @available(macOS 15.0, iOS 18.0, watchOS 11.0, tvOS 18.0, visionOS 2.0, *)

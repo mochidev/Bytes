@@ -23,12 +23,12 @@ import Testing
         #expect(try joinedWord.casting() as UInt32 == UInt32(0))
         
         let tooBig: any BytesCollection = [0,0,0,0,0]
-        #expect(throws: BytesError.ContiguousBytes.BufferSizeError.castingFailure(.invalidBufferSize(targetSize: 4, targetType: "UInt32", actualSize: 5))) {
+        #expect(throws: BytesError.ContiguousBytes.BufferSizeError.invalidBufferSize(targetSize: 4, targetType: "UInt32", actualSize: 5)) {
             try tooBig.casting(to: UInt32.self)
         }
         
         let tooSmall: any BytesCollection = [0,0,0]
-        #expect(throws: BytesError.ContiguousBytes.BufferSizeError.castingFailure(.invalidBufferSize(targetSize: 4, targetType: "UInt32", actualSize: 3))) {
+        #expect(throws: BytesError.ContiguousBytes.BufferSizeError.invalidBufferSize(targetSize: 4, targetType: "UInt32", actualSize: 3)) {
             try tooSmall.casting(to: UInt32.self)
         }
         
@@ -185,23 +185,23 @@ import Testing
         
         let incompleteBytes: Bytes = [0x00,0x01,0x00,0x10,0x01,0x00,0x10]
         /// Explicit thyped throw.
-        #expect(throws: BytesError.Transformation<BytesError.BufferSizeError>.BufferSizeError.castingFailure(.invalidBufferSize(targetSize: 8, targetType: "UInt16<4>", actualSize: 7))) {
+        #expect(throws: BytesError.Transformation<BytesError.BufferSizeError>.BufferSizeError.invalidBufferSize(targetSize: 8, targetType: "UInt16<4>", actualSize: 7)) {
             try [UInt16](bytes: incompleteBytes) { (bytes) throws(BytesError.BufferSizeError) -> UInt16 in try bytes.casting(to: UInt16.self).bigEndian }
         }
         
         /// Implicit any Error checks.
-        #expect(throws: BytesError.Transformation<any Error>.BufferSizeError.castingFailure(.invalidBufferSize(targetSize: 8, targetType: "UInt16<4>", actualSize: 7))) {
+        #expect(throws: BytesError.Transformation<any Error>.BufferSizeError.invalidBufferSize(targetSize: 8, targetType: "UInt16<4>", actualSize: 7)) {
             try [UInt16](bytes: incompleteBytes) { try $0.casting(to: UInt16.self).bigEndian }
         }
-        #expect(throws: BytesError.Transformation<any Error>.BufferSizeError.castingFailure(.invalidBufferSize(targetSize: 8, targetType: "UInt32<2>", actualSize: 7))) {
+        #expect(throws: BytesError.Transformation<any Error>.BufferSizeError.invalidBufferSize(targetSize: 8, targetType: "UInt32<2>", actualSize: 7)) {
             try [UInt16](bytes: incompleteBytes, element: UInt32.self) { try $0.casting(to: UInt16.self).bigEndian }
         }
-        #expect(throws: BytesError.Transformation<any Error>.BufferSizeError.castingFailure(.invalidBufferSize(targetSize: 8, targetType: "Bytes<2>", actualSize: 7))) {
+        #expect(throws: BytesError.Transformation<any Error>.BufferSizeError.invalidBufferSize(targetSize: 8, targetType: "Bytes<2>", actualSize: 7)) {
             try [UInt16](bytes: incompleteBytes, elementSize: 2) { try $0.casting(to: UInt16.self).bigEndian }
         }
         
         /// Make sure transformation is never called.
-        #expect(throws: BytesError.Transformation<Never>.BufferSizeError.castingFailure(.invalidBufferSize(targetSize: 8, targetType: "UInt16<4>", actualSize: 7))) {
+        #expect(throws: BytesError.Transformation<Never>.BufferSizeError.invalidBufferSize(targetSize: 8, targetType: "UInt16<4>", actualSize: 7)) {
             try [UInt16](bytes: incompleteBytes) { _ in
                 Issue.record("Should never be called.")
                 fatalError()
@@ -238,23 +238,23 @@ import Testing
         
         let incompleteBytes: Bytes = [0x00,0x01,0x00,0x10,0x01,0x00,0x10]
         /// Explicit thyped throw.
-        #expect(throws: BytesError.Transformation<BytesError.BufferSizeError>.BufferSizeError.castingFailure(.invalidBufferSize(targetSize: 8, targetType: "UInt16<4>", actualSize: 7))) {
+        #expect(throws: BytesError.Transformation<BytesError.BufferSizeError>.BufferSizeError.invalidBufferSize(targetSize: 8, targetType: "UInt16<4>", actualSize: 7)) {
             try Set<UInt16>(bytes: incompleteBytes) { (bytes) throws(BytesError.BufferSizeError) -> UInt16 in try bytes.casting(to: UInt16.self).bigEndian }
         }
         
         /// Implicit any Error checks.
-        #expect(throws: BytesError.Transformation<any Error>.BufferSizeError.castingFailure(.invalidBufferSize(targetSize: 8, targetType: "UInt16<4>", actualSize: 7))) {
+        #expect(throws: BytesError.Transformation<any Error>.BufferSizeError.invalidBufferSize(targetSize: 8, targetType: "UInt16<4>", actualSize: 7)) {
             try Set<UInt16>(bytes: incompleteBytes) { try $0.casting(to: UInt16.self).bigEndian }
         }
-        #expect(throws: BytesError.Transformation<any Error>.BufferSizeError.castingFailure(.invalidBufferSize(targetSize: 8, targetType: "UInt32<2>", actualSize: 7))) {
+        #expect(throws: BytesError.Transformation<any Error>.BufferSizeError.invalidBufferSize(targetSize: 8, targetType: "UInt32<2>", actualSize: 7)) {
             try Set<UInt16>(bytes: incompleteBytes, element: UInt32.self) { try $0.casting(to: UInt16.self).bigEndian }
         }
-        #expect(throws: BytesError.Transformation<any Error>.BufferSizeError.castingFailure(.invalidBufferSize(targetSize: 8, targetType: "Bytes<2>", actualSize: 7))) {
+        #expect(throws: BytesError.Transformation<any Error>.BufferSizeError.invalidBufferSize(targetSize: 8, targetType: "Bytes<2>", actualSize: 7)) {
             try Set<UInt16>(bytes: incompleteBytes, elementSize: 2) { try $0.casting(to: UInt16.self).bigEndian }
         }
         
         /// Make sure transformation is never called.
-        #expect(throws: BytesError.Transformation<Never>.BufferSizeError.castingFailure(.invalidBufferSize(targetSize: 8, targetType: "UInt16<4>", actualSize: 7))) {
+        #expect(throws: BytesError.Transformation<Never>.BufferSizeError.invalidBufferSize(targetSize: 8, targetType: "UInt16<4>", actualSize: 7)) {
             try Set<UInt16>(bytes: incompleteBytes) { _ in
                 Issue.record("Should never be called.")
                 fatalError()

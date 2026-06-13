@@ -831,7 +831,7 @@ import Testing
             #expect(try await iterator.next(littleEndian: UInt16.self) == 0x0201)
             #expect(try await iterator.next(littleEndian: UInt32.self) == 0x0605_0403)
             
-            await #expect(throws: BytesError.Iteration<any Error>.BufferSizeError.castingFailure(.invalidBufferSize(targetSize: 8, targetType: "UInt64", actualSize: 1))) {
+            await #expect(throws: BytesError.Iteration<any Error>.BufferSizeError.invalidBufferSize(targetSize: 8, targetType: "UInt64", actualSize: 1)) {
                 try await iterator.next(littleEndian: UInt64.self)
             }
         }
@@ -853,7 +853,7 @@ import Testing
             #expect(try await iterator.next(bigEndian: UInt16.self) == 0x0102)
             #expect(try await iterator.next(bigEndian: UInt32.self) == 0x0304_0506)
             
-            await #expect(throws: BytesError.Iteration<any Error>.BufferSizeError.castingFailure(.invalidBufferSize(targetSize: 8, targetType: "UInt64", actualSize: 1))) {
+            await #expect(throws: BytesError.Iteration<any Error>.BufferSizeError.invalidBufferSize(targetSize: 8, targetType: "UInt64", actualSize: 1)) {
                 try await iterator.next(bigEndian: UInt64.self)
             }
         }
@@ -932,7 +932,7 @@ import Testing
             
             try await iterator.check(littleEndian: UInt16(0x0605))
             
-            await #expect(throws: BytesError.Iteration<any Error>.SequenceCheckError.castingFailure(.checkedSequenceNotFound)) {
+            await #expect(throws: BytesError.Iteration<any Error>.SequenceCheckError.checkedSequenceNotFound) {
                 try await iterator.check(littleEndian: UInt16(0x0807))
             }
         }
@@ -964,7 +964,7 @@ import Testing
             
             try await iterator.check(bigEndian: UInt16(0x0506))
             
-            await #expect(throws: BytesError.Iteration<any Error>.SequenceCheckError.castingFailure(.checkedSequenceNotFound)) {
+            await #expect(throws: BytesError.Iteration<any Error>.SequenceCheckError.checkedSequenceNotFound) {
                 try await iterator.check(bigEndian: UInt16(0x0708))
             }
         }
@@ -1057,7 +1057,7 @@ import Testing
             #expect(try await iterator.next(littleEndian: UInt16.self) == 0x0201)
             #expect(try await iterator.next(littleEndian: UInt32.self) == 0x0605_0403)
             
-            await #expect(throws: BytesError.Iteration<Never>.BufferSizeError.castingFailure(.invalidBufferSize(targetSize: 8, targetType: "UInt64", actualSize: 1))) {
+            await #expect(throws: BytesError.Iteration<Never>.BufferSizeError.invalidBufferSize(targetSize: 8, targetType: "UInt64", actualSize: 1)) {
                 try await iterator.next(littleEndian: UInt64.self)
             }
         }
@@ -1081,7 +1081,7 @@ import Testing
             #expect(try await iterator.next(bigEndian: UInt16.self) == 0x0102)
             #expect(try await iterator.next(bigEndian: UInt32.self) == 0x0304_0506)
             
-            await #expect(throws: BytesError.Iteration<Never>.BufferSizeError.castingFailure(.invalidBufferSize(targetSize: 8, targetType: "UInt64", actualSize: 1))) {
+            await #expect(throws: BytesError.Iteration<Never>.BufferSizeError.invalidBufferSize(targetSize: 8, targetType: "UInt64", actualSize: 1)) {
                 try await iterator.next(bigEndian: UInt64.self)
             }
         }
@@ -1166,7 +1166,7 @@ import Testing
             
             try await iterator.check(littleEndian: UInt16(0x0605))
             
-            await #expect(throws: BytesError.Iteration<Never>.SequenceCheckError.castingFailure(.checkedSequenceNotFound)) {
+            await #expect(throws: BytesError.Iteration<Never>.SequenceCheckError.checkedSequenceNotFound) {
                 try await iterator.check(littleEndian: UInt16(0x0807))
             }
         }
@@ -1200,7 +1200,7 @@ import Testing
             
             try await iterator.check(bigEndian: UInt16(0x0506))
             
-            await #expect(throws: BytesError.Iteration<Never>.SequenceCheckError.castingFailure(.checkedSequenceNotFound)) {
+            await #expect(throws: BytesError.Iteration<Never>.SequenceCheckError.checkedSequenceNotFound) {
                 try await iterator.check(bigEndian: UInt16(0x0708))
             }
         }

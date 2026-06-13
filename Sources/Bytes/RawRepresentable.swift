@@ -357,16 +357,7 @@ extension IteratorProtocol where Element == Byte {
         } catch {
             throw .castingFailure(error)
         }
-        do {
-            return try T(rawBytes: rawBytes)
-        } catch {
-            switch error {
-            case .castingFailure:
-                fatalError("Transforming the raw value should always succeed.")
-            case .invalidRawRepresentableByteSequence(let rawType):
-                throw .invalidRawRepresentableByteSequence(rawType: rawType)
-            }
-        }
+        return try T(rawBytes: rawBytes)
     }
     
     /// Advances to the next raw representable in the squence and returns it, or ends the sequence if there is no next element.
@@ -390,16 +381,7 @@ extension IteratorProtocol where Element == Byte {
             throw .castingFailure(error)
         }
         guard let rawBytes else { return nil }
-        do {
-            return try T(rawBytes: rawBytes)
-        } catch {
-            switch error {
-            case .castingFailure:
-                fatalError("Transforming the raw value should always succeed.")
-            case .invalidRawRepresentableByteSequence(let rawType):
-                throw .invalidRawRepresentableByteSequence(rawType: rawType)
-            }
-        }
+        return try T(rawBytes: rawBytes)
     }
     
     /// Advances by the specified raw representable value if found, or throws if the next bytes in the iterator do not match.
@@ -453,16 +435,7 @@ extension IteratorProtocol where Element == Byte {
         } catch {
             throw .castingFailure(error)
         }
-        do {
-            return try T(littleEndianBytes: rawBytes)
-        } catch {
-            switch error {
-            case .castingFailure:
-                fatalError("Transforming the raw value should always succeed.")
-            case .invalidRawRepresentableByteSequence(let rawType):
-                throw .invalidRawRepresentableByteSequence(rawType: rawType)
-            }
-        }
+        return try T(littleEndianBytes: rawBytes)
     }
     
     /// Advances to the next big endian integer in the squence and returns it, or throws if it could not.
@@ -484,16 +457,7 @@ extension IteratorProtocol where Element == Byte {
         } catch {
             throw .castingFailure(error)
         }
-        do {
-            return try T(bigEndianBytes: rawBytes)
-        } catch {
-            switch error {
-            case .castingFailure:
-                fatalError("Transforming the raw value should always succeed.")
-            case .invalidRawRepresentableByteSequence(let rawType):
-                throw .invalidRawRepresentableByteSequence(rawType: rawType)
-            }
-        }
+        return try T(bigEndianBytes: rawBytes)
     }
     
     /// Advances to the next little endian integer in the squence and returns it, or ends the sequence if there is no next element.
@@ -516,16 +480,7 @@ extension IteratorProtocol where Element == Byte {
             throw .castingFailure(error)
         }
         guard let rawBytes else { return nil }
-        do {
-            return try T(littleEndianBytes: rawBytes)
-        } catch {
-            switch error {
-            case .castingFailure:
-                fatalError("Transforming the raw value should always succeed.")
-            case .invalidRawRepresentableByteSequence(let rawType):
-                throw .invalidRawRepresentableByteSequence(rawType: rawType)
-            }
-        }
+        return try T(littleEndianBytes: rawBytes)
     }
     
     /// Advances to the next big endian integer in the squence and returns it, or ends the sequence if there is no next element.
@@ -548,16 +503,7 @@ extension IteratorProtocol where Element == Byte {
             throw .castingFailure(error)
         }
         guard let rawBytes else { return nil }
-        do {
-            return try T(bigEndianBytes: rawBytes)
-        } catch {
-            switch error {
-            case .castingFailure:
-                fatalError("Transforming the raw value should always succeed.")
-            case .invalidRawRepresentableByteSequence(let rawType):
-                throw .invalidRawRepresentableByteSequence(rawType: rawType)
-            }
-        }
+        return try T(bigEndianBytes: rawBytes)
     }
     
     /// Advances by the next byte if found, or throws if the next bytes in the iterator do not match.
@@ -755,12 +701,7 @@ extension AsyncIteratorProtocol where Element == Byte {
         do {
             return try T(rawBytes: rawBytes)
         } catch {
-            switch error {
-            case .castingFailure:
-                fatalError("Transforming the raw value should always succeed.")
-            case .invalidRawRepresentableByteSequence(let rawType):
-                throw .invalidRawRepresentableByteSequence(rawType: rawType)
-            }
+            throw .castingFailure(error)
         }
     }
     
@@ -793,12 +734,7 @@ extension AsyncIteratorProtocol where Element == Byte {
         do {
             return try T(rawBytes: rawBytes)
         } catch {
-            switch error {
-            case .castingFailure:
-                fatalError("Transforming the raw value should always succeed.")
-            case .invalidRawRepresentableByteSequence(let rawType):
-                throw .invalidRawRepresentableByteSequence(rawType: rawType)
-            }
+            throw .castingFailure(error)
         }
     }
     
@@ -875,12 +811,7 @@ extension AsyncIteratorProtocol where Element == Byte {
         do {
             return try T(littleEndianBytes: rawBytes)
         } catch {
-            switch error {
-            case .castingFailure:
-                fatalError("Transforming the raw value should always succeed.")
-            case .invalidRawRepresentableByteSequence(let rawType):
-                throw .invalidRawRepresentableByteSequence(rawType: rawType)
-            }
+            throw .castingFailure(error)
         }
     }
     
@@ -912,12 +843,7 @@ extension AsyncIteratorProtocol where Element == Byte {
         do {
             return try T(bigEndianBytes: rawBytes)
         } catch {
-            switch error {
-            case .castingFailure:
-                fatalError("Transforming the raw value should always succeed.")
-            case .invalidRawRepresentableByteSequence(let rawType):
-                throw .invalidRawRepresentableByteSequence(rawType: rawType)
-            }
+            throw .castingFailure(error)
         }
     }
     
@@ -950,12 +876,7 @@ extension AsyncIteratorProtocol where Element == Byte {
         do {
             return try T(littleEndianBytes: rawBytes)
         } catch {
-            switch error {
-            case .castingFailure:
-                fatalError("Transforming the raw value should always succeed.")
-            case .invalidRawRepresentableByteSequence(let rawType):
-                throw .invalidRawRepresentableByteSequence(rawType: rawType)
-            }
+            throw .castingFailure(error)
         }
     }
     
@@ -988,12 +909,7 @@ extension AsyncIteratorProtocol where Element == Byte {
         do {
             return try T(bigEndianBytes: rawBytes)
         } catch {
-            switch error {
-            case .castingFailure:
-                fatalError("Transforming the raw value should always succeed.")
-            case .invalidRawRepresentableByteSequence(let rawType):
-                throw .invalidRawRepresentableByteSequence(rawType: rawType)
-            }
+            throw .castingFailure(error)
         }
     }
     
@@ -1248,12 +1164,7 @@ extension AsyncIteratorProtocol where Element == Byte {
         do {
             return try T(rawBytes: rawBytes)
         } catch {
-            switch error {
-            case .castingFailure:
-                fatalError("Transforming the raw value should always succeed.")
-            case .invalidRawRepresentableByteSequence(let rawType):
-                throw .invalidRawRepresentableByteSequence(rawType: rawType)
-            }
+            throw .castingFailure(error)
         }
     }
     
@@ -1284,12 +1195,7 @@ extension AsyncIteratorProtocol where Element == Byte {
         do {
             return try T(rawBytes: rawBytes)
         } catch {
-            switch error {
-            case .castingFailure:
-                fatalError("Transforming the raw value should always succeed.")
-            case .invalidRawRepresentableByteSequence(let rawType):
-                throw .invalidRawRepresentableByteSequence(rawType: rawType)
-            }
+            throw .castingFailure(error)
         }
     }
     
@@ -1360,12 +1266,7 @@ extension AsyncIteratorProtocol where Element == Byte {
         do {
             return try T(littleEndianBytes: rawBytes)
         } catch {
-            switch error {
-            case .castingFailure:
-                fatalError("Transforming the raw value should always succeed.")
-            case .invalidRawRepresentableByteSequence(let rawType):
-                throw .invalidRawRepresentableByteSequence(rawType: rawType)
-            }
+            throw .castingFailure(error)
         }
     }
     
@@ -1395,12 +1296,7 @@ extension AsyncIteratorProtocol where Element == Byte {
         do {
             return try T(bigEndianBytes: rawBytes)
         } catch {
-            switch error {
-            case .castingFailure:
-                fatalError("Transforming the raw value should always succeed.")
-            case .invalidRawRepresentableByteSequence(let rawType):
-                throw .invalidRawRepresentableByteSequence(rawType: rawType)
-            }
+            throw .castingFailure(error)
         }
     }
     
@@ -1431,12 +1327,7 @@ extension AsyncIteratorProtocol where Element == Byte {
         do {
             return try T(littleEndianBytes: rawBytes)
         } catch {
-            switch error {
-            case .castingFailure:
-                fatalError("Transforming the raw value should always succeed.")
-            case .invalidRawRepresentableByteSequence(let rawType):
-                throw .invalidRawRepresentableByteSequence(rawType: rawType)
-            }
+            throw .castingFailure(error)
         }
     }
     
@@ -1467,12 +1358,7 @@ extension AsyncIteratorProtocol where Element == Byte {
         do {
             return try T(bigEndianBytes: rawBytes)
         } catch {
-            switch error {
-            case .castingFailure:
-                fatalError("Transforming the raw value should always succeed.")
-            case .invalidRawRepresentableByteSequence(let rawType):
-                throw .invalidRawRepresentableByteSequence(rawType: rawType)
-            }
+            throw .castingFailure(error)
         }
     }
     

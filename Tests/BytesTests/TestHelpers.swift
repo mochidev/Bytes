@@ -76,61 +76,67 @@ struct AsyncThrowingTestSequence: AsyncSequence {
 // MARK: - Test Structs
 
 struct Byte1: Equatable {
-    let a: Byte
+    var a: Byte
     
     static let zero = Self(a: 0)
 }
 
+extension Byte1: ExpressibleByIntegerLiteral {
+    init(integerLiteral value: Byte) {
+        self.a = value
+    }
+}
+
 struct Byte4: Equatable {
-    let a: Byte1
-    let b: Byte1
-    let c: Byte1
-    let d: Byte1
+    var a: Byte1
+    var b: Byte1
+    var c: Byte1
+    var d: Byte1
     
     static let zero = Self(a: .zero, b: .zero, c: .zero, d: .zero)
 }
 
 struct Byte16: Equatable {
-    let a: Byte4
-    let b: Byte4
-    let c: Byte4
-    let d: Byte4
+    var a: Byte4
+    var b: Byte4
+    var c: Byte4
+    var d: Byte4
     
     static let zero = Self(a: .zero, b: .zero, c: .zero, d: .zero)
 }
 
 struct Byte64: Equatable {
-    let a: Byte16
-    let b: Byte16
-    let c: Byte16
-    let d: Byte16
+    var a: Byte16
+    var b: Byte16
+    var c: Byte16
+    var d: Byte16
     
     static let zero = Self(a: .zero, b: .zero, c: .zero, d: .zero)
 }
 
 struct Byte256: Equatable {
-    let a: Byte64
-    let b: Byte64
-    let c: Byte64
-    let d: Byte64
+    var a: Byte64
+    var b: Byte64
+    var c: Byte64
+    var d: Byte64
     
     static let zero = Self(a: .zero, b: .zero, c: .zero, d: .zero)
 }
 
 struct Byte1024: Equatable {
-    let a: Byte256
-    let b: Byte256
-    let c: Byte256
-    let d: Byte256
+    var a: Byte256
+    var b: Byte256
+    var c: Byte256
+    var d: Byte256
     
     static let zero = Self(a: .zero, b: .zero, c: .zero, d: .zero)
 }
 
 struct Byte4096: Equatable {
-    let a: Byte1024
-    let b: Byte1024
-    let c: Byte1024
-    let d: Byte1024
+    var a: Byte1024
+    var b: Byte1024
+    var c: Byte1024
+    var d: Byte1024
     
     static let zero = Self(a: .zero, b: .zero, c: .zero, d: .zero)
 }

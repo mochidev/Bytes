@@ -17,6 +17,11 @@ import Testing
         #expect(try zeroWord.casting(to: UInt32.self) == UInt32(0))
         #expect(try zeroWord.casting() as UInt32 == UInt32(0))
         
+        let joinedWord: any BytesCollection = [[0,0], [0,0]].joined()
+        
+        #expect(try joinedWord.casting(to: UInt32.self) == UInt32(0))
+        #expect(try joinedWord.casting() as UInt32 == UInt32(0))
+        
         let tooBig: any BytesCollection = [0,0,0,0,0]
         #expect(throws: BytesError.ContiguousBytes.BufferSizeError.castingFailure(.invalidBufferSize(targetSize: 4, targetType: "UInt32", actualSize: 5))) {
             try tooBig.casting(to: UInt32.self)

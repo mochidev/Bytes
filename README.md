@@ -86,7 +86,25 @@ Enums and other types that conform to `RawRepresentable` are also supported out 
 
 An array or set of Integers can be serialized using `bigEndianBytes`/ `littleEndianBytes`, and initialized using `init(bigEndianBytes: Bytes)`/`init(littleEndianBytes: Bytes)`. The same can be done with collections of UUIDs and `RawRepresentable` enums by using the APIs specific to their types.
 
-### Checking for Values
+### Iterating Byte Sequences
+
+Any sequence of bytes can be iterated to extract structured information field-by-field:
+
+```swift
+let sequence: some BytesCollection = ...
+let iterator = sequence.makeIterator()
+
+let twentyBytes = try iterator.next(Bytes.self, count: 20)
+let uint16 = try iterator.next(bigEndian: UInt16.self)
+let uint32 = try iterator.next(littleEndian: UInt32.self)
+...
+```
+
+This is also possible on any `AsyncSequence` using the same method names, preceeded with the `await` keyword.
+
+The `next(_ type: T.Type, ...)` family of methods will always return a value, or throw an appropriate error, even when the end of the sequence is encountered. If you'd rather handle the end of the sequence yourself, `nextIfPresent(_ type: T.Type, ...)` can be used instead, as it'll return `nil` when the sequence is at the last element. If an element spans multiple bytes, and not all bytes can be fetched, an error will still be thrown.
+
+#### Checking for Values
 
 Sometimes, while reading a sequence of bytes you just want to verify that the next byte in a sequence is a constant. This is easy to do with the `check()` family of methods on iterators:
 
@@ -162,18 +180,18 @@ struct Versionstamp {
 }
 ```
 
-### AsyncSequence
+### `AsyncSequenceReader`
 
-Bytes can also be used to pull data from `AsyncSequence` iterators. To learn more, please see [Integration with AsyncSequenceReader](https://github.com/mochidev/AsyncSequenceReader#integration-with-bytes).
+Bytes can also be used to expressively pull data from `AsyncSequence` iterators. To learn more, please see [Integration with AsyncSequenceReader](https://github.com/mochidev/AsyncSequenceReader#integration-with-bytes).
 
 For instance, improving the above example:
 ```swift
 import Bytes
 
-@available(macOS 10.15, iOS 13.0, watchOS 6.0, tvOS 13.0, *)
+@available(macOS 15.0, iOS 18.0, watchOS 11.0, tvOS 18.0, visionOS 2.0, *)
 extension AsyncIteratorProtocol where Element == Byte {
     @inlinable
-    mutating func next(_ type: Versionstamp.Type) async throws -> Versionstamp {
+    mutating func next(_ type: Versionstamp.Type, isolation actor: isolated (any Actor)? = #isolation) async throws(BytesError.Iteration<Failure>.BufferSizeError) -> Versionstamp {
         Versionstamp(
             transactionCommitVersion: try await next(bigEndian: UInt64.self),
             batchNumber: try await next(bigEndian: UInt16.self),

@@ -53,6 +53,7 @@ extension ByteCastingErrorWrapper where
 {
     /// An error thrown when an insufficient or invalid number of bytes were available before the ``Bytes`` sequence ended, wrapped in a parent error.
     @inlinable
+    @_disfavoredOverload
     public static func invalidBufferSize(targetSize: Int, targetType: String, actualSize: Int) -> Self {
         .castingFailure(.invalidBufferSize(targetSize: targetSize, targetType: targetType, actualSize: actualSize))
     }
@@ -64,6 +65,7 @@ extension ByteCastingErrorWrapper where
 {
     /// An error thrown when an insufficient or invalid number of bytes were available before the ``Bytes`` sequence ended, wrapped in a parent error.
     @inlinable
+    @_disfavoredOverload
     public static func invalidBufferSize(targetSize: Int, targetType: String, actualSize: Int) -> Self {
         .castingFailure(.invalidBufferSize(targetSize: targetSize, targetType: targetType, actualSize: actualSize))
     }
@@ -76,6 +78,21 @@ extension ByteCastingErrorWrapper where
 {
     /// An error thrown when an insufficient or invalid number of bytes were available before the ``Bytes`` sequence ended, wrapped in a parent error.
     @inlinable
+    @_disfavoredOverload
+    public static func invalidBufferSize(targetSize: Int, targetType: String, actualSize: Int) -> Self {
+        .castingFailure(.invalidBufferSize(targetSize: targetSize, targetType: targetType, actualSize: actualSize))
+    }
+}
+
+extension ByteCastingErrorWrapper where
+    CastingFailure: ByteCastingErrorWrapper,
+    CastingFailure.CastingFailure: ByteCastingErrorWrapper,
+    CastingFailure.CastingFailure.CastingFailure: ByteCastingErrorWrapper,
+    CastingFailure.CastingFailure.CastingFailure.CastingFailure == BytesError.BufferSizeError
+{
+    /// An error thrown when an insufficient or invalid number of bytes were available before the ``Bytes`` sequence ended, wrapped in a parent error.
+    @inlinable
+    @_disfavoredOverload
     public static func invalidBufferSize(targetSize: Int, targetType: String, actualSize: Int) -> Self {
         .castingFailure(.invalidBufferSize(targetSize: targetSize, targetType: targetType, actualSize: actualSize))
     }
@@ -108,6 +125,7 @@ extension ByteCastingErrorWrapper where
 {
     /// An error thrown when a character could not be constructed from the byte sequence, wrapped in a parent error.
     @inlinable
+    @_disfavoredOverload
     public static var invalidCharacterByteSequence: Self {
         .castingFailure(.invalidCharacterByteSequence)
     }
@@ -119,6 +137,7 @@ extension ByteCastingErrorWrapper where
 {
     /// An error thrown when the a character could not be constructed from the byte sequence, wrapped in a parent error.
     @inlinable
+    @_disfavoredOverload
     public static var invalidCharacterByteSequence: Self {
         .castingFailure(.invalidCharacterByteSequence)
     }
@@ -138,15 +157,27 @@ extension BytesError {
     }
 }
 
-extension ByteCastingError {
+extension ByteCastingError where
+    Self == BytesError.ContiguousBytesError<Never>
+{
     /// An error was thrown because the underlying buffer is not contiguous and is over 4KB in size.
     /// - Note: Copy the sequence first if you know the expected casting size is correct.
     @inlinable
     @_disfavoredOverload
-    public static func contiguousBytesUnavailable<CastingFailure: ByteCastingError>(
-        type: String
-    ) -> BytesError.ContiguousBytesError<CastingFailure> {
+    public static func contiguousBytesUnavailable(type: String) -> Self {
         .contiguousBytesUnavailable(type: type)
+    }
+}
+
+extension ByteCastingErrorWrapper where
+    CastingFailure == BytesError.ContiguousBytesError<Never>
+{
+    /// An error was thrown because the underlying buffer is not contiguous and is over 4KB in size, wrapped in a parent error.
+    /// - Note: Copy the sequence first if you know the expected casting size is correct.
+    @inlinable
+    @_disfavoredOverload
+    public static func contiguousBytesUnavailable(type: String) -> Self {
+        .castingFailure(.contiguousBytesUnavailable(type: type))
     }
 }
 
@@ -154,9 +185,23 @@ extension ByteCastingErrorWrapper {
     /// An error was thrown because the underlying buffer is not contiguous and is over 4KB in size, wrapped in a parent error.
     /// - Note: Copy the sequence first if you know the expected casting size is correct.
     @inlinable
+    @_disfavoredOverload
     public static func contiguousBytesUnavailable<InnerCastingFailure: ByteCastingError>(
         type: String
     ) -> Self where CastingFailure == BytesError.ContiguousBytesError<InnerCastingFailure> {
+        .castingFailure(.contiguousBytesUnavailable(type: type))
+    }
+}
+
+extension ByteCastingErrorWrapper where
+    CastingFailure: ByteCastingErrorWrapper,
+    CastingFailure.CastingFailure == BytesError.ContiguousBytesError<Never>
+{
+    /// An error was thrown because the underlying buffer is not contiguous and is over 4KB in size, wrapped in a parent error.
+    /// - Note: Copy the sequence first if you know the expected casting size is correct.
+    @inlinable
+    @_disfavoredOverload
+    public static func contiguousBytesUnavailable(type: String) -> Self {
         .castingFailure(.contiguousBytesUnavailable(type: type))
     }
 }
@@ -167,9 +212,39 @@ extension ByteCastingErrorWrapper where
     /// An error was thrown because the underlying buffer is not contiguous and is over 4KB in size, wrapped in a parent error.
     /// - Note: Copy the sequence first if you know the expected casting size is correct.
     @inlinable
+    @_disfavoredOverload
     public static func contiguousBytesUnavailable<InnerCastingFailure: ByteCastingError>(
         type: String
     ) -> Self where CastingFailure.CastingFailure == BytesError.ContiguousBytesError<InnerCastingFailure> {
+        .castingFailure(.contiguousBytesUnavailable(type: type))
+    }
+}
+
+extension ByteCastingErrorWrapper where
+    CastingFailure: ByteCastingErrorWrapper,
+    CastingFailure.CastingFailure: ByteCastingErrorWrapper,
+    CastingFailure.CastingFailure.CastingFailure == BytesError.ContiguousBytesError<Never>
+{
+    /// An error was thrown because the underlying buffer is not contiguous and is over 4KB in size, wrapped in a parent error.
+    /// - Note: Copy the sequence first if you know the expected casting size is correct.
+    @inlinable
+    @_disfavoredOverload
+    public static func contiguousBytesUnavailable(type: String) -> Self {
+        .castingFailure(.contiguousBytesUnavailable(type: type))
+    }
+}
+
+extension ByteCastingErrorWrapper where
+    CastingFailure: ByteCastingErrorWrapper,
+    CastingFailure.CastingFailure: ByteCastingErrorWrapper
+{
+    /// An error was thrown because the underlying buffer is not contiguous and is over 4KB in size, wrapped in a parent error.
+    /// - Note: Copy the sequence first if you know the expected casting size is correct.
+    @inlinable
+    @_disfavoredOverload
+    public static func contiguousBytesUnavailable<InnerCastingFailure: ByteCastingError>(
+        type: String
+    ) -> Self where CastingFailure.CastingFailure.CastingFailure == BytesError.ContiguousBytesError<InnerCastingFailure> {
         .castingFailure(.contiguousBytesUnavailable(type: type))
     }
 }
@@ -244,29 +319,33 @@ extension BytesError {
     }
 }
 
-extension ByteCastingError {
+extension ByteCastingError where
+    Self == BytesError.RawRepresentableError<Never>
+{
     /// Consuming the sequence failed because the raw value evaluated to a `nil` `RawRepresentable` value.
     @inlinable
     @_disfavoredOverload
-    public static func invalidRawRepresentableByteSequence<CastingFailure: ByteCastingError>(rawType: String) -> BytesError.RawRepresentableError<CastingFailure> {
+    public static func invalidRawRepresentableByteSequence(rawType: String) -> Self {
         .invalidRawRepresentableByteSequence(rawType: rawType)
+    }
+}
+
+extension ByteCastingErrorWrapper where
+    CastingFailure == BytesError.RawRepresentableError<Never>
+{
+    /// Consuming the sequence failed because the raw value evaluated to a `nil` `RawRepresentable` value, wrapped in a parent error.
+    @inlinable
+    @_disfavoredOverload
+    public static func invalidRawRepresentableByteSequence(rawType: String) -> Self {
+        .castingFailure(.invalidRawRepresentableByteSequence(rawType: rawType))
     }
 }
 
 extension ByteCastingErrorWrapper {
     /// Consuming the sequence failed because the raw value evaluated to a `nil` `RawRepresentable` value, wrapped in a parent error.
     @inlinable
+    @_disfavoredOverload
     public static func invalidRawRepresentableByteSequence<InnerCastingFailure: ByteCastingError>(rawType: String) -> Self where CastingFailure == BytesError.RawRepresentableError<InnerCastingFailure> {
-        .castingFailure(.invalidRawRepresentableByteSequence(rawType: rawType))
-    }
-}
-
-extension ByteCastingErrorWrapper where
-    CastingFailure: ByteCastingErrorWrapper
-{
-    /// Consuming the sequence failed because the raw value evaluated to a `nil` `RawRepresentable` value, wrapped in a parent error.
-    @inlinable
-    public static func invalidRawRepresentableByteSequence<InnerCastingFailure: ByteCastingError>(rawType: String) -> Self where CastingFailure.CastingFailure == BytesError.RawRepresentableError<InnerCastingFailure> {
         .castingFailure(.invalidRawRepresentableByteSequence(rawType: rawType))
     }
 }
@@ -298,6 +377,7 @@ extension ByteCastingErrorWrapper where
 {
     /// An error thrown when the checked byte was not found as the next consumable element, wrapped in a parent error.
     @inlinable
+    @_disfavoredOverload
     public static var checkedSequenceNotFound: Self {
         .castingFailure(.checkedSequenceNotFound)
     }
@@ -309,6 +389,7 @@ extension ByteCastingErrorWrapper where
 {
     /// An error thrown when the checked byte was not found as the next consumable element, wrapped in a parent error.
     @inlinable
+    @_disfavoredOverload
     public static var checkedSequenceNotFound: Self {
         .castingFailure(.checkedSequenceNotFound)
     }
@@ -433,19 +514,56 @@ extension BytesError {
     }
 }
 
-extension ByteCastingError {
+extension ByteCastingError where
+    Self == BytesError.UUIDDecodingError<Never>
+{
     /// An error thrown when a UUID could not be constructed from the byte sequence.
     @inlinable
     @_disfavoredOverload
-    public static func invalidUUIDByteSequence<CastingFailure: ByteCastingError>() -> BytesError.UUIDDecodingError<CastingFailure> {
+    public static var invalidUUIDByteSequence: Self {
         .invalidUUIDByteSequence
+    }
+}
+
+extension ByteCastingErrorWrapper where
+    CastingFailure == BytesError.UUIDDecodingError<Never>
+{
+    /// An error thrown when a UUID could not be constructed from the byte sequence, wrapped in a parent error.
+    @inlinable
+    @_disfavoredOverload
+    public static func invalidUUIDByteSequence() -> Self {
+        .castingFailure(.invalidUUIDByteSequence)
     }
 }
 
 extension ByteCastingErrorWrapper {
     /// An error thrown when a UUID could not be constructed from the byte sequence, wrapped in a parent error.
     @inlinable
+    @_disfavoredOverload
     public static func invalidUUIDByteSequence<InnerCastingFailure: ByteCastingError>() -> Self where CastingFailure == BytesError.UUIDDecodingError<InnerCastingFailure> {
+        .castingFailure(.invalidUUIDByteSequence)
+    }
+}
+
+extension ByteCastingErrorWrapper where
+    CastingFailure: ByteCastingErrorWrapper,
+    CastingFailure.CastingFailure == BytesError.UUIDDecodingError<Never>
+{
+    /// An error thrown when a UUID could not be constructed from the byte sequence, wrapped in a parent error.
+    @inlinable
+    @_disfavoredOverload
+    public static func invalidUUIDByteSequence() -> Self {
+        .castingFailure(.invalidUUIDByteSequence())
+    }
+}
+
+extension ByteCastingErrorWrapper where
+    CastingFailure: ByteCastingErrorWrapper
+{
+    /// An error thrown when a UUID could not be constructed from the byte sequence, wrapped in a parent error.
+    @inlinable
+    @_disfavoredOverload
+    public static func invalidUUIDByteSequence<InnerCastingFailure: ByteCastingError>() -> Self where CastingFailure.CastingFailure == BytesError.UUIDDecodingError<InnerCastingFailure> {
         .castingFailure(.invalidUUIDByteSequence())
     }
 }
@@ -458,45 +576,6 @@ extension BytesError {
     public enum ContiguousBytes {
         /// A ``BytesError/BufferSizeError`` error thrown when an insufficient or invalid number of bytes were available before the sequence ended, wrapped in a ``BytesError/ContiguousBytesError``.
         public typealias BufferSizeError = ContiguousBytesError<BytesError.BufferSizeError>
-    }
-    
-    /// A namespace for errors wrapped within a ``RawRepresentableError``.
-    public enum RawRepresentable {
-        /// A ``BytesError/BufferSizeError`` error thrown when an insufficient or invalid number of bytes were available before the sequence ended, wrapped in a ``BytesError/RawRepresentableError``.
-        public typealias BufferSizeError = RawRepresentableError<BytesError.BufferSizeError>
-        
-        /// A ``BytesError/CharacterDecodingError`` error thrown when the a character could not be constructed from the byte sequence, wrapped in a ``BytesError/RawRepresentableError``.
-        public typealias CharacterDecodingError = RawRepresentableError<BytesError.CharacterDecodingError>
-        
-        /// A ``BytesError/ContiguousBytesError`` error thrown when the receiving buffer cannot efficiently be made contiguous for casting, wrapped in a ``BytesError/RawRepresentableError``.
-        public typealias ContiguousBytesError<CastingFailure: ByteCastingError> = RawRepresentableError<BytesError.ContiguousBytesError<CastingFailure>>
-        
-        /// A namespace for errors wrapped within ``BytesError/ContiguousBytesError`` and ``BytesError/RawRepresentableError`` respectively.
-        public enum ContiguousBytes {
-            /// A ``BytesError/BufferSizeError`` error thrown when an insufficient or invalid number of bytes were available before the sequence ended, wrapped within ``BytesError/ContiguousBytesError`` and ``BytesError/RawRepresentableError`` respectively.
-            public typealias BufferSizeError = ContiguousBytesError<BytesError.BufferSizeError>
-        }
-        
-        /// A ``BytesError/SequenceCheckError`` error thrown when the checked byte was not found as the next consumable element, wrapped in a ``BytesError/RawRepresentableError``.
-        public typealias SequenceCheckError = RawRepresentableError<BytesError.SequenceCheckError>
-        
-        /// A ``BytesError/UUIDDecodingError`` error thrown when a UUID could not be constructed from the byte sequence, wrapped in a ``BytesError/RawRepresentableError``.
-        public typealias UUIDDecodingError<CastingFailure: ByteCastingError> = RawRepresentableError<BytesError.UUIDDecodingError<CastingFailure>>
-        
-        /// A namespace for errors wrapped within ``BytesError/UUIDDecodingError`` and ``BytesError/RawRepresentableError`` respectively.
-        public enum UUIDDecoding {
-            /// A ``BytesError/BufferSizeError`` error thrown when an insufficient or invalid number of bytes were available before the sequence ended, wrapped within ``BytesError/UUIDDecodingError`` and ``BytesError/RawRepresentableError`` respectively.
-            public typealias BufferSizeError = UUIDDecodingError<BytesError.BufferSizeError>
-            
-            /// A ``BytesError/ContiguousBytesError`` error thrown when the receiving buffer cannot efficiently be made contiguous for casting, wrapped within ``BytesError/UUIDDecodingError`` and ``BytesError/RawRepresentableError``.
-            public typealias ContiguousBytesError<CastingFailure: ByteCastingError> = UUIDDecodingError<BytesError.ContiguousBytesError<CastingFailure>>
-            
-            /// A namespace for errors wrapped within ``BytesError/ContiguousBytesError``, ``BytesError/UUIDDecodingError`` and ``BytesError/RawRepresentableError`` respectively.
-            public enum ContiguousBytes {
-                /// A ``BytesError/BufferSizeError`` error thrown when an insufficient or invalid number of bytes were available before the sequence ended, wrapped within ``BytesError/ContiguousBytesError``, ``BytesError/UUIDDecodingError``, and ``BytesError/RawRepresentableError`` respectively.
-                public typealias BufferSizeError = ContiguousBytesError<BytesError.BufferSizeError>
-            }
-        }
     }
     
     /// A namespace for errors wrapped within a ``IterationError``.
@@ -575,6 +654,45 @@ extension BytesError {
             /// A namespace for errors wrapped within ``BytesError/ContiguousBytesError``, ``BytesError/UUIDDecodingError``, and ``BytesError/IterationError`` respectively.
             public enum ContiguousBytes {
                 /// A ``BytesError/BufferSizeError`` error thrown when an insufficient or invalid number of bytes were available before the sequence ended, wrapped within ``BytesError/ContiguousBytesError``, ``BytesError/UUIDDecodingError``, and ``BytesError/IterationError`` respectively.
+                public typealias BufferSizeError = ContiguousBytesError<BytesError.BufferSizeError>
+            }
+        }
+    }
+    
+    /// A namespace for errors wrapped within a ``RawRepresentableError``.
+    public enum RawRepresentable {
+        /// A ``BytesError/BufferSizeError`` error thrown when an insufficient or invalid number of bytes were available before the sequence ended, wrapped in a ``BytesError/RawRepresentableError``.
+        public typealias BufferSizeError = RawRepresentableError<BytesError.BufferSizeError>
+        
+        /// A ``BytesError/CharacterDecodingError`` error thrown when the a character could not be constructed from the byte sequence, wrapped in a ``BytesError/RawRepresentableError``.
+        public typealias CharacterDecodingError = RawRepresentableError<BytesError.CharacterDecodingError>
+        
+        /// A ``BytesError/ContiguousBytesError`` error thrown when the receiving buffer cannot efficiently be made contiguous for casting, wrapped in a ``BytesError/RawRepresentableError``.
+        public typealias ContiguousBytesError<CastingFailure: ByteCastingError> = RawRepresentableError<BytesError.ContiguousBytesError<CastingFailure>>
+        
+        /// A namespace for errors wrapped within ``BytesError/ContiguousBytesError`` and ``BytesError/RawRepresentableError`` respectively.
+        public enum ContiguousBytes {
+            /// A ``BytesError/BufferSizeError`` error thrown when an insufficient or invalid number of bytes were available before the sequence ended, wrapped within ``BytesError/ContiguousBytesError`` and ``BytesError/RawRepresentableError`` respectively.
+            public typealias BufferSizeError = ContiguousBytesError<BytesError.BufferSizeError>
+        }
+        
+        /// A ``BytesError/SequenceCheckError`` error thrown when the checked byte was not found as the next consumable element, wrapped in a ``BytesError/RawRepresentableError``.
+        public typealias SequenceCheckError = RawRepresentableError<BytesError.SequenceCheckError>
+        
+        /// A ``BytesError/UUIDDecodingError`` error thrown when a UUID could not be constructed from the byte sequence, wrapped in a ``BytesError/RawRepresentableError``.
+        public typealias UUIDDecodingError<CastingFailure: ByteCastingError> = RawRepresentableError<BytesError.UUIDDecodingError<CastingFailure>>
+        
+        /// A namespace for errors wrapped within ``BytesError/UUIDDecodingError`` and ``BytesError/RawRepresentableError`` respectively.
+        public enum UUIDDecoding {
+            /// A ``BytesError/BufferSizeError`` error thrown when an insufficient or invalid number of bytes were available before the sequence ended, wrapped within ``BytesError/UUIDDecodingError`` and ``BytesError/RawRepresentableError`` respectively.
+            public typealias BufferSizeError = UUIDDecodingError<BytesError.BufferSizeError>
+            
+            /// A ``BytesError/ContiguousBytesError`` error thrown when the receiving buffer cannot efficiently be made contiguous for casting, wrapped within ``BytesError/UUIDDecodingError`` and ``BytesError/RawRepresentableError``.
+            public typealias ContiguousBytesError<CastingFailure: ByteCastingError> = UUIDDecodingError<BytesError.ContiguousBytesError<CastingFailure>>
+            
+            /// A namespace for errors wrapped within ``BytesError/ContiguousBytesError``, ``BytesError/UUIDDecodingError`` and ``BytesError/RawRepresentableError`` respectively.
+            public enum ContiguousBytes {
+                /// A ``BytesError/BufferSizeError`` error thrown when an insufficient or invalid number of bytes were available before the sequence ended, wrapped within ``BytesError/ContiguousBytesError``, ``BytesError/UUIDDecodingError``, and ``BytesError/RawRepresentableError`` respectively.
                 public typealias BufferSizeError = ContiguousBytesError<BytesError.BufferSizeError>
             }
         }

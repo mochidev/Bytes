@@ -28,7 +28,7 @@ Please check the [releases](https://github.com/mochidev/Bytes/releases) for reco
 dependencies: [
     .package(
         url: "https://github.com/mochidev/Bytes.git",
-        .upToNextMinor(from: "0.5.0")
+        .upToNextMinor(from: "0.6.1")
     ),
 ],
 ...

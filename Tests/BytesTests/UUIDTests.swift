@@ -53,7 +53,7 @@ import Testing
         #expect(try UUID(stringBytes: (Self.rawUUIDStringBytes as any BytesCollection)) == Self.validUUID)
         #expect(try UUID(stringBytes: [Self.rawUUIDStringBytes.prefix(18), Self.rawUUIDStringBytes.suffix(18)].joined()) == Self.validUUID)
         
-        #expect(throws: BytesError.UUIDDecoding.BufferSizeError.invalidBufferSize(targetSize: 36, targetType: "UUID(Byte<36>)", actualSize: 35)) {
+        #expect(throws: BytesError.UUIDDecoding.BufferSizeError.invalidBufferSize(targetSize: 36, targetType: "UUID(Byte<8-4-4-4-12>)", actualSize: 35)) {
             try UUID(stringBytes: Self.rawUUIDStringBytes.dropLast(1))
         }
         #expect(throws: BytesError.UUIDDecoding.BufferSizeError.invalidUUIDByteSequence) {
@@ -90,7 +90,7 @@ import Testing
         #expect(try [UUID](stringBytes: Self.rawUUIDLowercaseStringBytes + Self.rawUUIDStringBytes) == [Self.validUUID, Self.validUUID])
         #expect(try [UUID](stringBytes: [Self.rawUUIDStringBytes, Self.rawUUIDStringBytes].joined()) == [Self.validUUID, Self.validUUID])
         
-        #expect(throws: BytesError.UUIDDecoding.BufferSizeError.invalidBufferSize(targetSize: 36, targetType: "UUID(Byte<36>)<1>", actualSize: 35)) {
+        #expect(throws: BytesError.UUIDDecoding.BufferSizeError.invalidBufferSize(targetSize: 36, targetType: "UUID(Byte<8-4-4-4-12>)<1>", actualSize: 35)) {
             try [UUID](stringBytes: Self.rawUUIDStringBytes.dropLast(1))
         }
         #expect(throws: BytesError.UUIDDecoding.BufferSizeError.invalidUUIDByteSequence) {
@@ -119,7 +119,7 @@ import Testing
         #expect(try Set<UUID>(stringBytes: Self.rawUUIDLowercaseStringBytes + Self.rawUUIDStringBytes) == [Self.validUUID])
         #expect(try Set<UUID>(stringBytes: [Self.rawUUIDStringBytes, Self.rawUUIDStringBytes].joined()) == [Self.validUUID])
         
-        #expect(throws: BytesError.UUIDDecoding.BufferSizeError.invalidBufferSize(targetSize: 36, targetType: "UUID(Byte<36>)<1>", actualSize: 35)) {
+        #expect(throws: BytesError.UUIDDecoding.BufferSizeError.invalidBufferSize(targetSize: 36, targetType: "UUID(Byte<8-4-4-4-12>)<1>", actualSize: 35)) {
             try Set<UUID>(stringBytes: Self.rawUUIDStringBytes.dropLast(1))
         }
         #expect(throws: BytesError.UUIDDecoding.BufferSizeError.invalidUUIDByteSequence) {
@@ -141,7 +141,7 @@ import Testing
             var iterator = UUIDTests.rawUUIDStringBytes.makeIterator()
             #expect(try iterator.next(string: UUID.self) == UUIDTests.validUUID)
             
-            #expect(throws: BytesError.UUIDDecoding.BufferSizeError.invalidBufferSize(targetSize: 36, targetType: "UUID(Byte<36>)", actualSize: 0)) {
+            #expect(throws: BytesError.UUIDDecoding.BufferSizeError.invalidBufferSize(targetSize: 36, targetType: "UUID(Byte<8-4-4-4-12>)", actualSize: 0)) {
                 try iterator.next(string: UUID.self)
             }
             
@@ -167,7 +167,7 @@ import Testing
             var iterator = (UUIDTests.rawUUIDStringBytes + UUIDTests.rawUUIDStringBytes).dropLast().makeIterator()
             #expect(try iterator.nextIfPresent(string: UUID.self) == UUIDTests.validUUID)
             
-            #expect(throws: BytesError.UUIDDecoding.BufferSizeError.invalidBufferSize(targetSize: 36, targetType: "UUID(Byte<36>)", actualSize: 35)) {
+            #expect(throws: BytesError.UUIDDecoding.BufferSizeError.invalidBufferSize(targetSize: 36, targetType: "UUID(Byte<8-4-4-4-12>)", actualSize: 35)) {
                 try iterator.nextIfPresent(string: UUID.self)
             }
             
@@ -271,7 +271,7 @@ import Testing
             var iterator = AsyncTestIterator(UUIDTests.rawUUIDStringBytes)
             #expect(try await iterator.next(string: UUID.self) == UUIDTests.validUUID)
             
-            await #expect(throws: BytesError.Iteration<any Error>.UUIDDecoding.BufferSizeError.invalidBufferSize(targetSize: 36, targetType: "UUID(Byte<36>)", actualSize: 0)) {
+            await #expect(throws: BytesError.Iteration<any Error>.UUIDDecoding.BufferSizeError.invalidBufferSize(targetSize: 36, targetType: "UUID(Byte<8-4-4-4-12>)", actualSize: 0)) {
                 try await iterator.next(string: UUID.self)
             }
             
@@ -323,7 +323,7 @@ import Testing
             var iterator = AsyncTestIterator(UUIDTests.rawUUIDStringBytes + UUIDTests.rawUUIDStringBytes.dropLast())
             #expect(try await iterator.nextIfPresent(string: UUID.self) == UUIDTests.validUUID)
             
-            await #expect(throws: BytesError.Iteration<any Error>.UUIDDecoding.BufferSizeError.invalidBufferSize(targetSize: 36, targetType: "UUID(Byte<36>)", actualSize: 35)) {
+            await #expect(throws: BytesError.Iteration<any Error>.UUIDDecoding.BufferSizeError.invalidBufferSize(targetSize: 36, targetType: "UUID(Byte<8-4-4-4-12>)", actualSize: 35)) {
                 try await iterator.nextIfPresent(string: UUID.self)
             }
             
@@ -513,7 +513,7 @@ import Testing
             var iterator = AsyncTestIterator(UUIDTests.rawUUIDStringBytes)
             #expect(try await iterator.next(string: UUID.self) == UUIDTests.validUUID)
             
-            await #expect(throws: BytesError.Iteration<Never>.UUIDDecoding.BufferSizeError.invalidBufferSize(targetSize: 36, targetType: "UUID(Byte<36>)", actualSize: 0)) {
+            await #expect(throws: BytesError.Iteration<Never>.UUIDDecoding.BufferSizeError.invalidBufferSize(targetSize: 36, targetType: "UUID(Byte<8-4-4-4-12>)", actualSize: 0)) {
                 try await iterator.next(string: UUID.self)
             }
             
@@ -569,7 +569,7 @@ import Testing
             var iterator = AsyncTestIterator(UUIDTests.rawUUIDStringBytes + UUIDTests.rawUUIDStringBytes.dropLast())
             #expect(try await iterator.nextIfPresent(string: UUID.self) == UUIDTests.validUUID)
             
-            await #expect(throws: BytesError.Iteration<Never>.UUIDDecoding.BufferSizeError.invalidBufferSize(targetSize: 36, targetType: "UUID(Byte<36>)", actualSize: 35)) {
+            await #expect(throws: BytesError.Iteration<Never>.UUIDDecoding.BufferSizeError.invalidBufferSize(targetSize: 36, targetType: "UUID(Byte<8-4-4-4-12>)", actualSize: 35)) {
                 try await iterator.nextIfPresent(string: UUID.self)
             }
             

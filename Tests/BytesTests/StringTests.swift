@@ -64,7 +64,7 @@ import Testing
             #expect(try iterator.next(utf8: String.self, count: 2) == ", ")
             #expect(try iterator.next(utf8: String.self, count: 5) == "World")
             
-            #expect(throws: BytesError.BufferSizeError.invalidBufferSize(targetSize: 2, targetType: "Bytes", actualSize: 1)) {
+            #expect(throws: BytesError.BufferSizeError.invalidBufferSize(targetSize: 2, targetType: "String(UTF8)", actualSize: 1)) {
                 try iterator.next(utf8: String.self, count: 2)
             }
         }
@@ -96,7 +96,7 @@ import Testing
             #expect(try iterator.next(utf8: String.self, min: 0, max: 6) == "World!")
             #expect(try iterator.next(utf8: String.self, min: 0, max: 5) == "")
             
-            #expect(throws: BytesError.BufferSizeError.invalidBufferSize(targetSize: 1, targetType: "Bytes", actualSize: 0)) {
+            #expect(throws: BytesError.BufferSizeError.invalidBufferSize(targetSize: 1, targetType: "String(UTF8)", actualSize: 0)) {
                 try iterator.next(utf8: String.self, min: 1, max: 3)
             }
         }
@@ -129,7 +129,7 @@ import Testing
             #expect(try iterator.nextIfPresent(utf8: String.self, count: 2) == ", ")
             #expect(try iterator.nextIfPresent(utf8: String.self, count: 5) == "World")
             
-            #expect(throws: BytesError.BufferSizeError.invalidBufferSize(targetSize: 2, targetType: "Bytes", actualSize: 1)) {
+            #expect(throws: BytesError.BufferSizeError.invalidBufferSize(targetSize: 2, targetType: "String(UTF8)", actualSize: 1)) {
                 try iterator.nextIfPresent(utf8: String.self, count: 2)
             }
             
@@ -176,7 +176,7 @@ import Testing
             #expect(try iterator.nextIfPresent(utf8: String.self, min: 0, max: 2) == ", ")
             #expect(try iterator.nextIfPresent(utf8: String.self, min: 0, max: 5) == "World")
             
-            #expect(throws: BytesError.BufferSizeError.invalidBufferSize(targetSize: 2, targetType: "Bytes", actualSize: 1)) {
+            #expect(throws: BytesError.BufferSizeError.invalidBufferSize(targetSize: 2, targetType: "String(UTF8)", actualSize: 1)) {
                 try iterator.nextIfPresent(utf8: String.self, min: 2, max: 3)
             }
             
@@ -310,7 +310,7 @@ import Testing
             #expect(try await iterator.next(utf8: String.self, count: 2) == ", ")
             #expect(try await iterator.next(utf8: String.self, count: 5) == "World")
             
-            await #expect(throws: BytesError.Iteration<any Error>.BufferSizeError.invalidBufferSize(targetSize: 2, targetType: "Bytes", actualSize: 1)) {
+            await #expect(throws: BytesError.Iteration<any Error>.BufferSizeError.invalidBufferSize(targetSize: 2, targetType: "String(UTF8)", actualSize: 1)) {
                 try await iterator.next(utf8: String.self, count: 2)
             }
         }
@@ -362,7 +362,7 @@ import Testing
             #expect(try await iterator.next(utf8: String.self, min: 0, max: 6) == "World!")
             #expect(try await iterator.next(utf8: String.self, min: 0, max: 5) == "")
             
-            await #expect(throws: BytesError.Iteration<any Error>.BufferSizeError.invalidBufferSize(targetSize: 1, targetType: "Bytes", actualSize: 0)) {
+            await #expect(throws: BytesError.Iteration<any Error>.BufferSizeError.invalidBufferSize(targetSize: 1, targetType: "String(UTF8)", actualSize: 0)) {
                 try await iterator.next(utf8: String.self, min: 1, max: 3)
             }
         }
@@ -408,7 +408,7 @@ import Testing
             #expect(try await iterator.nextIfPresent(utf8: String.self, count: 2) == ", ")
             #expect(try await iterator.nextIfPresent(utf8: String.self, count: 5) == "World")
             
-            await #expect(throws: BytesError.Iteration<any Error>.BufferSizeError.invalidBufferSize(targetSize: 2, targetType: "Bytes", actualSize: 1)) {
+            await #expect(throws: BytesError.Iteration<any Error>.BufferSizeError.invalidBufferSize(targetSize: 2, targetType: "String(UTF8)", actualSize: 1)) {
                 try await iterator.nextIfPresent(utf8: String.self, count: 2)
             }
             
@@ -478,7 +478,7 @@ import Testing
             #expect(try await iterator.nextIfPresent(utf8: String.self, min: 0, max: 2) == ", ")
             #expect(try await iterator.nextIfPresent(utf8: String.self, min: 0, max: 5) == "World")
             
-            await #expect(throws: BytesError.Iteration<any Error>.BufferSizeError.invalidBufferSize(targetSize: 2, targetType: "Bytes", actualSize: 1)) {
+            await #expect(throws: BytesError.Iteration<any Error>.BufferSizeError.invalidBufferSize(targetSize: 2, targetType: "String(UTF8)", actualSize: 1)) {
                 try await iterator.nextIfPresent(utf8: String.self, min: 2, max: 3)
             }
             
@@ -729,7 +729,7 @@ import Testing
             #expect(try await iterator.next(utf8: String.self, count: 2) == ", ")
             #expect(try await iterator.next(utf8: String.self, count: 5) == "World")
             
-            await #expect(throws: BytesError.Iteration<Never>.BufferSizeError.invalidBufferSize(targetSize: 2, targetType: "Bytes", actualSize: 1)) {
+            await #expect(throws: BytesError.Iteration<Never>.BufferSizeError.invalidBufferSize(targetSize: 2, targetType: "String(UTF8)", actualSize: 1)) {
                 try await iterator.next(utf8: String.self, count: 2)
             }
         }
@@ -784,7 +784,7 @@ import Testing
             #expect(try await iterator.next(utf8: String.self, min: 0, max: 6) == "World!")
             #expect(try await iterator.next(utf8: String.self, min: 0, max: 5) == "")
             
-            await #expect(throws: BytesError.Iteration<Never>.BufferSizeError.invalidBufferSize(targetSize: 1, targetType: "Bytes", actualSize: 0)) {
+            await #expect(throws: BytesError.Iteration<Never>.BufferSizeError.invalidBufferSize(targetSize: 1, targetType: "String(UTF8)", actualSize: 0)) {
                 try await iterator.next(utf8: String.self, min: 1, max: 3)
             }
         }
@@ -834,7 +834,7 @@ import Testing
             #expect(try await iterator.nextIfPresent(utf8: String.self, count: 2) == ", ")
             #expect(try await iterator.nextIfPresent(utf8: String.self, count: 5) == "World")
             
-            await #expect(throws: BytesError.Iteration<Never>.BufferSizeError.invalidBufferSize(targetSize: 2, targetType: "Bytes", actualSize: 1)) {
+            await #expect(throws: BytesError.Iteration<Never>.BufferSizeError.invalidBufferSize(targetSize: 2, targetType: "String(UTF8)", actualSize: 1)) {
                 try await iterator.nextIfPresent(utf8: String.self, count: 2)
             }
             
@@ -908,7 +908,7 @@ import Testing
             #expect(try await iterator.nextIfPresent(utf8: String.self, min: 0, max: 2) == ", ")
             #expect(try await iterator.nextIfPresent(utf8: String.self, min: 0, max: 5) == "World")
             
-            await #expect(throws: BytesError.Iteration<Never>.BufferSizeError.invalidBufferSize(targetSize: 2, targetType: "Bytes", actualSize: 1)) {
+            await #expect(throws: BytesError.Iteration<Never>.BufferSizeError.invalidBufferSize(targetSize: 2, targetType: "String(UTF8)", actualSize: 1)) {
                 try await iterator.nextIfPresent(utf8: String.self, min: 2, max: 3)
             }
             

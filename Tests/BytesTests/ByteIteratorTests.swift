@@ -29,7 +29,7 @@ import Testing
         #expect(try iterator.next(Bytes.self, count: 3) == [0x03, 0x04, 0x05])
         #expect(try iterator.next(Bytes.self, count: 2) == [0x06, 0x07])
         
-        #expect(throws: BytesError.BufferSizeError.invalidBufferSize(targetSize: 1, targetType: "Bytes", actualSize: 0)) {
+        #expect(throws: BytesError.BufferSizeError.invalidBufferSize(targetSize: 1, targetType: "Byte", actualSize: 0)) {
             try iterator.next(Bytes.self, count: 1)
         }
         
@@ -63,7 +63,7 @@ import Testing
         #expect(try iterator.next(Bytes.self, min: 0, max: 3) == [0x06, 0x07])
         #expect(try iterator.next(Bytes.self, min: 0, max: 3) == [])
         
-        #expect(throws: BytesError.BufferSizeError.invalidBufferSize(targetSize: 1, targetType: "Bytes", actualSize: 0)) {
+        #expect(throws: BytesError.BufferSizeError.invalidBufferSize(targetSize: 1, targetType: "Byte", actualSize: 0)) {
             try iterator.next(Bytes.self, min: 1, max: 3)
         }
     }
@@ -113,7 +113,7 @@ import Testing
         #expect(try iterator.nextIfPresent(Bytes.self, count: 2) == [0x01, 0x02])
         #expect(try iterator.nextIfPresent(Bytes.self, count: 3) == [0x03, 0x04, 0x05])
         
-        #expect(throws: BytesError.BufferSizeError.invalidBufferSize(targetSize: 3, targetType: "Bytes", actualSize: 2)) {
+        #expect(throws: BytesError.BufferSizeError.invalidBufferSize(targetSize: 3, targetType: "Byte", actualSize: 2)) {
             try iterator.nextIfPresent(Bytes.self, count: 3)
         }
         
@@ -158,7 +158,7 @@ import Testing
         #expect(try iterator.nextIfPresent(Bytes.self, min: 0, max: 2) == [0x01, 0x02])
         #expect(try iterator.nextIfPresent(Bytes.self, min: 0, max: 3) == [0x03, 0x04, 0x05])
         
-        #expect(throws: BytesError.BufferSizeError.invalidBufferSize(targetSize: 3, targetType: "Bytes", actualSize: 2)) {
+        #expect(throws: BytesError.BufferSizeError.invalidBufferSize(targetSize: 3, targetType: "Byte", actualSize: 2)) {
             try iterator.nextIfPresent(Bytes.self, min: 3, max: 6)
         }
         

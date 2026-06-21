@@ -196,8 +196,11 @@ import Testing
         #expect(throws: BytesError.Transformation<any Error>.BufferSizeError.invalidBufferSize(targetSize: 8, targetType: "UInt32<2>", actualSize: 7)) {
             try [UInt16](bytes: incompleteBytes, element: UInt32.self) { try $0.casting(to: UInt16.self).bigEndian }
         }
-        #expect(throws: BytesError.Transformation<any Error>.BufferSizeError.invalidBufferSize(targetSize: 8, targetType: "Bytes<2>", actualSize: 7)) {
+        #expect(throws: BytesError.Transformation<any Error>.BufferSizeError.invalidBufferSize(targetSize: 8, targetType: "Byte<2>", actualSize: 7)) {
             try [UInt16](bytes: incompleteBytes, elementSize: 2) { try $0.casting(to: UInt16.self).bigEndian }
+        }
+        #expect(throws: BytesError.Transformation<any Error>.BufferSizeError.invalidBufferSize(targetSize: 8, targetType: "Foo<2>", actualSize: 7)) {
+            try [UInt16](bytes: incompleteBytes, elementSize: 2, targetType: "Foo") { try $0.casting(to: UInt16.self).bigEndian }
         }
         
         /// Make sure transformation is never called.
@@ -249,8 +252,11 @@ import Testing
         #expect(throws: BytesError.Transformation<any Error>.BufferSizeError.invalidBufferSize(targetSize: 8, targetType: "UInt32<2>", actualSize: 7)) {
             try Set<UInt16>(bytes: incompleteBytes, element: UInt32.self) { try $0.casting(to: UInt16.self).bigEndian }
         }
-        #expect(throws: BytesError.Transformation<any Error>.BufferSizeError.invalidBufferSize(targetSize: 8, targetType: "Bytes<2>", actualSize: 7)) {
+        #expect(throws: BytesError.Transformation<any Error>.BufferSizeError.invalidBufferSize(targetSize: 8, targetType: "Byte<2>", actualSize: 7)) {
             try Set<UInt16>(bytes: incompleteBytes, elementSize: 2) { try $0.casting(to: UInt16.self).bigEndian }
+        }
+        #expect(throws: BytesError.Transformation<any Error>.BufferSizeError.invalidBufferSize(targetSize: 8, targetType: "Foo<2>", actualSize: 7)) {
+            try Set<UInt16>(bytes: incompleteBytes, elementSize: 2, targetType: "Foo") { try $0.casting(to: UInt16.self).bigEndian }
         }
         
         /// Make sure transformation is never called.

@@ -57,7 +57,7 @@ extension IteratorProtocol where Element == Byte {
         utf8 type: String.Type,
         count: Int
     ) throws(BytesError.BufferSizeError) -> String {
-        String(utf8Bytes: try next(Bytes.self, count: count))
+        String(utf8Bytes: try next(Bytes.self, count: count, targetType: "String(UTF8)"))
     }
     
     /// Advances to the UTF-8 encoded String with the specified minimum size, continuing until the specified maximum size, or throws if it could not.
@@ -74,7 +74,7 @@ extension IteratorProtocol where Element == Byte {
         min minCount: Int = 0,
         max maxCount: Int
     ) throws(BytesError.BufferSizeError) -> String {
-        String(utf8Bytes: try next(Bytes.self, min: minCount, max: maxCount))
+        String(utf8Bytes: try next(Bytes.self, min: minCount, max: maxCount, targetType: "String(UTF8)"))
     }
     
     /// Advances to the UTF-8 encoded String of size `count`, or ends the sequence if there is no next element.
@@ -89,7 +89,7 @@ extension IteratorProtocol where Element == Byte {
         utf8 type: String.Type,
         count: Int
     ) throws(BytesError.BufferSizeError) -> String? {
-        try nextIfPresent(Bytes.self, count: count).map { String(utf8Bytes: $0) }
+        try nextIfPresent(Bytes.self, count: count, targetType: "String(UTF8)").map { String(utf8Bytes: $0) }
     }
     
     /// Advances to the UTF-8 encoded String with the specified minimum size, continuing until the specified maximum size, or ends the sequence if there is no next element.
@@ -106,7 +106,7 @@ extension IteratorProtocol where Element == Byte {
         min minCount: Int = 0,
         max maxCount: Int
     ) throws(BytesError.BufferSizeError) -> String? {
-        try nextIfPresent(Bytes.self, min: minCount, max: maxCount).map { String(utf8Bytes: $0) }
+        try nextIfPresent(Bytes.self, min: minCount, max: maxCount, targetType: "String(UTF8)").map { String(utf8Bytes: $0) }
     }
     
     /// Advances by the specified UTF-8 encoded Character if found, or throws if the next bytes in the iterator do not match.
@@ -202,7 +202,7 @@ extension AsyncIteratorProtocol where Element == Byte {
         utf8 type: String.Type,
         count: Int
     ) async throws(BytesError.Iteration<any Error>.BufferSizeError) -> String {
-        String(utf8Bytes: try await next(Bytes.self, count: count))
+        String(utf8Bytes: try await next(Bytes.self, count: count, targetType: "String(UTF8)"))
     }
     
     /// Asynchronously advances to the UTF-8 encoded String with the specified minimum size, continuing until the specified maximum size, or throws if it could not.
@@ -225,7 +225,7 @@ extension AsyncIteratorProtocol where Element == Byte {
         min minCount: Int = 0,
         max maxCount: Int
     ) async throws(BytesError.Iteration<any Error>.BufferSizeError) -> String {
-        String(utf8Bytes: try await next(Bytes.self, min: minCount, max: maxCount))
+        String(utf8Bytes: try await next(Bytes.self, min: minCount, max: maxCount, targetType: "String(UTF8)"))
     }
     
     /// Asynchronously advances to the UTF-8 encoded String of size `count`, or ends the sequence if there is no next element.
@@ -246,7 +246,7 @@ extension AsyncIteratorProtocol where Element == Byte {
         utf8 type: String.Type,
         count: Int
     ) async throws(BytesError.Iteration<any Error>.BufferSizeError) -> String? {
-        try await nextIfPresent(Bytes.self, count: count).map { String(utf8Bytes: $0) }
+        try await nextIfPresent(Bytes.self, count: count, targetType: "String(UTF8)").map { String(utf8Bytes: $0) }
     }
     
     /// Asynchronously advances to the UTF-8 encoded String with the specified minimum size, continuing until the specified maximum size, or ends the sequence if there is no next element.
@@ -269,7 +269,7 @@ extension AsyncIteratorProtocol where Element == Byte {
         min minCount: Int = 0,
         max maxCount: Int
     ) async throws(BytesError.Iteration<any Error>.BufferSizeError) -> String? {
-        try await nextIfPresent(Bytes.self, min: minCount, max: maxCount).map { String(utf8Bytes: $0) }
+        try await nextIfPresent(Bytes.self, min: minCount, max: maxCount, targetType: "String(UTF8)").map { String(utf8Bytes: $0) }
     }
     
     /// Asynchronously advances by the specified UTF-8 encoded Character if found, or throws if the next bytes in the iterator do not match.
@@ -384,7 +384,7 @@ extension AsyncIteratorProtocol where Element == Byte {
         count: Int,
         isolation actor: isolated (any Actor)? = #isolation
     ) async throws(BytesError.Iteration<Failure>.BufferSizeError) -> String {
-        String(utf8Bytes: try await next(Bytes.self, count: count))
+        String(utf8Bytes: try await next(Bytes.self, count: count, targetType: "String(UTF8)"))
     }
     
     /// Asynchronously advances to the UTF-8 encoded String with the specified minimum size, continuing until the specified maximum size, or throws if it could not.
@@ -405,7 +405,7 @@ extension AsyncIteratorProtocol where Element == Byte {
         max maxCount: Int,
         isolation actor: isolated (any Actor)? = #isolation
     ) async throws(BytesError.Iteration<Failure>.BufferSizeError) -> String {
-        String(utf8Bytes: try await next(Bytes.self, min: minCount, max: maxCount))
+        String(utf8Bytes: try await next(Bytes.self, min: minCount, max: maxCount, targetType: "String(UTF8)"))
     }
     
     /// Asynchronously advances to the UTF-8 encoded String of size `count`, or ends the sequence if there is no next element.
@@ -424,7 +424,7 @@ extension AsyncIteratorProtocol where Element == Byte {
         count: Int,
         isolation actor: isolated (any Actor)? = #isolation
     ) async throws(BytesError.Iteration<Failure>.BufferSizeError) -> String? {
-        try await nextIfPresent(Bytes.self, count: count).map { String(utf8Bytes: $0) }
+        try await nextIfPresent(Bytes.self, count: count, targetType: "String(UTF8)").map { String(utf8Bytes: $0) }
     }
     
     /// Asynchronously advances to the UTF-8 encoded String with the specified minimum size, continuing until the specified maximum size, or ends the sequence if there is no next element.
@@ -445,7 +445,7 @@ extension AsyncIteratorProtocol where Element == Byte {
         max maxCount: Int,
         isolation actor: isolated (any Actor)? = #isolation
     ) async throws(BytesError.Iteration<Failure>.BufferSizeError) -> String? {
-        try await nextIfPresent(Bytes.self, min: minCount, max: maxCount).map { String(utf8Bytes: $0) }
+        try await nextIfPresent(Bytes.self, min: minCount, max: maxCount, targetType: "String(UTF8)").map { String(utf8Bytes: $0) }
     }
     
     /// Asynchronously advances by the specified UTF-8 encoded Character if found, or throws if the next bytes in the iterator do not match.

@@ -328,7 +328,7 @@ enum CharacterEnum: Character {
                 try iterator.next(raw: RawEnum.self)
             }
             
-            #expect(throws: BytesError.RawRepresentable.BufferSizeError.invalidBufferSize(targetSize: 4, targetType: "Bytes", actualSize: 2)) {
+            #expect(throws: BytesError.RawRepresentable.BufferSizeError.invalidBufferSize(targetSize: 4, targetType: "Byte4", actualSize: 2)) {
                 try iterator.next(raw: RawEnum.self)
             }
             #expect(iterator.next() == nil)
@@ -345,7 +345,7 @@ enum CharacterEnum: Character {
                 try iterator.nextIfPresent(raw: RawEnum.self)
             }
             
-            #expect(throws: BytesError.RawRepresentable.BufferSizeError.invalidBufferSize(targetSize: 4, targetType: "Bytes", actualSize: 2)) {
+            #expect(throws: BytesError.RawRepresentable.BufferSizeError.invalidBufferSize(targetSize: 4, targetType: "Byte4", actualSize: 2)) {
                 try iterator.nextIfPresent(raw: RawEnum.self)
             }
             #expect(try iterator.nextIfPresent(raw: RawEnum.self) == nil)
@@ -391,7 +391,7 @@ enum CharacterEnum: Character {
                 try iterator.next(littleEndian: IntEnum.self)
             }
             
-            #expect(throws: BytesError.RawRepresentable.BufferSizeError.invalidBufferSize(targetSize: 2, targetType: "Bytes", actualSize: 1)) {
+            #expect(throws: BytesError.RawRepresentable.BufferSizeError.invalidBufferSize(targetSize: 2, targetType: "UInt16", actualSize: 1)) {
                 try iterator.next(littleEndian: IntEnum.self)
             }
         }
@@ -407,7 +407,7 @@ enum CharacterEnum: Character {
                 try iterator.next(bigEndian: IntEnum.self)
             }
             
-            #expect(throws: BytesError.RawRepresentable.BufferSizeError.invalidBufferSize(targetSize: 2, targetType: "Bytes", actualSize: 1)) {
+            #expect(throws: BytesError.RawRepresentable.BufferSizeError.invalidBufferSize(targetSize: 2, targetType: "UInt16", actualSize: 1)) {
                 try iterator.next(bigEndian: IntEnum.self)
             }
         }
@@ -423,7 +423,7 @@ enum CharacterEnum: Character {
                 try iterator.nextIfPresent(littleEndian: IntEnum.self)
             }
             
-            #expect(throws: BytesError.RawRepresentable.BufferSizeError.invalidBufferSize(targetSize: 2, targetType: "Bytes", actualSize: 1)) {
+            #expect(throws: BytesError.RawRepresentable.BufferSizeError.invalidBufferSize(targetSize: 2, targetType: "UInt16", actualSize: 1)) {
                 try iterator.nextIfPresent(littleEndian: IntEnum.self)
             }
             
@@ -441,7 +441,7 @@ enum CharacterEnum: Character {
                 try iterator.nextIfPresent(bigEndian: IntEnum.self)
             }
             
-            #expect(throws: BytesError.RawRepresentable.BufferSizeError.invalidBufferSize(targetSize: 2, targetType: "Bytes", actualSize: 1)) {
+            #expect(throws: BytesError.RawRepresentable.BufferSizeError.invalidBufferSize(targetSize: 2, targetType: "UInt16", actualSize: 1)) {
                 try iterator.nextIfPresent(bigEndian: IntEnum.self)
             }
             
@@ -626,7 +626,7 @@ enum CharacterEnum: Character {
                 try await iterator.next(raw: RawEnum.self)
             }
             
-            await #expect(throws: BytesError.Iteration<any Error>.RawRepresentable.BufferSizeError.invalidBufferSize(targetSize: 4, targetType: "Bytes", actualSize: 2)) {
+            await #expect(throws: BytesError.Iteration<any Error>.RawRepresentable.BufferSizeError.invalidBufferSize(targetSize: 4, targetType: "Byte4", actualSize: 2)) {
                 try await iterator.next(raw: RawEnum.self)
             }
             
@@ -658,7 +658,7 @@ enum CharacterEnum: Character {
                 try await iterator.nextIfPresent(raw: RawEnum.self)
             }
             
-            await #expect(throws: BytesError.Iteration<any Error>.RawRepresentable.BufferSizeError.invalidBufferSize(targetSize: 4, targetType: "Bytes", actualSize: 2)) {
+            await #expect(throws: BytesError.Iteration<any Error>.RawRepresentable.BufferSizeError.invalidBufferSize(targetSize: 4, targetType: "Byte4", actualSize: 2)) {
                 try await iterator.nextIfPresent(raw: RawEnum.self)
             }
             
@@ -751,7 +751,7 @@ enum CharacterEnum: Character {
                 try await iterator.next(littleEndian: IntEnum.self)
             }
             
-            await #expect(throws: BytesError.Iteration<any Error>.RawRepresentable.BufferSizeError.invalidBufferSize(targetSize: 2, targetType: "Bytes", actualSize: 1)) {
+            await #expect(throws: BytesError.Iteration<any Error>.RawRepresentable.BufferSizeError.invalidBufferSize(targetSize: 2, targetType: "UInt16", actualSize: 1)) {
                 try await iterator.next(littleEndian: IntEnum.self)
             }
         }
@@ -781,7 +781,7 @@ enum CharacterEnum: Character {
                 try await iterator.next(bigEndian: IntEnum.self)
             }
             
-            await #expect(throws: BytesError.Iteration<any Error>.RawRepresentable.BufferSizeError.invalidBufferSize(targetSize: 2, targetType: "Bytes", actualSize: 1)) {
+            await #expect(throws: BytesError.Iteration<any Error>.RawRepresentable.BufferSizeError.invalidBufferSize(targetSize: 2, targetType: "UInt16", actualSize: 1)) {
                 try await iterator.next(bigEndian: IntEnum.self)
             }
         }
@@ -811,7 +811,7 @@ enum CharacterEnum: Character {
                 try await iterator.nextIfPresent(littleEndian: IntEnum.self)
             }
             
-            await #expect(throws: BytesError.Iteration<any Error>.RawRepresentable.BufferSizeError.invalidBufferSize(targetSize: 2, targetType: "Bytes", actualSize: 1)) {
+            await #expect(throws: BytesError.Iteration<any Error>.RawRepresentable.BufferSizeError.invalidBufferSize(targetSize: 2, targetType: "UInt16", actualSize: 1)) {
                 try await iterator.nextIfPresent(littleEndian: IntEnum.self)
             }
             
@@ -845,7 +845,7 @@ enum CharacterEnum: Character {
                 try await iterator.nextIfPresent(bigEndian: IntEnum.self)
             }
             
-            await #expect(throws: BytesError.Iteration<any Error>.RawRepresentable.BufferSizeError.invalidBufferSize(targetSize: 2, targetType: "Bytes", actualSize: 1)) {
+            await #expect(throws: BytesError.Iteration<any Error>.RawRepresentable.BufferSizeError.invalidBufferSize(targetSize: 2, targetType: "UInt16", actualSize: 1)) {
                 try await iterator.nextIfPresent(bigEndian: IntEnum.self)
             }
             
@@ -1218,7 +1218,7 @@ enum CharacterEnum: Character {
                 try await iterator.next(raw: RawEnum.self)
             }
             
-            await #expect(throws: BytesError.Iteration<Never>.RawRepresentable.BufferSizeError.invalidBufferSize(targetSize: 4, targetType: "Bytes", actualSize: 2)) {
+            await #expect(throws: BytesError.Iteration<Never>.RawRepresentable.BufferSizeError.invalidBufferSize(targetSize: 4, targetType: "Byte4", actualSize: 2)) {
                 try await iterator.next(raw: RawEnum.self)
             }
             
@@ -1252,7 +1252,7 @@ enum CharacterEnum: Character {
                 try await iterator.nextIfPresent(raw: RawEnum.self)
             }
             
-            await #expect(throws: BytesError.Iteration<Never>.RawRepresentable.BufferSizeError.invalidBufferSize(targetSize: 4, targetType: "Bytes", actualSize: 2)) {
+            await #expect(throws: BytesError.Iteration<Never>.RawRepresentable.BufferSizeError.invalidBufferSize(targetSize: 4, targetType: "Byte4", actualSize: 2)) {
                 try await iterator.nextIfPresent(raw: RawEnum.self)
             }
             
@@ -1351,7 +1351,7 @@ enum CharacterEnum: Character {
                 try await iterator.next(littleEndian: IntEnum.self)
             }
             
-            await #expect(throws: BytesError.Iteration<Never>.RawRepresentable.BufferSizeError.invalidBufferSize(targetSize: 2, targetType: "Bytes", actualSize: 1)) {
+            await #expect(throws: BytesError.Iteration<Never>.RawRepresentable.BufferSizeError.invalidBufferSize(targetSize: 2, targetType: "UInt16", actualSize: 1)) {
                 try await iterator.next(littleEndian: IntEnum.self)
             }
         }
@@ -1383,7 +1383,7 @@ enum CharacterEnum: Character {
                 try await iterator.next(bigEndian: IntEnum.self)
             }
             
-            await #expect(throws: BytesError.Iteration<Never>.RawRepresentable.BufferSizeError.invalidBufferSize(targetSize: 2, targetType: "Bytes", actualSize: 1)) {
+            await #expect(throws: BytesError.Iteration<Never>.RawRepresentable.BufferSizeError.invalidBufferSize(targetSize: 2, targetType: "UInt16", actualSize: 1)) {
                 try await iterator.next(bigEndian: IntEnum.self)
             }
         }
@@ -1415,7 +1415,7 @@ enum CharacterEnum: Character {
                 try await iterator.nextIfPresent(littleEndian: IntEnum.self)
             }
             
-            await #expect(throws: BytesError.Iteration<Never>.RawRepresentable.BufferSizeError.invalidBufferSize(targetSize: 2, targetType: "Bytes", actualSize: 1)) {
+            await #expect(throws: BytesError.Iteration<Never>.RawRepresentable.BufferSizeError.invalidBufferSize(targetSize: 2, targetType: "UInt16", actualSize: 1)) {
                 try await iterator.nextIfPresent(littleEndian: IntEnum.self)
             }
             
@@ -1451,7 +1451,7 @@ enum CharacterEnum: Character {
                 try await iterator.nextIfPresent(bigEndian: IntEnum.self)
             }
             
-            await #expect(throws: BytesError.Iteration<Never>.RawRepresentable.BufferSizeError.invalidBufferSize(targetSize: 2, targetType: "Bytes", actualSize: 1)) {
+            await #expect(throws: BytesError.Iteration<Never>.RawRepresentable.BufferSizeError.invalidBufferSize(targetSize: 2, targetType: "UInt16", actualSize: 1)) {
                 try await iterator.nextIfPresent(bigEndian: IntEnum.self)
             }
             

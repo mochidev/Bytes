@@ -353,7 +353,7 @@ extension IteratorProtocol where Element == Byte {
     ) throws(BytesError.RawRepresentable.BufferSizeError) -> T {
         let rawBytes: Bytes
         do {
-            rawBytes = try next(Bytes.self, count: MemoryLayout<T.RawValue>.size)
+            rawBytes = try next(Bytes.self, count: MemoryLayout<T.RawValue>.size, targetType: "\(T.RawValue.self)")
         } catch {
             throw .castingFailure(error)
         }
@@ -376,7 +376,7 @@ extension IteratorProtocol where Element == Byte {
     ) throws(BytesError.RawRepresentable.BufferSizeError) -> T? {
         let rawBytes: Bytes?
         do {
-            rawBytes = try nextIfPresent(Bytes.self, count: MemoryLayout<T.RawValue>.size)
+            rawBytes = try nextIfPresent(Bytes.self, count: MemoryLayout<T.RawValue>.size, targetType: "\(T.RawValue.self)")
         } catch {
             throw .castingFailure(error)
         }
@@ -431,7 +431,7 @@ extension IteratorProtocol where Element == Byte {
     ) throws(BytesError.RawRepresentable.BufferSizeError) -> T where T.RawValue: FixedWidthInteger {
         let rawBytes: Bytes
         do {
-            rawBytes = try next(Bytes.self, count: MemoryLayout<T.RawValue>.size)
+            rawBytes = try next(Bytes.self, count: MemoryLayout<T.RawValue>.size, targetType: "\(T.RawValue.self)")
         } catch {
             throw .castingFailure(error)
         }
@@ -453,7 +453,7 @@ extension IteratorProtocol where Element == Byte {
     ) throws(BytesError.RawRepresentable.BufferSizeError) -> T where T.RawValue: FixedWidthInteger {
         let rawBytes: Bytes
         do {
-            rawBytes = try next(Bytes.self, count: MemoryLayout<T.RawValue>.size)
+            rawBytes = try next(Bytes.self, count: MemoryLayout<T.RawValue>.size, targetType: "\(T.RawValue.self)")
         } catch {
             throw .castingFailure(error)
         }
@@ -475,7 +475,7 @@ extension IteratorProtocol where Element == Byte {
     ) throws(BytesError.RawRepresentable.BufferSizeError) -> T? where T.RawValue: FixedWidthInteger {
         let rawBytes: Bytes?
         do {
-            rawBytes = try nextIfPresent(Bytes.self, count: MemoryLayout<T.RawValue>.size)
+            rawBytes = try nextIfPresent(Bytes.self, count: MemoryLayout<T.RawValue>.size, targetType: "\(T.RawValue.self)")
         } catch {
             throw .castingFailure(error)
         }
@@ -498,7 +498,7 @@ extension IteratorProtocol where Element == Byte {
     ) throws(BytesError.RawRepresentable.BufferSizeError) -> T? where T.RawValue: FixedWidthInteger {
         let rawBytes: Bytes?
         do {
-            rawBytes = try nextIfPresent(Bytes.self, count: MemoryLayout<T.RawValue>.size)
+            rawBytes = try nextIfPresent(Bytes.self, count: MemoryLayout<T.RawValue>.size, targetType: "\(T.RawValue.self)")
         } catch {
             throw .castingFailure(error)
         }
@@ -694,7 +694,7 @@ extension AsyncIteratorProtocol where Element == Byte {
     ) async throws(BytesError.Iteration<any Error>.RawRepresentable.BufferSizeError) -> T {
         let rawBytes: Bytes
         do {
-            rawBytes = try await next(Bytes.self, count: MemoryLayout<T.RawValue>.size)
+            rawBytes = try await next(Bytes.self, count: MemoryLayout<T.RawValue>.size, targetType: "\(T.RawValue.self)")
         } catch {
             throw error.mapCastingFailure { .castingFailure($0) }
         }
@@ -726,7 +726,7 @@ extension AsyncIteratorProtocol where Element == Byte {
     ) async throws(BytesError.Iteration<any Error>.RawRepresentable.BufferSizeError) -> T? {
         let rawBytes: Bytes?
         do {
-            rawBytes = try await nextIfPresent(Bytes.self, count: MemoryLayout<T.RawValue>.size)
+            rawBytes = try await nextIfPresent(Bytes.self, count: MemoryLayout<T.RawValue>.size, targetType: "\(T.RawValue.self)")
         } catch {
             throw error.mapCastingFailure { .castingFailure($0) }
         }
@@ -804,7 +804,7 @@ extension AsyncIteratorProtocol where Element == Byte {
     ) async throws(BytesError.Iteration<any Error>.RawRepresentable.BufferSizeError) -> T where T.RawValue: FixedWidthInteger {
         let rawBytes: Bytes
         do {
-            rawBytes = try await next(Bytes.self, count: MemoryLayout<T.RawValue>.size)
+            rawBytes = try await next(Bytes.self, count: MemoryLayout<T.RawValue>.size, targetType: "\(T.RawValue.self)")
         } catch {
             throw error.mapCastingFailure { .castingFailure($0) }
         }
@@ -836,7 +836,7 @@ extension AsyncIteratorProtocol where Element == Byte {
     ) async throws(BytesError.Iteration<any Error>.RawRepresentable.BufferSizeError) -> T where T.RawValue: FixedWidthInteger {
         let rawBytes: Bytes
         do {
-            rawBytes = try await next(Bytes.self, count: MemoryLayout<T.RawValue>.size)
+            rawBytes = try await next(Bytes.self, count: MemoryLayout<T.RawValue>.size, targetType: "\(T.RawValue.self)")
         } catch {
             throw error.mapCastingFailure { .castingFailure($0) }
         }
@@ -868,7 +868,7 @@ extension AsyncIteratorProtocol where Element == Byte {
     ) async throws(BytesError.Iteration<any Error>.RawRepresentable.BufferSizeError) -> T? where T.RawValue: FixedWidthInteger {
         let rawBytes: Bytes?
         do {
-            rawBytes = try await nextIfPresent(Bytes.self, count: MemoryLayout<T.RawValue>.size)
+            rawBytes = try await nextIfPresent(Bytes.self, count: MemoryLayout<T.RawValue>.size, targetType: "\(T.RawValue.self)")
         } catch {
             throw error.mapCastingFailure { .castingFailure($0) }
         }
@@ -901,7 +901,7 @@ extension AsyncIteratorProtocol where Element == Byte {
     ) async throws(BytesError.Iteration<any Error>.RawRepresentable.BufferSizeError) -> T? where T.RawValue: FixedWidthInteger {
         let rawBytes: Bytes?
         do {
-            rawBytes = try await nextIfPresent(Bytes.self, count: MemoryLayout<T.RawValue>.size)
+            rawBytes = try await nextIfPresent(Bytes.self, count: MemoryLayout<T.RawValue>.size, targetType: "\(T.RawValue.self)")
         } catch {
             throw error.mapCastingFailure { .castingFailure($0) }
         }
@@ -1157,7 +1157,7 @@ extension AsyncIteratorProtocol where Element == Byte {
     ) async throws(BytesError.Iteration<Failure>.RawRepresentable.BufferSizeError) -> T {
         let rawBytes: Bytes
         do {
-            rawBytes = try await next(Bytes.self, count: MemoryLayout<T.RawValue>.size)
+            rawBytes = try await next(Bytes.self, count: MemoryLayout<T.RawValue>.size, targetType: "\(T.RawValue.self)")
         } catch {
             throw error.mapCastingFailure { .castingFailure($0) }
         }
@@ -1187,7 +1187,7 @@ extension AsyncIteratorProtocol where Element == Byte {
     ) async throws(BytesError.Iteration<Failure>.RawRepresentable.BufferSizeError) -> T? {
         let rawBytes: Bytes?
         do {
-            rawBytes = try await nextIfPresent(Bytes.self, count: MemoryLayout<T.RawValue>.size)
+            rawBytes = try await nextIfPresent(Bytes.self, count: MemoryLayout<T.RawValue>.size, targetType: "\(T.RawValue.self)")
         } catch {
             throw error.mapCastingFailure { .castingFailure($0) }
         }
@@ -1259,7 +1259,7 @@ extension AsyncIteratorProtocol where Element == Byte {
     ) async throws(BytesError.Iteration<Failure>.RawRepresentable.BufferSizeError) -> T where T.RawValue: FixedWidthInteger {
         let rawBytes: Bytes
         do {
-            rawBytes = try await next(Bytes.self, count: MemoryLayout<T.RawValue>.size)
+            rawBytes = try await next(Bytes.self, count: MemoryLayout<T.RawValue>.size, targetType: "\(T.RawValue.self)")
         } catch {
             throw error.mapCastingFailure { .castingFailure($0) }
         }
@@ -1289,7 +1289,7 @@ extension AsyncIteratorProtocol where Element == Byte {
     ) async throws(BytesError.Iteration<Failure>.RawRepresentable.BufferSizeError) -> T where T.RawValue: FixedWidthInteger {
         let rawBytes: Bytes
         do {
-            rawBytes = try await next(Bytes.self, count: MemoryLayout<T.RawValue>.size)
+            rawBytes = try await next(Bytes.self, count: MemoryLayout<T.RawValue>.size, targetType: "\(T.RawValue.self)")
         } catch {
             throw error.mapCastingFailure { .castingFailure($0) }
         }
@@ -1319,7 +1319,7 @@ extension AsyncIteratorProtocol where Element == Byte {
     ) async throws(BytesError.Iteration<Failure>.RawRepresentable.BufferSizeError) -> T? where T.RawValue: FixedWidthInteger {
         let rawBytes: Bytes?
         do {
-            rawBytes = try await nextIfPresent(Bytes.self, count: MemoryLayout<T.RawValue>.size)
+            rawBytes = try await nextIfPresent(Bytes.self, count: MemoryLayout<T.RawValue>.size, targetType: "\(T.RawValue.self)")
         } catch {
             throw error.mapCastingFailure { .castingFailure($0) }
         }
@@ -1350,7 +1350,7 @@ extension AsyncIteratorProtocol where Element == Byte {
     ) async throws(BytesError.Iteration<Failure>.RawRepresentable.BufferSizeError) -> T? where T.RawValue: FixedWidthInteger {
         let rawBytes: Bytes?
         do {
-            rawBytes = try await nextIfPresent(Bytes.self, count: MemoryLayout<T.RawValue>.size)
+            rawBytes = try await nextIfPresent(Bytes.self, count: MemoryLayout<T.RawValue>.size, targetType: "\(T.RawValue.self)")
         } catch {
             throw error.mapCastingFailure { .castingFailure($0) }
         }

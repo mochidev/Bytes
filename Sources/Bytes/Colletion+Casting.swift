@@ -259,7 +259,7 @@ extension RangeReplaceableCollection {
     >(
         bytes: Bytes,
         elementSize: Int,
-        targetType: String = "Bytes",
+        targetType: String = "Byte",
         mapping transform: (Bytes.SubSequence) throws(TransformationFailure) -> Self.Element
     ) throws(BytesError.Transformation<TransformationFailure>.BufferSizeError) {
         let elementCount: Int
@@ -381,7 +381,7 @@ extension Set {
     >(
         bytes: Bytes,
         elementSize: Int,
-        targetType: String = "Bytes",
+        targetType: String = "Byte",
         mapping transform: (Bytes.SubSequence) throws(TransformationFailure) -> Self.Element
     ) throws(BytesError.Transformation<TransformationFailure>.BufferSizeError) {
         let elementCount: Int

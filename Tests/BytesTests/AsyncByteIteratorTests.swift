@@ -31,7 +31,7 @@ import Testing
         #expect(try await iterator.next(Bytes.self, count: 3) == [0x03, 0x04, 0x05])
         #expect(try await iterator.next(Bytes.self, count: 2) == [0x06, 0x07])
         
-        await #expect(throws: BytesError.Iteration<any Error>.BufferSizeError.invalidBufferSize(targetSize: 1, targetType: "Bytes", actualSize: 0)) {
+        await #expect(throws: BytesError.Iteration<any Error>.BufferSizeError.invalidBufferSize(targetSize: 1, targetType: "Byte", actualSize: 0)) {
             try await iterator.next(Bytes.self, count: 1)
         }
         
@@ -89,7 +89,7 @@ import Testing
         #expect(try await iterator.next(Bytes.self, min: 0, max: 3) == [0x06, 0x07])
         #expect(try await iterator.next(Bytes.self, min: 0, max: 3) == [])
         
-        await #expect(throws: BytesError.Iteration<any Error>.BufferSizeError.invalidBufferSize(targetSize: 1, targetType: "Bytes", actualSize: 0)) {
+        await #expect(throws: BytesError.Iteration<any Error>.BufferSizeError.invalidBufferSize(targetSize: 1, targetType: "Byte", actualSize: 0)) {
             try await iterator.next(Bytes.self, min: 1, max: 3)
         }
     }
@@ -169,7 +169,7 @@ import Testing
         #expect(try await iterator.nextIfPresent(Bytes.self, count: 2) == [0x01, 0x02])
         #expect(try await iterator.nextIfPresent(Bytes.self, count: 3) == [0x03, 0x04, 0x05])
         
-        await #expect(throws: BytesError.Iteration<any Error>.BufferSizeError.invalidBufferSize(targetSize: 3, targetType: "Bytes", actualSize: 2)) {
+        await #expect(throws: BytesError.Iteration<any Error>.BufferSizeError.invalidBufferSize(targetSize: 3, targetType: "Byte", actualSize: 2)) {
             try await iterator.nextIfPresent(Bytes.self, count: 3)
         }
         
@@ -239,7 +239,7 @@ import Testing
         #expect(try await iterator.nextIfPresent(Bytes.self, min: 0, max: 2) == [0x01, 0x02])
         #expect(try await iterator.nextIfPresent(Bytes.self, min: 0, max: 3) == [0x03, 0x04, 0x05])
         
-        await #expect(throws: BytesError.Iteration<any Error>.BufferSizeError.invalidBufferSize(targetSize: 3, targetType: "Bytes", actualSize: 2)) {
+        await #expect(throws: BytesError.Iteration<any Error>.BufferSizeError.invalidBufferSize(targetSize: 3, targetType: "Byte", actualSize: 2)) {
             try await iterator.nextIfPresent(Bytes.self, min: 3, max: 6)
         }
         
@@ -483,7 +483,7 @@ import Testing
         #expect(try await iterator.next(Bytes.self, count: 3) == [0x03, 0x04, 0x05])
         #expect(try await iterator.next(Bytes.self, count: 2) == [0x06, 0x07])
         
-        await #expect(throws: BytesError.Iteration<Never>.BufferSizeError.invalidBufferSize(targetSize: 1, targetType: "Bytes", actualSize: 0)) {
+        await #expect(throws: BytesError.Iteration<Never>.BufferSizeError.invalidBufferSize(targetSize: 1, targetType: "Byte", actualSize: 0)) {
             try await iterator.next(Bytes.self, count: 1)
         }
         
@@ -544,7 +544,7 @@ import Testing
         #expect(try await iterator.next(Bytes.self, min: 0, max: 3) == [0x06, 0x07])
         #expect(try await iterator.next(Bytes.self, min: 0, max: 3) == [])
         
-        await #expect(throws: BytesError.Iteration<Never>.BufferSizeError.invalidBufferSize(targetSize: 1, targetType: "Bytes", actualSize: 0)) {
+        await #expect(throws: BytesError.Iteration<Never>.BufferSizeError.invalidBufferSize(targetSize: 1, targetType: "Byte", actualSize: 0)) {
             try await iterator.next(Bytes.self, min: 1, max: 3)
         }
     }
@@ -631,7 +631,7 @@ import Testing
         #expect(try await iterator.nextIfPresent(Bytes.self, count: 2) == [0x01, 0x02])
         #expect(try await iterator.nextIfPresent(Bytes.self, count: 3) == [0x03, 0x04, 0x05])
         
-        await #expect(throws: BytesError.Iteration<Never>.BufferSizeError.invalidBufferSize(targetSize: 3, targetType: "Bytes", actualSize: 2)) {
+        await #expect(throws: BytesError.Iteration<Never>.BufferSizeError.invalidBufferSize(targetSize: 3, targetType: "Byte", actualSize: 2)) {
             try await iterator.nextIfPresent(Bytes.self, count: 3)
         }
         
@@ -705,7 +705,7 @@ import Testing
         #expect(try await iterator.nextIfPresent(Bytes.self, min: 0, max: 2) == [0x01, 0x02])
         #expect(try await iterator.nextIfPresent(Bytes.self, min: 0, max: 3) == [0x03, 0x04, 0x05])
         
-        await #expect(throws: BytesError.Iteration<Never>.BufferSizeError.invalidBufferSize(targetSize: 3, targetType: "Bytes", actualSize: 2)) {
+        await #expect(throws: BytesError.Iteration<Never>.BufferSizeError.invalidBufferSize(targetSize: 3, targetType: "Byte", actualSize: 2)) {
             try await iterator.nextIfPresent(Bytes.self, min: 3, max: 6)
         }
         

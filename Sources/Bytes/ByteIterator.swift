@@ -21,7 +21,7 @@ extension IteratorProtocol where Element == Byte {
     public mutating func next(
         _ bytes: Bytes.Type,
         count: Int,
-        targetType: String = "Bytes"
+        targetType: String = "Byte"
     ) throws(BytesError.BufferSizeError) -> Bytes {
         assert(count >= 0, "count must be larger than 0")
         return try next(bytes, min: count, max: count, targetType: targetType)
@@ -42,7 +42,7 @@ extension IteratorProtocol where Element == Byte {
         _ bytes: Bytes.Type,
         min minCount: Int,
         max maxCount: Int,
-        targetType: String = "Bytes"
+        targetType: String = "Byte"
     ) throws(BytesError.BufferSizeError) -> Bytes {
         precondition(minCount <= maxCount, "maxCount must be larger than or equal to minCount")
         precondition(minCount >= 0, "minCount must be larger than 0")
@@ -108,7 +108,7 @@ extension IteratorProtocol where Element == Byte {
     public mutating func nextIfPresent(
         _ bytes: Bytes.Type,
         count: Int,
-        targetType: String = "Bytes"
+        targetType: String = "Byte"
     ) throws(BytesError.BufferSizeError) -> Bytes? {
         assert(count >= 0, "count must be larger than 0")
         return try nextIfPresent(bytes, min: count, max: count, targetType: targetType)
@@ -129,7 +129,7 @@ extension IteratorProtocol where Element == Byte {
         _ bytes: Bytes.Type,
         min minCount: Int,
         max maxCount: Int,
-        targetType: String = "Bytes"
+        targetType: String = "Byte"
     ) throws(BytesError.BufferSizeError) -> Bytes? {
         precondition(minCount <= maxCount, "maxCount must be larger than or equal to minCount")
         precondition(minCount >= 0, "minCount must be larger than 0")

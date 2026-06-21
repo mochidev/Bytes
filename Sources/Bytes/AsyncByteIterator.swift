@@ -28,7 +28,7 @@ extension AsyncIteratorProtocol where Element == Byte {
     public mutating func next(
         _ bytes: Bytes.Type,
         count: Int,
-        targetType: String = "Bytes"
+        targetType: String = "Byte"
     ) async throws(BytesError.Iteration<any Error>.BufferSizeError) -> Bytes {
         assert(count >= 0, "count must be larger than 0")
         return try await next(bytes, min: count, max: count, targetType: targetType)
@@ -54,7 +54,7 @@ extension AsyncIteratorProtocol where Element == Byte {
         _ bytes: Bytes.Type,
         min minCount: Int,
         max maxCount: Int,
-        targetType: String = "Bytes"
+        targetType: String = "Byte"
     ) async throws(BytesError.Iteration<any Error>.BufferSizeError) -> Bytes {
         precondition(minCount <= maxCount, "maxCount must be larger than or equal to minCount")
         precondition(minCount >= 0, "minCount must be larger than 0")
@@ -132,7 +132,7 @@ extension AsyncIteratorProtocol where Element == Byte {
     public mutating func nextIfPresent(
         _ bytes: Bytes.Type,
         count: Int,
-        targetType: String = "Bytes"
+        targetType: String = "Byte"
     ) async throws(BytesError.Iteration<any Error>.BufferSizeError) -> Bytes? {
         assert(count >= 0, "count must be larger than 0")
         return try await nextIfPresent(bytes, min: count, max: count, targetType: targetType)
@@ -158,7 +158,7 @@ extension AsyncIteratorProtocol where Element == Byte {
         _ bytes: Bytes.Type,
         min minCount: Int,
         max maxCount: Int,
-        targetType: String = "Bytes"
+        targetType: String = "Byte"
     ) async throws(BytesError.Iteration<any Error>.BufferSizeError) -> Bytes? {
         precondition(minCount <= maxCount, "maxCount must be larger than or equal to minCount")
         precondition(minCount >= 0, "minCount must be larger than 0")
@@ -360,7 +360,7 @@ extension AsyncIteratorProtocol where Element == Byte {
     public mutating func next(
         _ bytes: Bytes.Type,
         count: Int,
-        targetType: String = "Bytes",
+        targetType: String = "Byte",
         isolation actor: isolated (any Actor)? = #isolation
     ) async throws(BytesError.Iteration<Failure>.BufferSizeError) -> Bytes {
         assert(count >= 0, "count must be larger than 0")
@@ -384,7 +384,7 @@ extension AsyncIteratorProtocol where Element == Byte {
         _ bytes: Bytes.Type,
         min minCount: Int,
         max maxCount: Int,
-        targetType: String = "Bytes",
+        targetType: String = "Byte",
         isolation actor: isolated (any Actor)? = #isolation
     ) async throws(BytesError.Iteration<Failure>.BufferSizeError) -> Bytes {
         precondition(minCount <= maxCount, "maxCount must be larger than or equal to minCount")
@@ -458,7 +458,7 @@ extension AsyncIteratorProtocol where Element == Byte {
     public mutating func nextIfPresent(
         _ bytes: Bytes.Type,
         count: Int,
-        targetType: String = "Bytes",
+        targetType: String = "Byte",
         isolation actor: isolated (any Actor)? = #isolation
     ) async throws(BytesError.Iteration<Failure>.BufferSizeError) -> Bytes? {
         assert(count >= 0, "count must be larger than 0")
@@ -482,7 +482,7 @@ extension AsyncIteratorProtocol where Element == Byte {
         _ bytes: Bytes.Type,
         min minCount: Int,
         max maxCount: Int,
-        targetType: String = "Bytes",
+        targetType: String = "Byte",
         isolation actor: isolated (any Actor)? = #isolation
     ) async throws(BytesError.Iteration<Failure>.BufferSizeError) -> Bytes? {
         precondition(minCount <= maxCount, "maxCount must be larger than or equal to minCount")

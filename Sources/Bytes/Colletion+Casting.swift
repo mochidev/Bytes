@@ -175,8 +175,8 @@ extension RangeReplaceableCollection {
     /// - Throws:
     ///     - ``BytesError/BufferSizeError/invalidBufferSize(targetSize:targetType:actualSize:)`` if the total size of the bytes sequence is not a multiple of the element's size.
     ///     - ``BytesError/TransformationError/transformationFailure(_:)`` if the `transform` closure threw an error.
-    /// - SeeAlso: ``init(bytes:element:mapping:)`` for when an element's memory layout can be used to infer the size.
-    /// - SeeAlso: ``init(bytes:elementSize:mapping:)`` for when its not suitable to infer the size of an element from its memory layout.  
+    /// - SeeAlso: ``init(bytes:element:targetType:mapping:)`` for when an element's memory layout can be used to infer the size.
+    /// - SeeAlso: ``init(bytes:elementSize:targetType:mapping:)`` for when its not suitable to infer the size of an element from its memory layout.
     @inlinable
     public init<
         Bytes: BytesCollection,
@@ -200,8 +200,8 @@ extension RangeReplaceableCollection {
     /// - Throws:
     ///     - ``BytesError/BufferSizeError/invalidBufferSize(targetSize:targetType:actualSize:)`` if the total size of the bytes sequence is not a multiple of the element's size.
     ///     - ``BytesError/TransformationError/transformationFailure(_:)`` if the `transform` closure threw an error.
-    /// - SeeAlso: ``init(bytes:mapping:)`` for when the collection element matches the encoded element.
-    /// - SeeAlso: ``init(bytes:elementSize:mapping:)`` for when its not suitable to infer the size of an element from its memory layout.
+    /// - SeeAlso: ``init(bytes:targetType:mapping:)`` for when the collection element matches the encoded element.
+    /// - SeeAlso: ``init(bytes:elementSize:targetType:mapping:)`` for when its not suitable to infer the size of an element from its memory layout.
     @inlinable
     public init<
         Bytes: BytesCollection,
@@ -250,8 +250,8 @@ extension RangeReplaceableCollection {
     /// - Throws:
     ///     - ``BytesError/BufferSizeError/invalidBufferSize(targetSize:targetType:actualSize:)`` if the total size of the bytes sequence is not a multiple of the element's size.
     ///     - ``BytesError/TransformationError/transformationFailure(_:)`` if the `transform` closure threw an error.
-    /// - SeeAlso: ``init(bytes:mapping:)`` for when the collection element matches the encoded element.
-    /// - SeeAlso: ``init(bytes:element:mapping:)`` for when an element's memory layout can be used to infer the size.
+    /// - SeeAlso: ``init(bytes:targetType:mapping:)`` for when the collection element matches the encoded element.
+    /// - SeeAlso: ``init(bytes:element:targetType:mapping:)`` for when an element's memory layout can be used to infer the size.
     @inlinable
     public init<
         Bytes: BytesCollection,
@@ -297,8 +297,8 @@ extension Set {
     /// - Throws:
     ///     - ``BytesError/BufferSizeError/invalidBufferSize(targetSize:targetType:actualSize:)`` if the total size of the bytes sequence is not a multiple of the element's size.
     ///     - ``BytesError/TransformationError/transformationFailure(_:)`` if the `transform` closure threw an error.
-    /// - SeeAlso: ``init(bytes:element:mapping:)`` for when an element's memory layout can be used to infer the size.
-    /// - SeeAlso: ``init(bytes:elementSize:mapping:)`` for when its not suitable to infer the size of an element from its memory layout.
+    /// - SeeAlso: ``init(bytes:element:targetType:mapping:)`` for when an element's memory layout can be used to infer the size.
+    /// - SeeAlso: ``init(bytes:elementSize:targetType:mapping:)`` for when its not suitable to infer the size of an element from its memory layout.
     @inlinable
     public init<
         Bytes: BytesCollection,
@@ -322,8 +322,8 @@ extension Set {
     /// - Throws:
     ///     - ``BytesError/BufferSizeError/invalidBufferSize(targetSize:targetType:actualSize:)`` if the total size of the bytes sequence is not a multiple of the element's size.
     ///     - ``BytesError/TransformationError/transformationFailure(_:)`` if the `transform` closure threw an error.
-    /// - SeeAlso: ``init(bytes:mapping:)`` for when the collection element matches the encoded element.
-    /// - SeeAlso: ``init(bytes:element:mapping:)`` for when an element's memory layout can be used to infer the size.
+    /// - SeeAlso: ``init(bytes:targetType:mapping:)`` for when the collection element matches the encoded element.
+    /// - SeeAlso: ``init(bytes:element:targetType:mapping:)`` for when an element's memory layout can be used to infer the size.
     @inlinable
     public init<
         Bytes: BytesCollection,
@@ -372,8 +372,8 @@ extension Set {
     /// - Throws:
     ///     - ``BytesError/BufferSizeError/invalidBufferSize(targetSize:targetType:actualSize:)`` if the total size of the bytes sequence is not a multiple of the element's size.
     ///     - ``BytesError/TransformationError/transformationFailure(_:)`` if the `transform` closure threw an error.
-    /// - SeeAlso: ``init(bytes:mapping:)`` for when the collection element matches the encoded element.
-    /// - SeeAlso: ``init(bytes:element:mapping:)`` for when an element's memory layout can be used to infer the size.
+    /// - SeeAlso: ``init(bytes:targetType:mapping:)`` for when the collection element matches the encoded element.
+    /// - SeeAlso: ``init(bytes:element:targetType:mapping:)`` for when an element's memory layout can be used to infer the size.
     @inlinable
     public init<
         Bytes: BytesCollection,

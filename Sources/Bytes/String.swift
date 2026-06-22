@@ -287,9 +287,9 @@ extension AsyncIteratorProtocol where Element == Byte {
     @inlinable
     @_disfavoredOverload
     public mutating func check(
-        utf8 string: Character
+        utf8 character: Character
     ) async throws(BytesError.Iteration<any Error>.SequenceCheckError) {
-        try await check(string.utf8Bytes)
+        try await check(character.utf8Bytes)
     }
     
     /// Asynchronously advances by the specified UTF-8 encoded String if found, or throws if the next bytes in the iterator do not match.
@@ -333,9 +333,9 @@ extension AsyncIteratorProtocol where Element == Byte {
     @discardableResult
     @_disfavoredOverload
     public mutating func checkIfPresent(
-        utf8 string: Character
+        utf8 character: Character
     ) async throws(BytesError.Iteration<any Error>.SequenceCheckError) -> Bool {
-        try await checkIfPresent(string.utf8Bytes)
+        try await checkIfPresent(character.utf8Bytes)
     }
     
     /// Asynchronously advances by the specified UTF-8 encoded String if found, throws if the next bytes in the iterator do not match, or returns false if the sequence ended.
@@ -460,10 +460,10 @@ extension AsyncIteratorProtocol where Element == Byte {
     ///     - ``BytesError/IterationError/iterationFailure(_:)`` if the underlying sequence threw an error while producing bytes.
     @inlinable
     public mutating func check(
-        utf8 string: Character,
+        utf8 character: Character,
         isolation actor: isolated (any Actor)? = #isolation
     ) async throws(BytesError.Iteration<Failure>.SequenceCheckError) {
-        try await check(string.utf8Bytes)
+        try await check(character.utf8Bytes)
     }
     
     /// Asynchronously advances by the specified UTF-8 encoded String if found, or throws if the next bytes in the iterator do not match.
@@ -502,10 +502,10 @@ extension AsyncIteratorProtocol where Element == Byte {
     @inlinable
     @discardableResult
     public mutating func checkIfPresent(
-        utf8 string: Character,
+        utf8 character: Character,
         isolation actor: isolated (any Actor)? = #isolation
     ) async throws(BytesError.Iteration<Failure>.SequenceCheckError) -> Bool {
-        try await checkIfPresent(string.utf8Bytes)
+        try await checkIfPresent(character.utf8Bytes)
     }
     
     /// Asynchronously advances by the specified UTF-8 encoded String if found, throws if the next bytes in the iterator do not match, or returns false if the sequence ended.

@@ -173,6 +173,9 @@ import Testing
         let backToExplicitSizeArray = try [UInt16](bytes: bytesFromArray, elementSize: 2) { try $0.casting(to: UInt16.self).bigEndian }
         #expect(backToExplicitSizeArray == [0x0001, 0x0010, 0x0100, 0x1000])
         
+        let arrayMappingEach = [UInt16](bytes: bytesFromArray, mappingEach: { UInt16($0) })
+        #expect(arrayMappingEach == [0x00,0x01,0x00,0x10,0x01,0x00,0x10,0x00])
+        
         #expect(throws: BytesError.Transformation<any Error>.BufferSizeError.transformationFailure(LocalError())) {
             try [UInt16](bytes: bytesFromArray) { _ in throw LocalError() }
         }
@@ -181,6 +184,9 @@ import Testing
         }
         #expect(throws: BytesError.Transformation<any Error>.BufferSizeError.transformationFailure(LocalError())) {
             try [UInt16](bytes: bytesFromArray, elementSize: 2) { _ in throw LocalError() }
+        }
+        #expect(throws: LocalError()) {
+            try [UInt16](bytes: bytesFromArray, mappingEach: { _ in throw LocalError() })
         }
         
         let incompleteBytes: Bytes = [0x00,0x01,0x00,0x10,0x01,0x00,0x10]
@@ -229,6 +235,9 @@ import Testing
         let backToExplicitSizeSet = try Set<UInt16>(bytes: completeBytes, elementSize: 2) { try $0.casting(to: UInt16.self).bigEndian }
         #expect(backToExplicitSizeSet == [0x0001, 0x0010, 0x0100, 0x1000])
         
+        let setMappingEach = Set<UInt16>(bytes: completeBytes, mappingEach: { UInt16($0) })
+        #expect(setMappingEach == [0x00,0x01,0x10])
+        
         #expect(throws: BytesError.Transformation<any Error>.BufferSizeError.transformationFailure(LocalError())) {
             try Set<UInt16>(bytes: bytesFromSet) { _ in throw LocalError() }
         }
@@ -237,6 +246,9 @@ import Testing
         }
         #expect(throws: BytesError.Transformation<any Error>.BufferSizeError.transformationFailure(LocalError())) {
             try Set<UInt16>(bytes: bytesFromSet, elementSize: 2) { _ in throw LocalError() }
+        }
+        #expect(throws: LocalError()) {
+            try Set<UInt16>(bytes: bytesFromSet, mappingEach: { _ in throw LocalError() })
         }
         
         let incompleteBytes: Bytes = [0x00,0x01,0x00,0x10,0x01,0x00,0x10]

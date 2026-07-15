@@ -152,6 +152,62 @@ extension RawRepresentable where RawValue: FixedWidthInteger {
     }
 }
 
+extension RawRepresentable where RawValue == UInt8 {
+    /// Initialize a raw representable type as a fixed width integer from a contiguous sequence of ``Bytes`` representing a big endian ``Swift/UInt8``.
+    /// - Parameter bigEndianBytes: The ``Bytes`` to interpret as a big endian integer.
+    /// - Throws:
+    ///     - ``BytesError/RawRepresentableError/invalidRawRepresentableByteSequence(rawType:)-enum.case`` if the integer does not correspond with a valid raw value.
+    @inlinable
+    public init(
+        bigEndianByte: Byte
+    ) throws(BytesError.RawRepresentableError<Never>) {
+        guard let value = Self(rawValue: RawValue(bigEndianByte: bigEndianByte))
+        else { throw .invalidRawRepresentableByteSequence(rawType: "\(RawValue.self)") }
+        self = value
+    }
+    
+    /// Initialize a raw representable type as a fixed width integer from a contiguous sequence of ``Bytes`` representing a little endian ``Swift/UInt8``.
+    /// - Parameter littleEndianBytes: The ``Bytes`` to interpret as a little endian integer.
+    /// - Throws:
+    ///     - ``BytesError/RawRepresentableError/invalidRawRepresentableByteSequence(rawType:)-enum.case`` if the integer does not correspond with a valid raw value.
+    @inlinable
+    public init(
+        littleEndianByte: Byte
+    ) throws(BytesError.RawRepresentableError<Never>) {
+        guard let value = Self(rawValue: RawValue(littleEndianByte: littleEndianByte))
+        else { throw .invalidRawRepresentableByteSequence(rawType: "\(RawValue.self)") }
+        self = value
+    }
+}
+
+extension RawRepresentable where RawValue == Int8 {
+    /// Initialize a raw representable type as a fixed width integer from a contiguous sequence of ``Bytes`` representing a big endian ``Swift/Int8``.
+    /// - Parameter bigEndianBytes: The ``Bytes`` to interpret as a big endian integer.
+    /// - Throws:
+    ///     - ``BytesError/RawRepresentableError/invalidRawRepresentableByteSequence(rawType:)-enum.case`` if the integer does not correspond with a valid raw value.
+    @inlinable
+    public init(
+        bigEndianByte: Byte
+    ) throws(BytesError.RawRepresentableError<Never>) {
+        guard let value = Self(rawValue: RawValue(bigEndianByte: bigEndianByte))
+        else { throw .invalidRawRepresentableByteSequence(rawType: "\(RawValue.self)") }
+        self = value
+    }
+    
+    /// Initialize a raw representable type as a fixed width integer from a contiguous sequence of ``Bytes`` representing a little endian ``Swift/Int8``.
+    /// - Parameter littleEndianBytes: The ``Bytes`` to interpret as a little endian integer.
+    /// - Throws:
+    ///     - ``BytesError/RawRepresentableError/invalidRawRepresentableByteSequence(rawType:)-enum.case`` if the integer does not correspond with a valid raw value.
+    @inlinable
+    public init(
+        littleEndianByte: Byte
+    ) throws(BytesError.RawRepresentableError<Never>) {
+        guard let value = Self(rawValue: RawValue(littleEndianByte: littleEndianByte))
+        else { throw .invalidRawRepresentableByteSequence(rawType: "\(RawValue.self)") }
+        self = value
+    }
+}
+
 extension RawRepresentable where RawValue: StringProtocol {
     /// Get the UTF-8 representation of the `rawValue`'s string as a contiguous sequence of ``Bytes``.
     @inlinable
@@ -276,6 +332,54 @@ extension Collection where Element: RawRepresentable, Element.RawValue: FixedWid
     }
 }
 
+extension Collection where Element: RawRepresentable, Element.RawValue == UInt8 {
+    /// Initialize a collection of raw representable types with a sequence of ``Bytes`` representing a sequence of big endian `rawValue`s.
+    /// - Parameter bigEndianBytes: The ``Bytes`` to interpret as a sequence of big endian integer `rawValue`s.
+    /// - Throws:
+    ///     - ``BytesError/RawRepresentableError/invalidRawRepresentableByteSequence(rawType:)-enum.case`` if the integer does not correspond with a valid raw value.
+    @inlinable
+    public init<Bytes: BytesCollection>(
+        bigEndianBytes: Bytes
+    ) throws(BytesError.RawRepresentableError<Never>) where Self: RangeReplaceableCollection {
+        try self.init(bytes: bigEndianBytes, mappingEach: Element.init(bigEndianByte:))
+    }
+    
+    /// Initialize a collection of raw representable types with a sequence of ``Bytes`` representing a sequence of little endian `rawValue`s.
+    /// - Parameter littleEndianBytes: The ``Bytes`` to interpret as a sequence of little endian integer `rawValue`s.
+    /// - Throws:
+    ///     - ``BytesError/RawRepresentableError/invalidRawRepresentableByteSequence(rawType:)-enum.case`` if the integer does not correspond with a valid raw value.
+    @inlinable
+    public init<Bytes: BytesCollection>(
+        littleEndianBytes: Bytes
+    ) throws(BytesError.RawRepresentableError<Never>) where Self: RangeReplaceableCollection {
+        try self.init(bytes: littleEndianBytes, mappingEach: Element.init(littleEndianByte:))
+    }
+}
+
+extension Collection where Element: RawRepresentable, Element.RawValue == Int8 {
+    /// Initialize a collection of raw representable types with a sequence of ``Bytes`` representing a sequence of big endian `rawValue`s.
+    /// - Parameter bigEndianBytes: The ``Bytes`` to interpret as a sequence of big endian integer `rawValue`s.
+    /// - Throws:
+    ///     - ``BytesError/RawRepresentableError/invalidRawRepresentableByteSequence(rawType:)-enum.case`` if the integer does not correspond with a valid raw value.
+    @inlinable
+    public init<Bytes: BytesCollection>(
+        bigEndianBytes: Bytes
+    ) throws(BytesError.RawRepresentableError<Never>) where Self: RangeReplaceableCollection {
+        try self.init(bytes: bigEndianBytes, mappingEach: Element.init(bigEndianByte:))
+    }
+    
+    /// Initialize a collection of raw representable types with a sequence of ``Bytes`` representing a sequence of little endian `rawValue`s.
+    /// - Parameter littleEndianBytes: The ``Bytes`` to interpret as a sequence of little endian integer `rawValue`s.
+    /// - Throws:
+    ///     - ``BytesError/RawRepresentableError/invalidRawRepresentableByteSequence(rawType:)-enum.case`` if the integer does not correspond with a valid raw value.
+    @inlinable
+    public init<Bytes: BytesCollection>(
+        littleEndianBytes: Bytes
+    ) throws(BytesError.RawRepresentableError<Never>) where Self: RangeReplaceableCollection {
+        try self.init(bytes: littleEndianBytes, mappingEach: Element.init(littleEndianByte:))
+    }
+}
+
 // MARK: - Set Extensions
 
 extension Set where Element: RawRepresentable {
@@ -330,6 +434,54 @@ extension Set where Element: RawRepresentable, Element.RawValue: FixedWidthInteg
         } catch {
             throw error.flattened
         }
+    }
+}
+
+extension Set where Element: RawRepresentable, Element.RawValue == UInt8 {
+    /// Initialize a Set of raw representable types with a sequence of ``Bytes`` representing a sequence of big endian `rawValue`s.
+    /// - Parameter bigEndianBytes: The ``Bytes`` to interpret as a sequence of big endian integer `rawValue`s.
+    /// - Throws:
+    ///     - ``BytesError/RawRepresentableError/invalidRawRepresentableByteSequence(rawType:)-enum.case`` if the integer does not correspond with a valid raw value.
+    @inlinable
+    public init<Bytes: BytesCollection>(
+        bigEndianBytes: Bytes
+    ) throws(BytesError.RawRepresentableError<Never>) {
+        try self.init(bytes: bigEndianBytes, mappingEach: Element.init(bigEndianByte:))
+    }
+    
+    /// Initialize a Set of raw representable types with a sequence of ``Bytes`` representing a sequence of little endian `rawValue`s.
+    /// - Parameter littleEndianBytes: The ``Bytes`` to interpret as a sequence of little endian integer `rawValue`s.
+    /// - Throws:
+    ///     - ``BytesError/RawRepresentableError/invalidRawRepresentableByteSequence(rawType:)-enum.case`` if the integer does not correspond with a valid raw value.
+    @inlinable
+    public init<Bytes: BytesCollection>(
+        littleEndianBytes: Bytes
+    ) throws(BytesError.RawRepresentableError<Never>) {
+        try self.init(bytes: littleEndianBytes, mappingEach: Element.init(littleEndianByte:))
+    }
+}
+
+extension Set where Element: RawRepresentable, Element.RawValue == Int8 {
+    /// Initialize a Set of raw representable types with a sequence of ``Bytes`` representing a sequence of big endian `rawValue`s.
+    /// - Parameter bigEndianBytes: The ``Bytes`` to interpret as a sequence of big endian integer `rawValue`s.
+    /// - Throws:
+    ///     - ``BytesError/RawRepresentableError/invalidRawRepresentableByteSequence(rawType:)-enum.case`` if the integer does not correspond with a valid raw value.
+    @inlinable
+    public init<Bytes: BytesCollection>(
+        bigEndianBytes: Bytes
+    ) throws(BytesError.RawRepresentableError<Never>) {
+        try self.init(bytes: bigEndianBytes, mappingEach: Element.init(bigEndianByte:))
+    }
+    
+    /// Initialize a Set of raw representable types with a sequence of ``Bytes`` representing a sequence of little endian `rawValue`s.
+    /// - Parameter littleEndianBytes: The ``Bytes`` to interpret as a sequence of little endian integer `rawValue`s.
+    /// - Throws:
+    ///     - ``BytesError/RawRepresentableError/invalidRawRepresentableByteSequence(rawType:)-enum.case`` if the integer does not correspond with a valid raw value.
+    @inlinable
+    public init<Bytes: BytesCollection>(
+        littleEndianBytes: Bytes
+    ) throws(BytesError.RawRepresentableError<Never>) {
+        try self.init(bytes: littleEndianBytes, mappingEach: Element.init(littleEndianByte:))
     }
 }
 
@@ -511,13 +663,13 @@ extension IteratorProtocol where Element == Byte {
     /// Use this method when you expect an integer to be next in the sequence, and it would be an error if something else were encountered.
     ///
     /// **Learn More:** [Integration with AsyncSequenceReader](https://github.com/mochidev/AsyncSequenceReader#integration-with-bytes)
-    /// - Parameter integer: The raw integer to check for.
+    /// - Parameter byte: The raw byte to check for.
     /// - Throws: ``BytesError/SequenceCheckError/checkedSequenceNotFound`` if the integer could not be identified.
     @inlinable
     public mutating func check<RawInt: RawRepresentable>(
-        _ integer: RawInt
-    ) throws(BytesError.SequenceCheckError) where RawInt.RawValue == UInt8 {
-        try check(integer.rawValue)
+        _ byte: RawInt
+    ) throws(BytesError.SequenceCheckError) where RawInt.RawValue == Byte {
+        try check(byte.rawValue)
     }
     
     /// Advances by the next little endien integer if found, or throws if the next bytes in the iterator do not match.
@@ -553,15 +705,15 @@ extension IteratorProtocol where Element == Byte {
     /// Use this method when you expect an integer to be next in the sequence, and it would be an error if something else were encountered.
     ///
     /// **Learn More:** [Integration with AsyncSequenceReader](https://github.com/mochidev/AsyncSequenceReader#integration-with-bytes)
-    /// - Parameter integer: The raw integer to check for.
-    /// - Returns: `true` if the integer was found, or `false` if the sequence finished.
-    /// - Throws: ``BytesError/SequenceCheckError/checkedSequenceNotFound`` if the integer could not be identified.
+    /// - Parameter byte: The raw byte to check for.
+    /// - Returns: `true` if the byte was found, or `false` if the sequence finished.
+    /// - Throws: ``BytesError/SequenceCheckError/checkedSequenceNotFound`` if the byte could not be identified.
     @inlinable
     @discardableResult
     public mutating func checkIfPresent<RawInt: RawRepresentable>(
-        _ integer: RawInt
-    ) throws(BytesError.SequenceCheckError) -> Bool where RawInt.RawValue == UInt8 {
-        try checkIfPresent(integer.rawValue)
+        _ byte: RawInt
+    ) throws(BytesError.SequenceCheckError) -> Bool where RawInt.RawValue == Byte {
+        try checkIfPresent(byte.rawValue)
     }
     
     /// Advances by the next little endien integer if found, throws if the next bytes in the iterator do not match, or returns false if the sequence ended.
@@ -918,9 +1070,9 @@ extension AsyncIteratorProtocol where Element == Byte {
     /// Use this method when you expect an integer to be next in the sequence, and it would be an error if something else were encountered.
     ///
     /// **Learn More:** [Integration with AsyncSequenceReader](https://github.com/mochidev/AsyncSequenceReader#integration-with-bytes)
-    /// - Parameter integer: The raw integer to check for.
+    /// - Parameter byte: The raw byte to check for.
     /// - Throws:
-    ///     - ``BytesError/SequenceCheckError/checkedSequenceNotFound`` if the integer could not be identified.
+    ///     - ``BytesError/SequenceCheckError/checkedSequenceNotFound`` if the byte could not be identified.
     ///     - ``BytesError/IterationError/iterationFailure(_:)`` if the underlying sequence threw an error while producing bytes.
     #if swift(>=6.2)
     @concurrent
@@ -928,9 +1080,9 @@ extension AsyncIteratorProtocol where Element == Byte {
     @inlinable
     @_disfavoredOverload
     public mutating func check<RawInt: RawRepresentable>(
-        _ integer: RawInt
-    ) async throws(BytesError.Iteration<any Error>.SequenceCheckError) where RawInt.RawValue == UInt8 {
-        try await check(integer.rawValue)
+        _ byte: RawInt
+    ) async throws(BytesError.Iteration<any Error>.SequenceCheckError) where RawInt.RawValue == Byte {
+        try await check(byte.rawValue)
     }
     
     /// Asynchronously advances by the next little endien integer if found, or throws if the next bytes in the iterator do not match.
@@ -978,10 +1130,10 @@ extension AsyncIteratorProtocol where Element == Byte {
     /// Use this method when you expect an integer to be next in the sequence, and it would be an error if something else were encountered.
     ///
     /// **Learn More:** [Integration with AsyncSequenceReader](https://github.com/mochidev/AsyncSequenceReader#integration-with-bytes)
-    /// - Parameter integer: The raw integer to check for.
-    /// - Returns: `true` if the integer was found, or `false` if the sequence finished.
+    /// - Parameter byte: The raw byte to check for.
+    /// - Returns: `true` if the byte was found, or `false` if the sequence finished.
     /// - Throws:
-    ///     - ``BytesError/SequenceCheckError/checkedSequenceNotFound`` if the integer could not be identified.
+    ///     - ``BytesError/SequenceCheckError/checkedSequenceNotFound`` if the byte could not be identified.
     ///     - ``BytesError/IterationError/iterationFailure(_:)`` if the underlying sequence threw an error while producing bytes.
     #if swift(>=6.2)
     @concurrent
@@ -990,9 +1142,9 @@ extension AsyncIteratorProtocol where Element == Byte {
     @_disfavoredOverload
     @discardableResult
     public mutating func checkIfPresent<RawInt: RawRepresentable>(
-        _ integer: RawInt
-    ) async throws(BytesError.Iteration<any Error>.SequenceCheckError) -> Bool where RawInt.RawValue == UInt8 {
-        try await checkIfPresent(integer.rawValue)
+        _ byte: RawInt
+    ) async throws(BytesError.Iteration<any Error>.SequenceCheckError) -> Bool where RawInt.RawValue == Byte {
+        try await checkIfPresent(byte.rawValue)
     }
     
     /// Asynchronously advances by the next little endien integer if found, throws if the next bytes in the iterator do not match, or returns false if the sequence ended.
@@ -1367,17 +1519,17 @@ extension AsyncIteratorProtocol where Element == Byte {
     /// Use this method when you expect an integer to be next in the sequence, and it would be an error if something else were encountered.
     ///
     /// **Learn More:** [Integration with AsyncSequenceReader](https://github.com/mochidev/AsyncSequenceReader#integration-with-bytes)
-    /// - Parameter integer: The raw integer to check for.
+    /// - Parameter byte: The raw byte to check for.
     /// - Parameter actor: The isolation context to run the reciever on.
     /// - Throws:
-    ///     - ``BytesError/SequenceCheckError/checkedSequenceNotFound`` if the integer could not be identified.
+    ///     - ``BytesError/SequenceCheckError/checkedSequenceNotFound`` if the byte could not be identified.
     ///     - ``BytesError/IterationError/iterationFailure(_:)`` if the underlying sequence threw an error while producing bytes.
     @inlinable
     public mutating func check<RawInt: RawRepresentable>(
-        _ integer: RawInt,
+        _ byte: RawInt,
         isolation actor: isolated (any Actor)? = #isolation
-    ) async throws(BytesError.Iteration<Failure>.SequenceCheckError) where RawInt.RawValue == UInt8 {
-        try await check(integer.rawValue)
+    ) async throws(BytesError.Iteration<Failure>.SequenceCheckError) where RawInt.RawValue == Byte {
+        try await check(byte.rawValue)
     }
     
     /// Asynchronously advances by the next little endien integer if found, or throws if the next bytes in the iterator do not match.
@@ -1421,19 +1573,19 @@ extension AsyncIteratorProtocol where Element == Byte {
     /// Use this method when you expect an integer to be next in the sequence, and it would be an error if something else were encountered.
     ///
     /// **Learn More:** [Integration with AsyncSequenceReader](https://github.com/mochidev/AsyncSequenceReader#integration-with-bytes)
-    /// - Parameter integer: The raw integer to check for.
+    /// - Parameter byte: The raw byte to check for.
     /// - Parameter actor: The isolation context to run the reciever on.
-    /// - Returns: `true` if the integer was found, or `false` if the sequence finished.
+    /// - Returns: `true` if the byte was found, or `false` if the sequence finished.
     /// - Throws:
-    ///     - ``BytesError/SequenceCheckError/checkedSequenceNotFound`` if the integer could not be identified.
+    ///     - ``BytesError/SequenceCheckError/checkedSequenceNotFound`` if the byte could not be identified.
     ///     - ``BytesError/IterationError/iterationFailure(_:)`` if the underlying sequence threw an error while producing bytes.
     @inlinable
     @discardableResult
     public mutating func checkIfPresent<RawInt: RawRepresentable>(
-        _ integer: RawInt,
+        _ byte: RawInt,
         isolation actor: isolated (any Actor)? = #isolation
-    ) async throws(BytesError.Iteration<Failure>.SequenceCheckError) -> Bool where RawInt.RawValue == UInt8 {
-        try await checkIfPresent(integer.rawValue)
+    ) async throws(BytesError.Iteration<Failure>.SequenceCheckError) -> Bool where RawInt.RawValue == Byte {
+        try await checkIfPresent(byte.rawValue)
     }
     
     /// Asynchronously advances by the next little endien integer if found, throws if the next bytes in the iterator do not match, or returns false if the sequence ended.

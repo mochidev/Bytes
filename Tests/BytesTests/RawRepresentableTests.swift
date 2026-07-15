@@ -65,7 +65,11 @@ enum IntEnum: UInt16 {
     case a, b, c
 }
 
-enum Int8Enum: UInt8 {
+enum Int8Enum: Int8 {
+    case a, b, c
+}
+
+enum UInt8Enum: UInt8 {
     case a, b, c
 }
 
@@ -448,21 +452,21 @@ enum CharacterEnum: Character {
             #expect(try iterator.nextIfPresent(bigEndian: UInt64.self) == nil)
         }
         
-        @Test func checkUInt8() async throws {
+        @Test func checkByte() async throws {
             let bytes: Bytes = [0x00, 0x01, 0x02, 0x03, 0x02]
             var iterator = bytes.makeIterator()
-            try iterator.check(Int8Enum.a)
-            try iterator.check(Int8Enum.b)
-            try iterator.check(Int8Enum.c)
+            try iterator.check(UInt8Enum.a)
+            try iterator.check(UInt8Enum.b)
+            try iterator.check(UInt8Enum.c)
             
             #expect(throws: BytesError.SequenceCheckError.checkedSequenceNotFound) {
-                try iterator.check(Int8Enum.a)
+                try iterator.check(UInt8Enum.a)
             }
             
-            try iterator.check(Int8Enum.c)
+            try iterator.check(UInt8Enum.c)
             
             #expect(throws: BytesError.SequenceCheckError.checkedSequenceNotFound) {
-                try iterator.check(Int8Enum.b)
+                try iterator.check(UInt8Enum.b)
             }
         }
         
@@ -502,19 +506,19 @@ enum CharacterEnum: Character {
             }
         }
         
-        @Test func checkIfPresentUInt8() async throws {
+        @Test func checkIfPresentByte() async throws {
             let bytes: Bytes = [0x00, 0x01, 0x02, 0x03, 0x02]
             var iterator = bytes.makeIterator()
-            #expect(try iterator.checkIfPresent(Int8Enum.a) == true)
-            #expect(try iterator.checkIfPresent(Int8Enum.b) == true)
-            #expect(try iterator.checkIfPresent(Int8Enum.c) == true)
+            #expect(try iterator.checkIfPresent(UInt8Enum.a) == true)
+            #expect(try iterator.checkIfPresent(UInt8Enum.b) == true)
+            #expect(try iterator.checkIfPresent(UInt8Enum.c) == true)
             
             #expect(throws: BytesError.SequenceCheckError.checkedSequenceNotFound) {
-                try iterator.checkIfPresent(Int8Enum.a)
+                try iterator.checkIfPresent(UInt8Enum.a)
             }
             
-            #expect(try iterator.checkIfPresent(Int8Enum.c) == true)
-            #expect(try iterator.checkIfPresent(Int8Enum.b) == false)
+            #expect(try iterator.checkIfPresent(UInt8Enum.c) == true)
+            #expect(try iterator.checkIfPresent(UInt8Enum.b) == false)
         }
         
         @Test func checkIfPresentLittleEndian() async throws {
@@ -869,37 +873,37 @@ enum CharacterEnum: Character {
             #expect(try await iterator.nextIfPresent(bigEndian: UInt64.self) == nil)
         }
         
-        @Test func checkUInt8() async throws {
+        @Test func checkByte() async throws {
             var iterator = AsyncTestIterator([0x00, 0x01, 0x02, 0x03, 0x02])
-            try await iterator.check(Int8Enum.a)
-            try await iterator.check(Int8Enum.b)
-            try await iterator.check(Int8Enum.c)
+            try await iterator.check(UInt8Enum.a)
+            try await iterator.check(UInt8Enum.b)
+            try await iterator.check(UInt8Enum.c)
             
             await #expect(throws: BytesError.Iteration<any Error>.SequenceCheckError.checkedSequenceNotFound) {
-                try await iterator.check(Int8Enum.a)
+                try await iterator.check(UInt8Enum.a)
             }
             
-            try await iterator.check(Int8Enum.c)
+            try await iterator.check(UInt8Enum.c)
             
             await #expect(throws: BytesError.Iteration<any Error>.SequenceCheckError.checkedSequenceNotFound) {
-                try await iterator.check(Int8Enum.b)
+                try await iterator.check(UInt8Enum.b)
             }
         }
         
-        @Test func checkUInt8Throws() async throws {
+        @Test func checkByteThrows() async throws {
             var iterator = AsyncThrowingTestIterator([0x00, 0x01, 0x02, 0x03, 0x02])
-            try await iterator.check(Int8Enum.a)
-            try await iterator.check(Int8Enum.b)
-            try await iterator.check(Int8Enum.c)
+            try await iterator.check(UInt8Enum.a)
+            try await iterator.check(UInt8Enum.b)
+            try await iterator.check(UInt8Enum.c)
             
             await #expect(throws: BytesError.Iteration<any Error>.SequenceCheckError.checkedSequenceNotFound) {
-                try await iterator.check(Int8Enum.a)
+                try await iterator.check(UInt8Enum.a)
             }
             
-            try await iterator.check(Int8Enum.c)
+            try await iterator.check(UInt8Enum.c)
             
             await #expect(throws: BytesError.Iteration<any Error>.SequenceCheckError.iterationFailure(LocalError())) {
-                try await iterator.check(Int8Enum.b)
+                try await iterator.check(UInt8Enum.b)
             }
         }
         
@@ -971,37 +975,37 @@ enum CharacterEnum: Character {
             }
         }
         
-        @Test func checkIfPresentUInt8() async throws {
+        @Test func checkIfPresentByte() async throws {
             var iterator = AsyncTestIterator([0x00, 0x01, 0x02, 0x03, 0x02])
-            #expect(try await iterator.checkIfPresent(Int8Enum.a) == true)
-            #expect(try await iterator.checkIfPresent(Int8Enum.b) == true)
-            #expect(try await iterator.checkIfPresent(Int8Enum.c) == true)
+            #expect(try await iterator.checkIfPresent(UInt8Enum.a) == true)
+            #expect(try await iterator.checkIfPresent(UInt8Enum.b) == true)
+            #expect(try await iterator.checkIfPresent(UInt8Enum.c) == true)
             
             await #expect(throws: BytesError.Iteration<any Error>.SequenceCheckError.checkedSequenceNotFound) {
-                try await iterator.checkIfPresent(Int8Enum.a)
+                try await iterator.checkIfPresent(UInt8Enum.a)
             }
             
-            #expect(try await iterator.checkIfPresent(Int8Enum.c) == true)
-            #expect(try await iterator.checkIfPresent(Int8Enum.b) == false)
+            #expect(try await iterator.checkIfPresent(UInt8Enum.c) == true)
+            #expect(try await iterator.checkIfPresent(UInt8Enum.b) == false)
         }
         
-        @Test func checkIfPresentUInt8Throws() async throws {
+        @Test func checkIfPresentByteThrows() async throws {
             var iterator = AsyncThrowingTestIterator([0x00, 0x01, 0x02, 0x03, 0x02])
-            #expect(try await iterator.checkIfPresent(Int8Enum.a) == true)
-            #expect(try await iterator.checkIfPresent(Int8Enum.b) == true)
-            #expect(try await iterator.checkIfPresent(Int8Enum.c) == true)
+            #expect(try await iterator.checkIfPresent(UInt8Enum.a) == true)
+            #expect(try await iterator.checkIfPresent(UInt8Enum.b) == true)
+            #expect(try await iterator.checkIfPresent(UInt8Enum.c) == true)
             
             await #expect(throws: BytesError.Iteration<any Error>.SequenceCheckError.checkedSequenceNotFound) {
-                try await iterator.checkIfPresent(Int8Enum.a)
+                try await iterator.checkIfPresent(UInt8Enum.a)
             }
             
-            #expect(try await iterator.checkIfPresent(Int8Enum.c) == true)
+            #expect(try await iterator.checkIfPresent(UInt8Enum.c) == true)
             
             await #expect(throws: BytesError.Iteration<any Error>.SequenceCheckError.iterationFailure(LocalError())) {
-                try await iterator.checkIfPresent(Int8Enum.b)
+                try await iterator.checkIfPresent(UInt8Enum.b)
             }
             
-            #expect(try await iterator.checkIfPresent(Int8Enum.b) == false)
+            #expect(try await iterator.checkIfPresent(UInt8Enum.b) == false)
         }
         
         @Test func checkIfPresentLittleEndian() async throws {
@@ -1477,38 +1481,38 @@ enum CharacterEnum: Character {
         }
         
         @available(macOS 15.0, iOS 18.0, watchOS 11.0, tvOS 18.0, visionOS 2.0, *)
-        @Test func checkUInt8() async throws {
+        @Test func checkByte() async throws {
             var iterator = AsyncTestIterator([0x00, 0x01, 0x02, 0x03, 0x02])
-            try await iterator.check(Int8Enum.a)
-            try await iterator.check(Int8Enum.b)
-            try await iterator.check(Int8Enum.c)
+            try await iterator.check(UInt8Enum.a)
+            try await iterator.check(UInt8Enum.b)
+            try await iterator.check(UInt8Enum.c)
             
             await #expect(throws: BytesError.Iteration<Never>.SequenceCheckError.checkedSequenceNotFound) {
-                try await iterator.check(Int8Enum.a)
+                try await iterator.check(UInt8Enum.a)
             }
             
-            try await iterator.check(Int8Enum.c)
+            try await iterator.check(UInt8Enum.c)
             
             await #expect(throws: BytesError.Iteration<Never>.SequenceCheckError.checkedSequenceNotFound) {
-                try await iterator.check(Int8Enum.b)
+                try await iterator.check(UInt8Enum.b)
             }
         }
         
         @available(macOS 15.0, iOS 18.0, watchOS 11.0, tvOS 18.0, visionOS 2.0, *)
-        @Test func checkUInt8Throws() async throws {
+        @Test func checkByteThrows() async throws {
             var iterator = AsyncThrowingTestIterator([0x00, 0x01, 0x02, 0x03, 0x02])
-            try await iterator.check(Int8Enum.a)
-            try await iterator.check(Int8Enum.b)
-            try await iterator.check(Int8Enum.c)
+            try await iterator.check(UInt8Enum.a)
+            try await iterator.check(UInt8Enum.b)
+            try await iterator.check(UInt8Enum.c)
             
             await #expect(throws: BytesError.Iteration<LocalError>.SequenceCheckError.checkedSequenceNotFound) {
-                try await iterator.check(Int8Enum.a)
+                try await iterator.check(UInt8Enum.a)
             }
             
-            try await iterator.check(Int8Enum.c)
+            try await iterator.check(UInt8Enum.c)
             
             await #expect(throws: BytesError.Iteration<LocalError>.SequenceCheckError.iterationFailure(LocalError())) {
-                try await iterator.check(Int8Enum.b)
+                try await iterator.check(UInt8Enum.b)
             }
         }
         
@@ -1585,38 +1589,38 @@ enum CharacterEnum: Character {
         }
         
         @available(macOS 15.0, iOS 18.0, watchOS 11.0, tvOS 18.0, visionOS 2.0, *)
-        @Test func checkIfPresentUInt8() async throws {
+        @Test func checkIfPresentByte() async throws {
             var iterator = AsyncTestIterator([0x00, 0x01, 0x02, 0x03, 0x02])
-            #expect(try await iterator.checkIfPresent(Int8Enum.a) == true)
-            #expect(try await iterator.checkIfPresent(Int8Enum.b) == true)
-            #expect(try await iterator.checkIfPresent(Int8Enum.c) == true)
+            #expect(try await iterator.checkIfPresent(UInt8Enum.a) == true)
+            #expect(try await iterator.checkIfPresent(UInt8Enum.b) == true)
+            #expect(try await iterator.checkIfPresent(UInt8Enum.c) == true)
             
             await #expect(throws: BytesError.Iteration<Never>.SequenceCheckError.checkedSequenceNotFound) {
-                try await iterator.checkIfPresent(Int8Enum.a)
+                try await iterator.checkIfPresent(UInt8Enum.a)
             }
             
-            #expect(try await iterator.checkIfPresent(Int8Enum.c) == true)
-            #expect(try await iterator.checkIfPresent(Int8Enum.b) == false)
+            #expect(try await iterator.checkIfPresent(UInt8Enum.c) == true)
+            #expect(try await iterator.checkIfPresent(UInt8Enum.b) == false)
         }
         
         @available(macOS 15.0, iOS 18.0, watchOS 11.0, tvOS 18.0, visionOS 2.0, *)
-        @Test func checkIfPresentUInt8Throws() async throws {
+        @Test func checkIfPresentByteThrows() async throws {
             var iterator = AsyncThrowingTestIterator([0x00, 0x01, 0x02, 0x03, 0x02])
-            #expect(try await iterator.checkIfPresent(Int8Enum.a) == true)
-            #expect(try await iterator.checkIfPresent(Int8Enum.b) == true)
-            #expect(try await iterator.checkIfPresent(Int8Enum.c) == true)
+            #expect(try await iterator.checkIfPresent(UInt8Enum.a) == true)
+            #expect(try await iterator.checkIfPresent(UInt8Enum.b) == true)
+            #expect(try await iterator.checkIfPresent(UInt8Enum.c) == true)
             
             await #expect(throws: BytesError.Iteration<LocalError>.SequenceCheckError.checkedSequenceNotFound) {
-                try await iterator.checkIfPresent(Int8Enum.a)
+                try await iterator.checkIfPresent(UInt8Enum.a)
             }
             
-            #expect(try await iterator.checkIfPresent(Int8Enum.c) == true)
+            #expect(try await iterator.checkIfPresent(UInt8Enum.c) == true)
             
             await #expect(throws: BytesError.Iteration<LocalError>.SequenceCheckError.iterationFailure(LocalError())) {
-                try await iterator.checkIfPresent(Int8Enum.b)
+                try await iterator.checkIfPresent(UInt8Enum.b)
             }
             
-            #expect(try await iterator.checkIfPresent(Int8Enum.b) == false)
+            #expect(try await iterator.checkIfPresent(UInt8Enum.b) == false)
         }
         
         @available(macOS 15.0, iOS 18.0, watchOS 11.0, tvOS 18.0, visionOS 2.0, *)

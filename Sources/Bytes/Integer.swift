@@ -67,6 +67,38 @@ extension FixedWidthInteger {
     }
 }
 
+extension UInt8 {
+    /// Initialize a fixed width integer from a single ``Byte`` representing a big endian ``Swift/UInt8``.
+    /// - Parameter bigEndianByte: The ``Byte`` to interpret as a big endian integer.
+    @inlinable
+    public init(bigEndianByte: Byte) {
+        self.init(bigEndian: bigEndianByte)
+    }
+    
+    /// Initialize a fixed width integer from a single ``Byte`` representing a little endian ``Swift/UInt8``.
+    /// - Parameter littleEndianByte: The ``Byte`` to interpret as a little endian integer.
+    @inlinable
+    public init(littleEndianByte: Byte) {
+        self.init(littleEndian: littleEndianByte)
+    }
+}
+
+extension Int8 {
+    /// Initialize a fixed width integer from a single ``Byte`` representing a big endian ``Swift/Int8``.
+    /// - Parameter bigEndianByte: The ``Byte`` to interpret as a big endian integer.
+    @inlinable
+    public init(bigEndianByte: Byte) {
+        self.init(bigEndian: Self(bitPattern: bigEndianByte))
+    }
+    
+    /// Initialize a fixed width integer from a single ``Byte`` representing a little endian ``Swift/Int8``.
+    /// - Parameter littleEndianByte: The ``Byte`` to interpret as a little endian integer.
+    @inlinable
+    public init(littleEndianByte: Byte) {
+        self.init(littleEndian: Self(bitPattern: littleEndianByte))
+    }
+}
+
 extension Collection where Element: FixedWidthInteger {
     /// The big endian representations of a collection of integers.
     @inlinable
@@ -143,6 +175,46 @@ extension Collection where Element: FixedWidthInteger {
     }
 }
 
+extension Collection where Element == UInt8 {
+    /// Initialize a collection of integers with a sequence of ``Bytes`` representing a sequence of big endian ``Swift/UInt8``.
+    /// - Parameter bigEndianBytes: The ``Bytes`` to interpret as a sequence of big endian integers.
+    @inlinable
+    public init<Bytes: BytesCollection>(
+        bigEndianBytes: Bytes
+    ) where Self: RangeReplaceableCollection {
+        self.init(bytes: bigEndianBytes, mappingEach: Element.init(bigEndianByte:))
+    }
+    
+    /// Initialize a collection of integers with a sequence of ``Bytes`` representing a sequence of little endian ``Swift/UInt8``.
+    /// - Parameter littleEndianBytes: The ``Bytes`` to interpret as a sequence of little endian integers.
+    @inlinable
+    public init<Bytes: BytesCollection>(
+        littleEndianBytes: Bytes
+    ) where Self: RangeReplaceableCollection {
+        self.init(bytes: littleEndianBytes, mappingEach: Element.init(littleEndianByte:))
+    }
+}
+
+extension Collection where Element == Int8 {
+    /// Initialize a collection of integers with a sequence of ``Bytes`` representing a sequence of big endian ``Swift/Int8``.
+    /// - Parameter bigEndianBytes: The ``Bytes`` to interpret as a sequence of big endian integers.
+    @inlinable
+    public init<Bytes: BytesCollection>(
+        bigEndianBytes: Bytes
+    ) where Self: RangeReplaceableCollection {
+        self.init(bytes: bigEndianBytes, mappingEach: Element.init(bigEndianByte:))
+    }
+    
+    /// Initialize a collection of integers with a sequence of ``Bytes`` representing a sequence of little endian ``Swift/Int8``.
+    /// - Parameter littleEndianBytes: The ``Bytes`` to interpret as a sequence of little endian integers.
+    @inlinable
+    public init<Bytes: BytesCollection>(
+        littleEndianBytes: Bytes
+    ) where Self: RangeReplaceableCollection {
+        self.init(bytes: littleEndianBytes, mappingEach: Element.init(littleEndianByte:))
+    }
+}
+
 extension Set where Element: FixedWidthInteger {
     /// Initialize a Set of integers with a sequence of ``Bytes`` representing a sequence of big endian types.
     /// - Parameter bigEndianBytes: The ``Bytes`` to interpret as a sequence of big endian integers.
@@ -150,6 +222,7 @@ extension Set where Element: FixedWidthInteger {
     ///     - ``BytesError/BufferSizeError/invalidBufferSize(targetSize:targetType:actualSize:)`` if the byte sequence is not a multiple of the size of the integer type.
     ///     - ``BytesError/ContiguousBytesError/contiguousBytesUnavailable(type:)-enum.case`` if a byte sub-sequence cannot be made to be contiguous.
     @inlinable
+    @_disfavoredOverload
     public init<Bytes: BytesCollection>(
         bigEndianBytes: Bytes
     ) throws(BytesError.ContiguousBytes.BufferSizeError) {
@@ -165,6 +238,7 @@ extension Set where Element: FixedWidthInteger {
     /// - Throws:
     ///     - ``BytesError/BufferSizeError/invalidBufferSize(targetSize:targetType:actualSize:)`` if the byte sequence is not a multiple of the size of the integer type.
     @inlinable
+    @_disfavoredOverload
     public init<Bytes: BytesCollection>(
         bigEndianBytes: Bytes
     ) throws(BytesError.BufferSizeError) where Bytes.SubSequence: ContiguousBytesCollection {
@@ -181,6 +255,7 @@ extension Set where Element: FixedWidthInteger {
     ///     - ``BytesError/BufferSizeError/invalidBufferSize(targetSize:targetType:actualSize:)`` if the byte sequence is not a multiple of the size of the integer type.
     ///     - ``BytesError/ContiguousBytesError/contiguousBytesUnavailable(type:)-enum.case`` if a byte sub-sequence cannot be made to be contiguous.
     @inlinable
+    @_disfavoredOverload
     public init<Bytes: BytesCollection>(
         littleEndianBytes: Bytes
     ) throws(BytesError.ContiguousBytes.BufferSizeError) {
@@ -196,6 +271,7 @@ extension Set where Element: FixedWidthInteger {
     /// - Throws:
     ///     - ``BytesError/BufferSizeError/invalidBufferSize(targetSize:targetType:actualSize:)`` if the byte sequence is not a multiple of the size of the integer type.
     @inlinable
+    @_disfavoredOverload
     public init<Bytes: BytesCollection>(
         littleEndianBytes: Bytes
     ) throws(BytesError.BufferSizeError) where Bytes.SubSequence: ContiguousBytesCollection {
@@ -204,6 +280,46 @@ extension Set where Element: FixedWidthInteger {
         } catch {
             throw error.flattened
         }
+    }
+}
+
+extension Set where Element == UInt8 {
+    /// Initialize a Set of integers with a sequence of ``Bytes`` representing a sequence of big endian ``Swift/UInt8``.
+    /// - Parameter bigEndianBytes: The ``Bytes`` to interpret as a sequence of big endian integers.
+    @inlinable
+    public init<Bytes: BytesCollection>(
+        bigEndianBytes: Bytes
+    ) {
+        self.init(bytes: bigEndianBytes, mappingEach: Element.init(bigEndianByte:))
+    }
+    
+    /// Initialize a Set of integers with a sequence of ``Bytes`` representing a sequence of little endian ``Swift/UInt8``.
+    /// - Parameter littleEndianBytes: The ``Bytes`` to interpret as a sequence of little endian integers.
+    @inlinable
+    public init<Bytes: BytesCollection>(
+        littleEndianBytes: Bytes
+    ) {
+        self.init(bytes: littleEndianBytes, mappingEach: Element.init(littleEndianByte:))
+    }
+}
+
+extension Set where Element == Int8 {
+    /// Initialize a Set of integers with a sequence of ``Bytes`` representing a sequence of big endian ``Swift/Int8``.
+    /// - Parameter bigEndianBytes: The ``Bytes`` to interpret as a sequence of big endian integers.
+    @inlinable
+    public init<Bytes: BytesCollection>(
+        bigEndianBytes: Bytes
+    ) {
+        self.init(bytes: bigEndianBytes, mappingEach: Element.init(bigEndianByte:))
+    }
+    
+    /// Initialize a Set of integers with a sequence of ``Bytes`` representing a sequence of little endian ``Swift/Int8``.
+    /// - Parameter littleEndianBytes: The ``Bytes`` to interpret as a sequence of little endian integers.
+    @inlinable
+    public init<Bytes: BytesCollection>(
+        littleEndianBytes: Bytes
+    ) {
+        self.init(bytes: littleEndianBytes, mappingEach: Element.init(littleEndianByte:))
     }
 }
 

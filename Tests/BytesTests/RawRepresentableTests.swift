@@ -158,6 +158,24 @@ enum CharacterEnum: Character {
         }
     }
     
+    @Test func enumFromBigEndianByte() async throws {
+        #expect(try Int8Enum(bigEndianByte: 0x00) == .a)
+        #expect(try Int8Enum(bigEndianByte: 0x01) == .b)
+        #expect(try Int8Enum(bigEndianByte: 0x02) == .c)
+        
+        #expect(throws: BytesError.RawRepresentableError<Never>.invalidRawRepresentableByteSequence(rawType: "Int8")) {
+            try Int8Enum(bigEndianByte: 0x03)
+        }
+        
+        #expect(try UInt8Enum(bigEndianByte: 0x00) == .a)
+        #expect(try UInt8Enum(bigEndianByte: 0x01) == .b)
+        #expect(try UInt8Enum(bigEndianByte: 0x02) == .c)
+        
+        #expect(throws: BytesError.RawRepresentableError<Never>.invalidRawRepresentableByteSequence(rawType: "UInt8")) {
+            try UInt8Enum(bigEndianByte: 0x03)
+        }
+    }
+    
     @Test func littleEndianBytesFromEnum() async throws {
         #expect(IntEnum.a.littleEndianBytes == [0x00, 0x00])
         #expect(IntEnum.b.littleEndianBytes == [0x01, 0x00])
@@ -189,6 +207,24 @@ enum CharacterEnum: Character {
         
         #expect(throws: BytesError.RawRepresentable.BufferSizeError.invalidBufferSize(targetSize: 2, targetType: "UInt16", actualSize: 1)) {
             try IntEnum(littleEndianBytes: [0x03])
+        }
+    }
+    
+    @Test func enumFromLittleEndianByte() async throws {
+        #expect(try Int8Enum(littleEndianByte: 0x00) == .a)
+        #expect(try Int8Enum(littleEndianByte: 0x01) == .b)
+        #expect(try Int8Enum(littleEndianByte: 0x02) == .c)
+        
+        #expect(throws: BytesError.RawRepresentableError<Never>.invalidRawRepresentableByteSequence(rawType: "Int8")) {
+            try Int8Enum(littleEndianByte: 0x03)
+        }
+        
+        #expect(try UInt8Enum(littleEndianByte: 0x00) == .a)
+        #expect(try UInt8Enum(littleEndianByte: 0x01) == .b)
+        #expect(try UInt8Enum(littleEndianByte: 0x02) == .c)
+        
+        #expect(throws: BytesError.RawRepresentableError<Never>.invalidRawRepresentableByteSequence(rawType: "UInt8")) {
+            try UInt8Enum(littleEndianByte: 0x03)
         }
     }
     
@@ -264,6 +300,22 @@ enum CharacterEnum: Character {
         }
     }
     
+    @Test func uint8EnumCollectionFromBigEndianBytes() async throws {
+        #expect(try Array<UInt8Enum>(bigEndianBytes: [0x00, 0x01, 0x02]) == [.a, .b, .c])
+        
+        #expect(throws: BytesError.RawRepresentableError<Never>.invalidRawRepresentableByteSequence(rawType: "UInt8")) {
+            try Array<UInt8Enum>(bigEndianBytes: [0x00, 0x01, 0x03])
+        }
+    }
+    
+    @Test func int8EnumCollectionFromBigEndianBytes() async throws {
+        #expect(try Array<Int8Enum>(bigEndianBytes: [0x00, 0x01, 0x02]) == [.a, .b, .c])
+        
+        #expect(throws: BytesError.RawRepresentableError<Never>.invalidRawRepresentableByteSequence(rawType: "Int8")) {
+            try Array<Int8Enum>(bigEndianBytes: [0x00, 0x01, 0x03])
+        }
+    }
+    
     @Test func littleEndianBytesFromEnumCollection() async throws {
         #expect([IntEnum.a, .b, .c].littleEndianBytes == [0x00, 0x00, 0x01, 0x00, 0x02, 0x00])
     }
@@ -277,6 +329,22 @@ enum CharacterEnum: Character {
         
         #expect(throws: BytesError.RawRepresentable.ContiguousBytes.BufferSizeError.invalidBufferSize(targetSize: 4, targetType: "UInt16<2>", actualSize: 3)) {
             try Array<IntEnum>(littleEndianBytes: [0x00, 0x00, 0x00])
+        }
+    }
+    
+    @Test func uint8EnumCollectionFromLittleEndianBytes() async throws {
+        #expect(try Array<UInt8Enum>(littleEndianBytes: [0x00, 0x01, 0x02]) == [.a, .b, .c])
+        
+        #expect(throws: BytesError.RawRepresentableError<Never>.invalidRawRepresentableByteSequence(rawType: "UInt8")) {
+            try Array<UInt8Enum>(littleEndianBytes: [0x00, 0x01, 0x03])
+        }
+    }
+    
+    @Test func int8EnumCollectionFromLittleEndianBytes() async throws {
+        #expect(try Array<Int8Enum>(littleEndianBytes: [0x00, 0x01, 0x02]) == [.a, .b, .c])
+        
+        #expect(throws: BytesError.RawRepresentableError<Never>.invalidRawRepresentableByteSequence(rawType: "Int8")) {
+            try Array<Int8Enum>(littleEndianBytes: [0x00, 0x01, 0x03])
         }
     }
     
@@ -308,6 +376,22 @@ enum CharacterEnum: Character {
         }
     }
     
+    @Test func uint8EnumSetFromBigEndianBytes() async throws {
+        #expect(try Set<UInt8Enum>(bigEndianBytes: [0x00, 0x01, 0x00, 0x02, 0x01, 0x01]) == [.a, .b, .c])
+        
+        #expect(throws: BytesError.RawRepresentableError<Never>.invalidRawRepresentableByteSequence(rawType: "UInt8")) {
+            try Set<UInt8Enum>(bigEndianBytes: [0x00, 0x01, 0x03, 0x01])
+        }
+    }
+    
+    @Test func int8EnumSetFromBigEndianBytes() async throws {
+        #expect(try Set<Int8Enum>(bigEndianBytes: [0x00, 0x01, 0x00, 0x02, 0x01, 0x01]) == [.a, .b, .c])
+        
+        #expect(throws: BytesError.RawRepresentableError<Never>.invalidRawRepresentableByteSequence(rawType: "Int8")) {
+            try Set<Int8Enum>(bigEndianBytes: [0x00, 0x01, 0x03, 0x01])
+        }
+    }
+    
     @Test func enumSetFromNonContiguousLittleEndianBytes() async throws {
         #expect(try Set<IntEnum>(littleEndianBytes: [0x00, 0x00, 0x01, 0x00, 0x02, 0x00, 0x00, 0x00, 0x01, 0x00, 0x02, 0x00]) == [.a, .b, .c])
         
@@ -317,6 +401,22 @@ enum CharacterEnum: Character {
         
         #expect(throws: BytesError.RawRepresentable.ContiguousBytes.BufferSizeError.invalidBufferSize(targetSize: 4, targetType: "UInt16<2>", actualSize: 3)) {
             try Set<IntEnum>(littleEndianBytes: [0x00, 0x00, 0x00])
+        }
+    }
+    
+    @Test func uint8EnumSetFromLittleEndianBytes() async throws {
+        #expect(try Set<UInt8Enum>(littleEndianBytes: [0x00, 0x01, 0x00, 0x02, 0x01, 0x01]) == [.a, .b, .c])
+        
+        #expect(throws: BytesError.RawRepresentableError<Never>.invalidRawRepresentableByteSequence(rawType: "UInt8")) {
+            try Set<UInt8Enum>(littleEndianBytes: [0x00, 0x01, 0x03, 0x01])
+        }
+    }
+    
+    @Test func int8EnumSetFromLittleEndianBytes() async throws {
+        #expect(try Set<Int8Enum>(littleEndianBytes: [0x00, 0x01, 0x00, 0x02, 0x01, 0x01]) == [.a, .b, .c])
+        
+        #expect(throws: BytesError.RawRepresentableError<Never>.invalidRawRepresentableByteSequence(rawType: "Int8")) {
+            try Set<Int8Enum>(littleEndianBytes: [0x00, 0x01, 0x03, 0x01])
         }
     }
     

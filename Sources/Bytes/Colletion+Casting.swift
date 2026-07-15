@@ -167,6 +167,31 @@ extension Collection {
 }
 
 extension RangeReplaceableCollection {
+    /// Creates a new collection from a sequence of bytes, transforming single bytes into the element type of the collection.
+    /// - Parameters:
+    ///   - bytes: The bytes to transform.
+    ///   - transform: The transformation to perform on each element.
+    /// - Throws:
+    ///     - The same error as the `transform` closure if it threw an error.
+    @inlinable
+    @_disfavoredOverload
+    public init<
+        Bytes: BytesCollection,
+        TransformationFailure: Error
+    >(
+        bytes: Bytes,
+        mappingEach transform: (Byte) throws(TransformationFailure) -> Self.Element
+    ) throws(TransformationFailure) {
+        var result = Self()
+        result.reserveCapacity(bytes.count)
+        
+        for byte in bytes {
+            result.append(try transform(byte))
+        }
+        
+        self = result
+    }
+    
     /// Creates a new collection from a sequence of bytes, transforming batches of bytes into the element type of the collection.
     /// - Parameters:
     ///   - bytes: The bytes to transform.
@@ -289,6 +314,31 @@ extension RangeReplaceableCollection {
 }
 
 extension Set {
+    /// Creates a new Set from a sequence of bytes, transforming single bytes into the element type of the Set.
+    /// - Parameters:
+    ///   - bytes: The bytes to transform.
+    ///   - transform: The transformation to perform on each element.
+    /// - Throws:
+    ///     - The same error as the `transform` closure if it threw an error.
+    @inlinable
+    @_disfavoredOverload
+    public init<
+        Bytes: BytesCollection,
+        TransformationFailure: Error
+    >(
+        bytes: Bytes,
+        mappingEach transform: (Byte) throws(TransformationFailure) -> Self.Element
+    ) throws(TransformationFailure) {
+        var result = Self()
+        result.reserveCapacity(bytes.count)
+        
+        for byte in bytes {
+            result.insert(try transform(byte))
+        }
+        
+        self = result
+    }
+    
     /// Creates a new Set from a sequence of bytes, transforming batches of bytes into the element type of the Set.
     /// - Parameters:
     ///   - bytes: The bytes to transform.

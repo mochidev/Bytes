@@ -215,6 +215,16 @@ import Testing
         }
     }
     
+    @Test func integerFromBigEndianByte() async throws {
+        #expect(UInt8(bigEndianByte: 0x00) == 0x00)
+        #expect(UInt8(bigEndianByte: 0x01) == 0x01)
+        #expect(UInt8(bigEndianByte: 0xff) == 0xff)
+        
+        #expect(Int8(bigEndianByte: 0x00) == 0x00)
+        #expect(Int8(bigEndianByte: 0x01) == 0x01)
+        #expect(Int8(bigEndianByte: 0xff) == -0x01)
+    }
+    
     @Test func littleEndianBytesFromInteger() async throws {
         #expect(UInt8(0x00).littleEndianBytes == [0x00])
         #expect(UInt8(0x01).littleEndianBytes == [0x01])
@@ -419,6 +429,16 @@ import Testing
         }
     }
     
+    @Test func integerFromLittleEndianByte() async throws {
+        #expect(UInt8(littleEndianByte: 0x00) == 0x00)
+        #expect(UInt8(littleEndianByte: 0x01) == 0x01)
+        #expect(UInt8(littleEndianByte: 0xff) == 0xff)
+        
+        #expect(Int8(littleEndianByte: 0x00) == 0x00)
+        #expect(Int8(littleEndianByte: 0x01) == 0x01)
+        #expect(Int8(littleEndianByte: 0xff) == -0x01)
+    }
+    
     @Test func bytesFromIntegerCollection() async throws {
         let integers: [UInt16] = [0x0001, 0x0010, 0x0100, 0x1000]
         #expect(integers.bigEndianBytes == [0x00,0x01,0x00,0x10,0x01,0x00,0x10,0x00])
@@ -427,7 +447,8 @@ import Testing
     
     @Test func integerCollectionFromNonContiguousBigEndianBytes() async throws {
         let bytes: any BytesCollection = [0x00, 0x01, 0x00, 0x10, 0x01, 0x00, 0x10, 0x00, 0x11, 0x10, 0x11, 0x01, 0x10, 0x11, 0x01, 0x11]
-        #expect(try [UInt8](bigEndianBytes: bytes) == [0x00, 0x01, 0x00, 0x10, 0x01, 0x00, 0x10, 0x00, 0x11, 0x10, 0x11, 0x01, 0x10, 0x11, 0x01, 0x11])
+        #expect([UInt8](bigEndianBytes: bytes) == [0x00, 0x01, 0x00, 0x10, 0x01, 0x00, 0x10, 0x00, 0x11, 0x10, 0x11, 0x01, 0x10, 0x11, 0x01, 0x11])
+        #expect([Int8](bigEndianBytes: bytes) == [0x00, 0x01, 0x00, 0x10, 0x01, 0x00, 0x10, 0x00, 0x11, 0x10, 0x11, 0x01, 0x10, 0x11, 0x01, 0x11])
         #expect(try [UInt16](bigEndianBytes: bytes) == [0x0001, 0x0010, 0x0100, 0x1000, 0x1110, 0x1101, 0x1011, 0x0111])
         #expect(try [UInt32](bigEndianBytes: bytes) == [0x0001_0010, 0x0100_1000, 0x1110_1101, 0x1011_0111])
         #expect(try [UInt64](bigEndianBytes: bytes) == [0x0001_0010_0100_1000, 0x1110_1101_1011_0111])
@@ -436,7 +457,8 @@ import Testing
         }
         
         let emptyBytes: any BytesCollection = []
-        #expect(try [UInt8](bigEndianBytes: emptyBytes) == [])
+        #expect([UInt8](bigEndianBytes: emptyBytes) == [])
+        #expect([Int8](bigEndianBytes: emptyBytes) == [])
         #expect(try [UInt16](bigEndianBytes: emptyBytes) == [])
         #expect(try [UInt32](bigEndianBytes: emptyBytes) == [])
         #expect(try [UInt64](bigEndianBytes: emptyBytes) == [])
@@ -463,7 +485,8 @@ import Testing
     
     @Test func integerCollectionFromContiguousBigEndianBytes() async throws {
         let bytes: Bytes = [0x00, 0x01, 0x00, 0x10, 0x01, 0x00, 0x10, 0x00, 0x11, 0x10, 0x11, 0x01, 0x10, 0x11, 0x01, 0x11]
-        #expect(try [UInt8](bigEndianBytes: bytes) == [0x00, 0x01, 0x00, 0x10, 0x01, 0x00, 0x10, 0x00, 0x11, 0x10, 0x11, 0x01, 0x10, 0x11, 0x01, 0x11])
+        #expect([UInt8](bigEndianBytes: bytes) == [0x00, 0x01, 0x00, 0x10, 0x01, 0x00, 0x10, 0x00, 0x11, 0x10, 0x11, 0x01, 0x10, 0x11, 0x01, 0x11])
+        #expect([Int8](bigEndianBytes: bytes) == [0x00, 0x01, 0x00, 0x10, 0x01, 0x00, 0x10, 0x00, 0x11, 0x10, 0x11, 0x01, 0x10, 0x11, 0x01, 0x11])
         #expect(try [UInt16](bigEndianBytes: bytes) == [0x0001, 0x0010, 0x0100, 0x1000, 0x1110, 0x1101, 0x1011, 0x0111])
         #expect(try [UInt32](bigEndianBytes: bytes) == [0x0001_0010, 0x0100_1000, 0x1110_1101, 0x1011_0111])
         #expect(try [UInt64](bigEndianBytes: bytes) == [0x0001_0010_0100_1000, 0x1110_1101_1011_0111])
@@ -472,7 +495,8 @@ import Testing
         }
         
         let emptyBytes: Bytes = []
-        #expect(try [UInt8](bigEndianBytes: emptyBytes) == [])
+        #expect([UInt8](bigEndianBytes: emptyBytes) == [])
+        #expect([Int8](bigEndianBytes: emptyBytes) == [])
         #expect(try [UInt16](bigEndianBytes: emptyBytes) == [])
         #expect(try [UInt32](bigEndianBytes: emptyBytes) == [])
         #expect(try [UInt64](bigEndianBytes: emptyBytes) == [])
@@ -499,7 +523,8 @@ import Testing
     
     @Test func integerSetFromNonContiguousBigEndianBytes() async throws {
         let bytes: any BytesCollection = [0x00, 0x01, 0x00, 0x10, 0x01, 0x00, 0x10, 0x00, 0x11, 0x10, 0x11, 0x01, 0x10, 0x11, 0x01, 0x11]
-        #expect(try Set<UInt8>(bigEndianBytes: bytes) == [0x00, 0x01, 0x10, 0x11])
+        #expect(Set<UInt8>(bigEndianBytes: bytes) == [0x00, 0x01, 0x10, 0x11])
+        #expect(Set<Int8>(bigEndianBytes: bytes) == [0x00, 0x01, 0x10, 0x11])
         #expect(try Set<UInt16>(bigEndianBytes: bytes) == [0x0001, 0x0010, 0x0100, 0x1000, 0x1110, 0x1101, 0x1011, 0x0111])
         #expect(try Set<UInt32>(bigEndianBytes: bytes) == [0x0001_0010, 0x0100_1000, 0x1110_1101, 0x1011_0111])
         #expect(try Set<UInt64>(bigEndianBytes: bytes) == [0x0001_0010_0100_1000, 0x1110_1101_1011_0111])
@@ -508,7 +533,8 @@ import Testing
         }
         
         let emptyBytes: any BytesCollection = []
-        #expect(try Set<UInt8>(bigEndianBytes: emptyBytes) == [])
+        #expect(Set<UInt8>(bigEndianBytes: emptyBytes) == [])
+        #expect(Set<Int8>(bigEndianBytes: emptyBytes) == [])
         #expect(try Set<UInt16>(bigEndianBytes: emptyBytes) == [])
         #expect(try Set<UInt32>(bigEndianBytes: emptyBytes) == [])
         #expect(try Set<UInt64>(bigEndianBytes: emptyBytes) == [])
@@ -535,7 +561,8 @@ import Testing
     
     @Test func integerSetFromContiguousBigEndianBytes() async throws {
         let bytes: Bytes = [0x00, 0x01, 0x00, 0x10, 0x01, 0x00, 0x10, 0x00, 0x11, 0x10, 0x11, 0x01, 0x10, 0x11, 0x01, 0x11]
-        #expect(try Set<UInt8>(bigEndianBytes: bytes) == [0x00, 0x01, 0x10, 0x11])
+        #expect(Set<UInt8>(bigEndianBytes: bytes) == [0x00, 0x01, 0x10, 0x11])
+        #expect(Set<Int8>(bigEndianBytes: bytes) == [0x00, 0x01, 0x10, 0x11])
         #expect(try Set<UInt16>(bigEndianBytes: bytes) == [0x0001, 0x0010, 0x0100, 0x1000, 0x1110, 0x1101, 0x1011, 0x0111])
         #expect(try Set<UInt32>(bigEndianBytes: bytes) == [0x0001_0010, 0x0100_1000, 0x1110_1101, 0x1011_0111])
         #expect(try Set<UInt64>(bigEndianBytes: bytes) == [0x0001_0010_0100_1000, 0x1110_1101_1011_0111])
@@ -544,7 +571,8 @@ import Testing
         }
         
         let emptyBytes: Bytes = []
-        #expect(try Set<UInt8>(bigEndianBytes: emptyBytes) == [])
+        #expect(Set<UInt8>(bigEndianBytes: emptyBytes) == [])
+        #expect(Set<Int8>(bigEndianBytes: emptyBytes) == [])
         #expect(try Set<UInt16>(bigEndianBytes: emptyBytes) == [])
         #expect(try Set<UInt32>(bigEndianBytes: emptyBytes) == [])
         #expect(try Set<UInt64>(bigEndianBytes: emptyBytes) == [])
@@ -571,7 +599,8 @@ import Testing
     
     @Test func integerCollectionFromNonContiguousLittleEndianBytes() async throws {
         let bytes: any BytesCollection = [0x00, 0x01, 0x00, 0x10, 0x01, 0x00, 0x10, 0x00, 0x11, 0x10, 0x11, 0x01, 0x10, 0x11, 0x01, 0x11]
-        #expect(try [UInt8](littleEndianBytes: bytes) == [0x00, 0x01, 0x00, 0x10, 0x01, 0x00, 0x10, 0x00, 0x11, 0x10, 0x11, 0x01, 0x10, 0x11, 0x01, 0x11])
+        #expect([UInt8](littleEndianBytes: bytes) == [0x00, 0x01, 0x00, 0x10, 0x01, 0x00, 0x10, 0x00, 0x11, 0x10, 0x11, 0x01, 0x10, 0x11, 0x01, 0x11])
+        #expect([Int8](littleEndianBytes: bytes) == [0x00, 0x01, 0x00, 0x10, 0x01, 0x00, 0x10, 0x00, 0x11, 0x10, 0x11, 0x01, 0x10, 0x11, 0x01, 0x11])
         #expect(try [UInt16](littleEndianBytes: bytes) == [0x0100, 0x1000, 0x0001, 0x0010, 0x1011, 0x0111, 0x1110, 0x1101])
         #expect(try [UInt32](littleEndianBytes: bytes) == [0x1000_0100, 0x0010_0001, 0x0111_1011, 0x1101_1110])
         #expect(try [UInt64](littleEndianBytes: bytes) == [0x0010_0001_1000_0100, 0x1101_1110_0111_1011])
@@ -580,7 +609,8 @@ import Testing
         }
         
         let emptyBytes: any BytesCollection = []
-        #expect(try [UInt8](littleEndianBytes: emptyBytes) == [])
+        #expect([UInt8](littleEndianBytes: emptyBytes) == [])
+        #expect([Int8](littleEndianBytes: emptyBytes) == [])
         #expect(try [UInt16](littleEndianBytes: emptyBytes) == [])
         #expect(try [UInt32](littleEndianBytes: emptyBytes) == [])
         #expect(try [UInt64](littleEndianBytes: emptyBytes) == [])
@@ -607,7 +637,8 @@ import Testing
     
     @Test func integerCollectionFromContiguousLittleEndianBytes() async throws {
         let bytes: Bytes = [0x00, 0x01, 0x00, 0x10, 0x01, 0x00, 0x10, 0x00, 0x11, 0x10, 0x11, 0x01, 0x10, 0x11, 0x01, 0x11]
-        #expect(try [UInt8](littleEndianBytes: bytes) == [0x00, 0x01, 0x00, 0x10, 0x01, 0x00, 0x10, 0x00, 0x11, 0x10, 0x11, 0x01, 0x10, 0x11, 0x01, 0x11])
+        #expect([UInt8](littleEndianBytes: bytes) == [0x00, 0x01, 0x00, 0x10, 0x01, 0x00, 0x10, 0x00, 0x11, 0x10, 0x11, 0x01, 0x10, 0x11, 0x01, 0x11])
+        #expect([Int8](littleEndianBytes: bytes) == [0x00, 0x01, 0x00, 0x10, 0x01, 0x00, 0x10, 0x00, 0x11, 0x10, 0x11, 0x01, 0x10, 0x11, 0x01, 0x11])
         #expect(try [UInt16](littleEndianBytes: bytes) == [0x0100, 0x1000, 0x0001, 0x0010, 0x1011, 0x0111, 0x1110, 0x1101])
         #expect(try [UInt32](littleEndianBytes: bytes) == [0x1000_0100, 0x0010_0001, 0x0111_1011, 0x1101_1110])
         #expect(try [UInt64](littleEndianBytes: bytes) == [0x0010_0001_1000_0100, 0x1101_1110_0111_1011])
@@ -616,7 +647,8 @@ import Testing
         }
         
         let emptyBytes: Bytes = []
-        #expect(try [UInt8](littleEndianBytes: emptyBytes) == [])
+        #expect([UInt8](littleEndianBytes: emptyBytes) == [])
+        #expect([Int8](littleEndianBytes: emptyBytes) == [])
         #expect(try [UInt16](littleEndianBytes: emptyBytes) == [])
         #expect(try [UInt32](littleEndianBytes: emptyBytes) == [])
         #expect(try [UInt64](littleEndianBytes: emptyBytes) == [])
@@ -643,7 +675,8 @@ import Testing
     
     @Test func integerSetFromNonContiguousLittleEndianBytes() async throws {
         let bytes: any BytesCollection = [0x00, 0x01, 0x00, 0x10, 0x01, 0x00, 0x10, 0x00, 0x11, 0x10, 0x11, 0x01, 0x10, 0x11, 0x01, 0x11]
-        #expect(try Set<UInt8>(littleEndianBytes: bytes) == [0x00, 0x01, 0x10, 0x11])
+        #expect(Set<UInt8>(littleEndianBytes: bytes) == [0x00, 0x01, 0x10, 0x11])
+        #expect(Set<Int8>(littleEndianBytes: bytes) == [0x00, 0x01, 0x10, 0x11])
         #expect(try Set<UInt16>(littleEndianBytes: bytes) == [0x0001, 0x0010, 0x0100, 0x1000, 0x1110, 0x1101, 0x1011, 0x0111])
         #expect(try Set<UInt32>(littleEndianBytes: bytes) == [0x1000_0100, 0x0010_0001, 0x0111_1011, 0x1101_1110])
         #expect(try Set<UInt64>(littleEndianBytes: bytes) == [0x0010_0001_1000_0100, 0x1101_1110_0111_1011])
@@ -652,7 +685,8 @@ import Testing
         }
         
         let emptyBytes: any BytesCollection = []
-        #expect(try Set<UInt8>(littleEndianBytes: emptyBytes) == [])
+        #expect(Set<UInt8>(littleEndianBytes: emptyBytes) == [])
+        #expect(Set<Int8>(littleEndianBytes: emptyBytes) == [])
         #expect(try Set<UInt16>(littleEndianBytes: emptyBytes) == [])
         #expect(try Set<UInt32>(littleEndianBytes: emptyBytes) == [])
         #expect(try Set<UInt64>(littleEndianBytes: emptyBytes) == [])
@@ -679,7 +713,8 @@ import Testing
     
     @Test func integerSetFromContiguousLittleEndianBytes() async throws {
         let bytes: Bytes = [0x00, 0x01, 0x00, 0x10, 0x01, 0x00, 0x10, 0x00, 0x11, 0x10, 0x11, 0x01, 0x10, 0x11, 0x01, 0x11]
-        #expect(try Set<UInt8>(littleEndianBytes: bytes) == [0x00, 0x01, 0x10, 0x11])
+        #expect(Set<UInt8>(littleEndianBytes: bytes) == [0x00, 0x01, 0x10, 0x11])
+        #expect(Set<Int8>(littleEndianBytes: bytes) == [0x00, 0x01, 0x10, 0x11])
         #expect(try Set<UInt16>(littleEndianBytes: bytes) == [0x0001, 0x0010, 0x0100, 0x1000, 0x1110, 0x1101, 0x1011, 0x0111])
         #expect(try Set<UInt32>(littleEndianBytes: bytes) == [0x1000_0100, 0x0010_0001, 0x0111_1011, 0x1101_1110])
         #expect(try Set<UInt64>(littleEndianBytes: bytes) == [0x0010_0001_1000_0100, 0x1101_1110_0111_1011])
@@ -688,7 +723,8 @@ import Testing
         }
         
         let emptyBytes: Bytes = []
-        #expect(try Set<UInt8>(littleEndianBytes: emptyBytes) == [])
+        #expect(Set<UInt8>(littleEndianBytes: emptyBytes) == [])
+        #expect(Set<Int8>(littleEndianBytes: emptyBytes) == [])
         #expect(try Set<UInt16>(littleEndianBytes: emptyBytes) == [])
         #expect(try Set<UInt32>(littleEndianBytes: emptyBytes) == [])
         #expect(try Set<UInt64>(littleEndianBytes: emptyBytes) == [])

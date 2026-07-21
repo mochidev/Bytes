@@ -30,6 +30,7 @@ extension Collection where Element == Byte {
     ///     - ``BytesError/ContiguousBytesError/contiguousBytesUnavailable(type:)-enum.case`` if contiguous memory could not be made available.
     /// - Returns: An instance represented by the ``Bytes`` sequence.
     @inlinable
+    @_disfavoredOverload
     public func casting<R>(
         to target: R.Type = R.self,
         targetType: String? = nil

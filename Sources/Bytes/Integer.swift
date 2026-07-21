@@ -20,6 +20,7 @@ extension FixedWidthInteger {
     ///     - ``BytesError/BufferSizeError/invalidBufferSize(targetSize:targetType:actualSize:)`` if the byte sequence does not match the size of the integer type.
     ///     - ``BytesError/ContiguousBytesError/contiguousBytesUnavailable(type:)-enum.case`` if the byte sequence cannot be made to be contiguous.
     @inlinable
+    @_disfavoredOverload
     public init<Bytes: BytesCollection>(
         bigEndianBytes: Bytes
     ) throws(BytesError.ContiguousBytes.BufferSizeError) {
@@ -49,6 +50,7 @@ extension FixedWidthInteger {
     ///     - ``BytesError/BufferSizeError/invalidBufferSize(targetSize:targetType:actualSize:)`` if the byte sequence does not match the size of the integer type.
     ///     - ``BytesError/ContiguousBytesError/contiguousBytesUnavailable(type:)-enum.case`` if the byte sequence cannot be made to be contiguous.
     @inlinable
+    @_disfavoredOverload
     public init<Bytes: BytesCollection>(
         littleEndianBytes: Bytes
     ) throws(BytesError.ContiguousBytes.BufferSizeError) {
@@ -112,6 +114,7 @@ extension Collection where Element: FixedWidthInteger {
     ///     - ``BytesError/BufferSizeError/invalidBufferSize(targetSize:targetType:actualSize:)`` if the byte sequence is not a multiple of the size of the integer type.
     ///     - ``BytesError/ContiguousBytesError/contiguousBytesUnavailable(type:)-enum.case`` if a byte sub-sequence cannot be made to be contiguous.
     @inlinable
+    @_disfavoredOverload
     public init<Bytes: BytesCollection>(
         bigEndianBytes: Bytes
     ) throws(BytesError.ContiguousBytes.BufferSizeError) where Self: RangeReplaceableCollection {
@@ -149,6 +152,7 @@ extension Collection where Element: FixedWidthInteger {
     ///     - ``BytesError/BufferSizeError/invalidBufferSize(targetSize:targetType:actualSize:)`` if the byte sequence is not a multiple of the size of the integer type.
     ///     - ``BytesError/ContiguousBytesError/contiguousBytesUnavailable(type:)-enum.case`` if a byte sub-sequence cannot be made to be contiguous.
     @inlinable
+    @_disfavoredOverload
     public init<Bytes: BytesCollection>(
         littleEndianBytes: Bytes
     ) throws(BytesError.ContiguousBytes.BufferSizeError) where Self: RangeReplaceableCollection {

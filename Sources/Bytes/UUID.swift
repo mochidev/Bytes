@@ -40,6 +40,7 @@ extension UUID {
     /// - Throws:
     ///     - ``BytesError/BufferSizeError/invalidBufferSize(targetSize:targetType:actualSize:)`` if the byte sequence is not 16-bytes.
     @inlinable
+    @_disfavoredOverload
     public init<Bytes: BytesCollection>(
         bytes: Bytes
     ) throws(BytesError.BufferSizeError) {
@@ -98,6 +99,7 @@ extension Collection where Element == UUID {
     /// - Throws:
     ///     - ``BytesError/BufferSizeError/invalidBufferSize(targetSize:targetType:actualSize:)`` if the byte sequence is not a multiple of 16-bytes.
     @inlinable
+    @_disfavoredOverload
     public init<Bytes: BytesCollection & Sendable>(
         bytes: Bytes
     ) throws(BytesError.BufferSizeError) where Self: RangeReplaceableCollection {
@@ -154,6 +156,7 @@ extension Set where Element == UUID {
     /// - Throws:
     ///     - ``BytesError/BufferSizeError/invalidBufferSize(targetSize:targetType:actualSize:)`` if the byte sequence is not a multiple of 16-bytes.
     @inlinable
+    @_disfavoredOverload
     public init<Bytes: BytesCollection & Sendable>(
         bytes: Bytes
     ) throws(BytesError.BufferSizeError) {

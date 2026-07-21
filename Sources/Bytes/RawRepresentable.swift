@@ -21,6 +21,7 @@ extension RawRepresentable {
     ///     - ``BytesError/ContiguousBytesError/contiguousBytesUnavailable(type:)-enum.case`` if the byte sequence cannot be made to be contiguous.
     ///     - ``BytesError/RawRepresentableError/invalidRawRepresentableByteSequence(rawType:)-enum.case`` if the byte sequence does not correspond with a valid raw value.
     @inlinable
+    @_disfavoredOverload
     public init<Bytes: BytesCollection>(
         rawBytes: Bytes
     ) throws(BytesError.RawRepresentable.ContiguousBytes.BufferSizeError) {
@@ -70,6 +71,7 @@ extension RawRepresentable where RawValue: FixedWidthInteger {
     ///     - ``BytesError/ContiguousBytesError/contiguousBytesUnavailable(type:)-enum.case`` if the byte sequence cannot be made to be contiguous.
     ///     - ``BytesError/RawRepresentableError/invalidRawRepresentableByteSequence(rawType:)-enum.case`` if the integer does not correspond with a valid raw value.
     @inlinable
+    @_disfavoredOverload
     public init<Bytes: BytesCollection>(
         bigEndianBytes: Bytes
     ) throws(BytesError.RawRepresentable.ContiguousBytes.BufferSizeError) {
@@ -117,6 +119,7 @@ extension RawRepresentable where RawValue: FixedWidthInteger {
     ///     - ``BytesError/ContiguousBytesError/contiguousBytesUnavailable(type:)-enum.case`` if the byte sequence cannot be made to be contiguous.
     ///     - ``BytesError/RawRepresentableError/invalidRawRepresentableByteSequence(rawType:)-enum.case`` if the integer does not correspond with a valid raw value.
     @inlinable
+    @_disfavoredOverload
     public init<Bytes: BytesCollection>(
         littleEndianBytes: Bytes
     ) throws(BytesError.RawRepresentable.ContiguousBytes.BufferSizeError) {

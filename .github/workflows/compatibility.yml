@@ -156,3 +156,75 @@ jobs:
     - name: Build
       run: |
         swift build --configuration debug
+
+  Build-Release-6-4:
+    name: Build Swift 6.4 Release
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+    - name: Checkout Source
+      uses: actions/checkout@v6
+    - name: Set Swift Version
+      uses: vapor/swiftly-action@v0.2
+      with:
+        toolchain: "6.4.x-snapshot"
+    - name: Swift Version
+      run: |
+        swift --version
+    - name: Build
+      run: |
+        swift build --configuration release
+
+  Build-Debug-6-4:
+    name: Build Swift 6.4 Debug
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+    - name: Checkout Source
+      uses: actions/checkout@v6
+    - name: Set Swift Version
+      uses: vapor/swiftly-action@v0.2
+      with:
+        toolchain: "6.4.x-snapshot"
+    - name: Swift Version
+      run: |
+        swift --version
+    - name: Build
+      run: |
+        swift build --configuration debug
+
+  Build-Release-main:
+    name: Build Swift main Release
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+    - name: Checkout Source
+      uses: actions/checkout@v6
+    - name: Set Swift Version
+      uses: vapor/swiftly-action@v0.2
+      with:
+        toolchain: "main-snapshot"
+    - name: Swift Version
+      run: |
+        swift --version
+    - name: Build
+      run: |
+        swift build --configuration release
+
+  Build-Debug-main:
+    name: Build Swift main Debug
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+    - name: Checkout Source
+      uses: actions/checkout@v6
+    - name: Set Swift Version
+      uses: vapor/swiftly-action@v0.2
+      with:
+        toolchain: "main-snapshot"
+    - name: Swift Version
+      run: |
+        swift --version
+    - name: Build
+      run: |
+        swift build --configuration debug

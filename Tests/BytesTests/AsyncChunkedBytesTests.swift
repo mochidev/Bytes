@@ -11,6 +11,7 @@ import Bytes
 import Testing
 
 @Suite struct AsyncChunkedBytesTests {
+    #if !os(iOS) && !os(tvOS) && !os(watchOS) && !os(visionOS)
     @Test func chunkedInvalidInput() async throws {
         await #expect(processExitsWith: .failure) {
             let sequence = AsyncTestSequence()
@@ -29,6 +30,7 @@ import Testing
             _ = sequence.chuncked(0)
         }
     }
+    #endif
     
     @Test func chunked() async throws {
         let sequence = AsyncTestSequence()

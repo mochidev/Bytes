@@ -48,6 +48,7 @@ import Testing
     }
     
     @Suite struct StringByteIteratorTests {
+        #if !os(iOS) && !os(tvOS) && !os(watchOS) && !os(visionOS)
         @Test func nextUTF8StringCountInvalidInput() async throws {
             await #expect(processExitsWith: .failure) {
                 let bytes: Bytes = [72, 101, 108, 108, 111, 44, 32, 87, 111, 114, 108, 100, 33]
@@ -55,6 +56,7 @@ import Testing
                 _ = try iterator.next(utf8: String.self, count: -1)
             }
         }
+        #endif
         
         @Test func nextUTF8StringCount() async throws {
             let bytes: Bytes = [72, 101, 108, 108, 111, 44, 32, 87, 111, 114, 108, 100, 33]
@@ -69,6 +71,7 @@ import Testing
             }
         }
         
+        #if !os(iOS) && !os(tvOS) && !os(watchOS) && !os(visionOS)
         @Test func nextUTF8StringMinMaxInvalidInput() async throws {
             await #expect(processExitsWith: .failure) {
                 let bytes: Bytes = [72, 101, 108, 108, 111, 44, 32, 87, 111, 114, 108, 100, 33]
@@ -86,6 +89,7 @@ import Testing
                 _ = try iterator.next(utf8: String.self, min: 1, max: 0)
             }
         }
+        #endif
         
         @Test func nextUTF8StringMinMax() async throws {
             let bytes: Bytes = [72, 101, 108, 108, 111, 44, 32, 87, 111, 114, 108, 100, 33]
@@ -101,6 +105,7 @@ import Testing
             }
         }
         
+        #if !os(iOS) && !os(tvOS) && !os(watchOS) && !os(visionOS)
         @Test func nextIfPresentUTF8StringCountInvalidInput() async throws {
             await #expect(processExitsWith: .failure) {
                 let bytes: Bytes = [72, 101, 108, 108, 111, 44, 32, 87, 111, 114, 108, 100, 33]
@@ -108,6 +113,7 @@ import Testing
                 _ = try iterator.nextIfPresent(utf8: String.self, count: -1)
             }
         }
+        #endif
         
         @Test func nextIfPresentUTF8StringCount() async throws {
             let bytes: Bytes = [72, 101, 108, 108, 111, 44, 32, 87, 111, 114, 108, 100, 33]
@@ -138,6 +144,7 @@ import Testing
             #expect(try iterator.nextIfPresent(utf8: String.self, count: 0) == "")
         }
         
+        #if !os(iOS) && !os(tvOS) && !os(watchOS) && !os(visionOS)
         @Test func nextIfPresentUTF8StringMinMaxInvalidInput() async throws {
             await #expect(processExitsWith: .failure) {
                 let bytes: Bytes = [72, 101, 108, 108, 111, 44, 32, 87, 111, 114, 108, 100, 33]
@@ -155,6 +162,7 @@ import Testing
                 _ = try iterator.nextIfPresent(utf8: String.self, min: 1, max: 0)
             }
         }
+        #endif
         
         @Test func nextIfPresentUTF8StringMinMax() async throws {
             let bytes: Bytes = [72, 101, 108, 108, 111, 44, 32, 87, 111, 114, 108, 100, 33]
@@ -292,6 +300,7 @@ import Testing
     
     #if canImport(Darwin)
     @Suite struct StringLegacyAsyncByteIteratorTests {
+        #if !os(iOS) && !os(tvOS) && !os(watchOS) && !os(visionOS)
         @Test func nextUTF8StringCountInvalidInput() async throws {
             await #expect(processExitsWith: .failure) {
                 var iterator = AsyncTestIterator([72, 101, 108, 108, 111, 44, 32, 87, 111, 114, 108, 100, 33])
@@ -302,6 +311,7 @@ import Testing
                 _ = try await iterator.next(utf8: String.self, count: -1)
             }
         }
+        #endif
         
         @Test func nextUTF8StringCount() async throws {
             var iterator = AsyncTestIterator([72, 101, 108, 108, 111, 44, 32, 87, 111, 114, 108, 100, 33])
@@ -327,6 +337,7 @@ import Testing
             }
         }
         
+        #if !os(iOS) && !os(tvOS) && !os(watchOS) && !os(visionOS)
         @Test func nextUTF8StringMinMaxInvalidInput() async throws {
             await #expect(processExitsWith: .failure) {
                 var iterator = AsyncTestIterator([72, 101, 108, 108, 111, 44, 32, 87, 111, 114, 108, 100, 33])
@@ -353,6 +364,7 @@ import Testing
                 _ = try await iterator.next(utf8: String.self, min: 1, max: 0)
             }
         }
+        #endif
         
         @Test func nextUTF8StringMinMax() async throws {
             var iterator = AsyncTestIterator([72, 101, 108, 108, 111, 44, 32, 87, 111, 114, 108, 100, 33])
@@ -379,6 +391,7 @@ import Testing
             }
         }
         
+        #if !os(iOS) && !os(tvOS) && !os(watchOS) && !os(visionOS)
         @Test func nextIfPresentUTF8StringCountInvalidInput() async throws {
             await #expect(processExitsWith: .failure) {
                 var iterator = AsyncTestIterator([72, 101, 108, 108, 111, 44, 32, 87, 111, 114, 108, 100, 33])
@@ -389,6 +402,7 @@ import Testing
                 _ = try await iterator.nextIfPresent(utf8: String.self, count: -1)
             }
         }
+        #endif
         
         @Test func nextIfPresentUTF8StringCount() async throws {
             var iterator = AsyncTestIterator([72, 101, 108, 108, 111, 44, 32, 87, 111, 114, 108, 100, 33])
@@ -433,6 +447,7 @@ import Testing
             #expect(try await iterator.nextIfPresent(utf8: String.self, count: 0) == "")
         }
         
+        #if !os(iOS) && !os(tvOS) && !os(watchOS) && !os(visionOS)
         @Test func nextIfPresentUTF8StringMinMaxInvalidInput() async throws {
             await #expect(processExitsWith: .failure) {
                 var iterator = AsyncTestIterator([72, 101, 108, 108, 111, 44, 32, 87, 111, 114, 108, 100, 33])
@@ -459,6 +474,7 @@ import Testing
                 _ = try await iterator.nextIfPresent(utf8: String.self, min: 1, max: 0)
             }
         }
+        #endif
         
         @Test func nextIfPresentUTF8StringMinMax() async throws {
             var iterator = AsyncTestIterator([72, 101, 108, 108, 111, 44, 32, 87, 111, 114, 108, 100, 33])
@@ -709,6 +725,7 @@ import Testing
     #endif
     
     @Suite struct StringAsyncByteIteratorTests {
+        #if !os(iOS) && !os(tvOS) && !os(watchOS) && !os(visionOS)
         @available(macOS 15.0, iOS 18.0, watchOS 11.0, tvOS 18.0, visionOS 2.0, *)
         @Test func nextUTF8StringCountInvalidInput() async throws {
             await #expect(processExitsWith: .failure) {
@@ -720,6 +737,7 @@ import Testing
                 _ = try await iterator.next(utf8: String.self, count: -1)
             }
         }
+        #endif
         
         @available(macOS 15.0, iOS 18.0, watchOS 11.0, tvOS 18.0, visionOS 2.0, *)
         @Test func nextUTF8StringCount() async throws {
@@ -747,6 +765,7 @@ import Testing
             }
         }
         
+        #if !os(iOS) && !os(tvOS) && !os(watchOS) && !os(visionOS)
         @available(macOS 15.0, iOS 18.0, watchOS 11.0, tvOS 18.0, visionOS 2.0, *)
         @Test func nextUTF8StringMinMaxInvalidInput() async throws {
             await #expect(processExitsWith: .failure) {
@@ -774,6 +793,7 @@ import Testing
                 _ = try await iterator.next(utf8: String.self, min: 1, max: 0)
             }
         }
+        #endif
         
         @available(macOS 15.0, iOS 18.0, watchOS 11.0, tvOS 18.0, visionOS 2.0, *)
         @Test func nextUTF8StringMinMax() async throws {
@@ -802,6 +822,7 @@ import Testing
             }
         }
         
+        #if !os(iOS) && !os(tvOS) && !os(watchOS) && !os(visionOS)
         @available(macOS 15.0, iOS 18.0, watchOS 11.0, tvOS 18.0, visionOS 2.0, *)
         @Test func nextIfPresentUTF8StringCountInvalidInput() async throws {
             await #expect(processExitsWith: .failure) {
@@ -813,6 +834,7 @@ import Testing
                 _ = try await iterator.nextIfPresent(utf8: String.self, count: -1)
             }
         }
+        #endif
         
         @available(macOS 15.0, iOS 18.0, watchOS 11.0, tvOS 18.0, visionOS 2.0, *)
         @Test func nextIfPresentUTF8StringCount() async throws {
@@ -860,6 +882,7 @@ import Testing
             #expect(try await iterator.nextIfPresent(utf8: String.self, count: 0) == "")
         }
         
+        #if !os(iOS) && !os(tvOS) && !os(watchOS) && !os(visionOS)
         @available(macOS 15.0, iOS 18.0, watchOS 11.0, tvOS 18.0, visionOS 2.0, *)
         @Test func nextIfPresentUTF8StringMinMaxInvalidInput() async throws {
             await #expect(processExitsWith: .failure) {
@@ -887,6 +910,7 @@ import Testing
                 _ = try await iterator.nextIfPresent(utf8: String.self, min: 1, max: 0)
             }
         }
+        #endif
         
         @available(macOS 15.0, iOS 18.0, watchOS 11.0, tvOS 18.0, visionOS 2.0, *)
         @Test func nextIfPresentUTF8StringMinMax() async throws {

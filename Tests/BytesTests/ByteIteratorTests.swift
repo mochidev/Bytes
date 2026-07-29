@@ -13,6 +13,7 @@ import Testing
 @Suite struct ByteIteratorTests {
     let bytes: Bytes = [0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07]
     
+    #if !os(iOS) && !os(tvOS) && !os(watchOS) && !os(visionOS)
     @Test func nextCountInvalidInput() async throws {
         await #expect(processExitsWith: .failure) {
             let bytes: Bytes = [0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07]
@@ -20,6 +21,7 @@ import Testing
             _ = try iterator.next(Bytes.self, count: -1)
         }
     }
+    #endif
     
     @Test func nextCount() async throws {
         var iterator = bytes.makeIterator()
@@ -36,6 +38,7 @@ import Testing
         #expect(try iterator.next(Bytes.self, count: 0) == [])
     }
     
+    #if !os(iOS) && !os(tvOS) && !os(watchOS) && !os(visionOS)
     @Test func nextMinMaxInvalidInput() async throws {
         await #expect(processExitsWith: .failure) {
             let bytes: Bytes = [0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07]
@@ -53,6 +56,7 @@ import Testing
             _ = try iterator.next(Bytes.self, min: 1, max: 0)
         }
     }
+    #endif
     
     @Test func nextMinMax() async throws {
         var iterator = bytes.makeIterator()
@@ -68,6 +72,7 @@ import Testing
         }
     }
     
+    #if !os(iOS) && !os(tvOS) && !os(watchOS) && !os(visionOS)
     @Test func nextMaxInvalidInput() async throws {
         await #expect(processExitsWith: .failure) {
             let bytes: Bytes = [0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07]
@@ -75,6 +80,7 @@ import Testing
             _ = iterator.next(Bytes.self, max: -1)
         }
     }
+    #endif
     
     @Test func nextMax() async throws {
         var iterator = bytes.makeIterator()
@@ -86,6 +92,7 @@ import Testing
         #expect(iterator.next(Bytes.self, max: 3) == [])
     }
     
+    #if !os(iOS) && !os(tvOS) && !os(watchOS) && !os(visionOS)
     @Test func nextIfPresentCountInvalidInput() async throws {
         await #expect(processExitsWith: .failure) {
             let bytes: Bytes = [0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07]
@@ -93,6 +100,7 @@ import Testing
             _ = try iterator.nextIfPresent(Bytes.self, count: -1)
         }
     }
+    #endif
     
     @Test func nextIfPresentCount() async throws {
         var iterator = bytes.makeIterator()
@@ -122,6 +130,7 @@ import Testing
         #expect(try iterator.nextIfPresent(Bytes.self, count: 0) == [])
     }
     
+    #if !os(iOS) && !os(tvOS) && !os(watchOS) && !os(visionOS)
     @Test func nextIfPresentMinMaxInvalidInput() async throws {
         await #expect(processExitsWith: .failure) {
             let bytes: Bytes = [0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07]
@@ -139,6 +148,7 @@ import Testing
             _ = try iterator.nextIfPresent(Bytes.self, min: 1, max: 0)
         }
     }
+    #endif
     
     @Test func nextIfPresentMinMax() async throws {
         var iterator = bytes.makeIterator()
@@ -165,6 +175,7 @@ import Testing
         #expect(try iterator.nextIfPresent(Bytes.self, min: 0, max: 3) == nil)
     }
 
+    #if !os(iOS) && !os(tvOS) && !os(watchOS) && !os(visionOS)
     @Test func nextIfPresentMaxInvalidInput() async throws {
         await #expect(processExitsWith: .failure) {
             let bytes: Bytes = [0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07]
@@ -172,6 +183,7 @@ import Testing
             _ = iterator.nextIfPresent(Bytes.self, max: -1)
         }
     }
+    #endif
     
     @Test func nextIfPresentMax() async throws {
         var iterator = bytes.makeIterator()
